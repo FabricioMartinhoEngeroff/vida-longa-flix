@@ -1,0 +1,43 @@
+<!-- cabecalho.component.html -->
+
+<!--
+  ✅ No React:
+  <HeaderEstilizado> ... </HeaderEstilizado>
+
+  ✅ No Angular:
+  usamos uma tag normal (header)
+  e aplicamos classes CSS
+-->
+<header class="header-estilizado">
+  <!-- Container do logo + titulo -->
+  <div class="logo-titulo-container">
+    <img class="icone-lupa" src="/assets/icons/search.png" alt="ícone de lupa" />
+
+    <!--
+      Aqui estamos chamando o componente "Titulo"
+      Exatamente igual no React.
+      Só muda a sintaxe.
+
+      React: <Titulo $alinhamento="left">Vida Longa Flix</Titulo>
+      Angular: <app-titulo [alinhamento]="'left'">Vida Longa Flix</app-titulo>
+
+      (Obs: depende de como o TituloComponent foi feito)
+    -->
+    <app-titulo [alinhamento]="'left'">Vida Longa Flix</app-titulo>
+  </div>
+
+  <!-- Container do campo de pesquisa -->
+  <div class="campo-texto-container">
+ 
+
+   
+      <app-campo-texto
+  placeholder="Pesquisar..."
+  (valueChange)="onPesquisar($event)"
+  (configuracaoClick)="abrirConfiguracoes()"
+></app-campo-texto>
+      
+    
+    <app-campo-texto [placeholder]="'Pesquisar...'"></app-campo-texto>
+  </div>
+</header>

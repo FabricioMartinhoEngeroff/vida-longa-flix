@@ -1,0 +1,40 @@
+<!-- campo-texto.component.html -->
+
+<!-- Wrapper: agrupa input + botão engrenagem -->
+<div class="wrapper">
+  <!-- Container do input (com lupa dentro) -->
+  <div class="container-estilizado">
+    <!-- input estilizado -->
+    <input
+      class="campo-texto-estilizado"
+      [type]="type"
+      [placeholder]="placeholder"
+      [value]="value"
+      [disabled]="disabled"
+      (input)="onInput($event)"
+    />
+
+    <!-- Ícone da lupa dentro do input -->
+    <img class="icone-lupa" src="/assets/icons/search.png" alt="ícone de lupa" />
+
+  </div>
+
+  <!-- Botão de configuração -->
+  <button
+    type="button"
+    class="configuracao-container"
+    (click)="onConfiguracaoClick()"
+    aria-label="Configurações"
+  >
+    <!--
+      No React: <FiSettings />
+      No Angular: podemos usar um ícone simples via SVG/Unicode.
+
+      ✅ Opção simples e rápida: usar um SVG inline via path no CSS/HTML
+      ✅ Alternativa profissional: Angular Material icon
+    -->
+
+    <!-- opção simples: caractere ⚙ -->
+    <span class="icone-config">⚙</span>
+  </button>
+</div>

@@ -1,0 +1,76 @@
+/* cabecalho.component.css */
+
+/*
+  ✅ React styled-components:
+  const HeaderEstilizado = styled.header` ... `
+*/
+.header-estilizado {
+  background-color: #7da873;
+  padding: 10px 20px;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+
+  height: auto;
+}
+
+/*
+  ✅ Responsividade igual ao React:
+  @media (max-width: 768px) { ... }
+*/
+@media (max-width: 768px) {
+  .header-estilizado {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+/* Container logo + título */
+.logo-titulo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .logo-titulo-container {
+    justify-content: center;
+  }
+}
+
+/* Logo */
+.logo {
+  height: 50px;
+  width: auto;
+
+  margin: 0;
+  padding: 0;
+
+  display: block;
+
+  background-color: #629359;
+  border-radius: 50%;
+}
+
+/* Campo texto container */
+.campo-texto-container {
+  flex: 1;
+
+  display: flex;
+  justify-content: flex-end;
+
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .campo-texto-container {
+    justify-content: center;
+    width: 100%;
+  }
+}
