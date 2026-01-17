@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CampoTextoComponent } from './campo-texto.component';
+import { BotaoIconeComponent } from './botao-icone.component';
 
-describe('CampoTextoComponent', () => {
-  let component: CampoTextoComponent;
-  let fixture: ComponentFixture<CampoTextoComponent>;
+describe('BotaoIconeComponent', () => {
+  let component: BotaoIconeComponent;
+  let fixture: ComponentFixture<BotaoIconeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CampoTextoComponent]
+      declarations: [BotaoIconeComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CampoTextoComponent);
+    fixture = TestBed.createComponent(BotaoIconeComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
     await fixture.whenStable();
   });
 

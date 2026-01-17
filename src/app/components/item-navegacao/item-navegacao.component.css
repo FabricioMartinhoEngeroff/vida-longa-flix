@@ -1,0 +1,49 @@
+item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  color: #ffffff;
+  font-family: "verdana-regular";
+  font-size: 14px;
+  text-align: center;
+
+  gap: 3px;
+  padding: 4px;
+
+  &:hover {
+    color: #d0ffd0;
+  }
+}
+
+.item.ativo {
+  color: #000000;
+  font-family: "verdana-bold";
+}
+
+.icone {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 3px;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.icone.ativo {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .item {
+    font-size: 12px;
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .icone {
+    width: 24px;
+    height: 24px;
+  }
+}

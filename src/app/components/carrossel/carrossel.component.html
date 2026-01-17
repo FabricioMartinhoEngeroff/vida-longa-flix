@@ -1,0 +1,13 @@
+<div class="carrossel-container">
+  <button class="scroll-button left" (click)="scroll('left')" type="button" aria-label="Voltar">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <div #carrossel class="video-list">
+    <ng-content></ng-content>
+  </div>
+
+  <button class="scroll-button right" (click)="scroll('right')" type="button" aria-label="Avançar">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</div>

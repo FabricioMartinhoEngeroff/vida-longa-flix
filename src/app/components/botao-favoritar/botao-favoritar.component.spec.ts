@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CampoTextoComponent } from './campo-texto.component';
+import { BotaoFavoritar } from './botao-favoritar.component';
 
-describe('CampoTextoComponent', () => {
-  let component: CampoTextoComponent;
-  let fixture: ComponentFixture<CampoTextoComponent>;
+describe('BotaoFavoritar', () => {
+  let component: BotaoFavoritar;
+  let fixture: ComponentFixture<BotaoFavoritar>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CampoTextoComponent]
+      imports: [BotaoFavoritar]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CampoTextoComponent);
+    fixture = TestBed.createComponent(BotaoFavoritar);
     component = fixture.componentInstance;
-    fixture.detectChanges();
     await fixture.whenStable();
   });
 

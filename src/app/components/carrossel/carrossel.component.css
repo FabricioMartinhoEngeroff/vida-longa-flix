@@ -1,0 +1,54 @@
+.carrossel-container {
+  position: relative;
+  padding: 0 12px;
+  overflow-x: auto;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+.scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+
+  &:hover {
+    color: #000;
+  }
+}
+
+.scroll-button.left {
+  left: 0;
+}
+
+.scroll-button.right {
+  right: 0;
+}
+
+:deep(mat-icon) {
+  width: 36px;
+  height: 36px;
+  font-size: 36px;
+}
+
+.video-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+
+  overflow-x: auto;
+  scroll-behavior: smooth;
+
+  padding: 10px 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .scroll-button {
+    display: none; /* oculta as setas em telas pequenas */
+  }
+}

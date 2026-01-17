@@ -1,0 +1,27 @@
+.botao {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+
+  color: #b78afa;
+
+  &:hover {
+    color: #8b5cd6;
+  }
+}
+
+.botao.favorito {
+  color: #8b5cd6;
+
+  &:hover {
+    color: #6a0dad;
+  }
+}
+
+/* garante tamanho do ícone */
+:deep(mat-icon) {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}

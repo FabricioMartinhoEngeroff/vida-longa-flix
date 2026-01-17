@@ -1,0 +1,50 @@
+/* Botão Favorito (Like) */
+.botao-favorito {
+  background: none;
+  border: none;
+  color: gray;
+  font-size: 24px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.botao-favorito.favorito {
+  color: red;
+}
+
+.botao-favorito:hover {
+  color: lightgray;
+}
+
+.botao-favorito.favorito:hover {
+  color: #ff6666;
+}
+
+@media (max-width: 768px) {
+  .botao-favorito {
+    font-size: 28px;
+    margin-top: 12px;
+    align-self: center;
+  }
+}
+
+/* Botão de seta */
+.botao-seta {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: gray;
+  padding: 8px;
+}
+
+.botao-seta:hover {
+  color: black;
+}
+
+@media (max-width: 768px) {
+  .botao-seta {
+    font-size: 28px;
+    padding: 12px;
+  }
+}
