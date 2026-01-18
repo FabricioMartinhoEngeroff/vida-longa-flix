@@ -9,9 +9,9 @@ import { NgClass } from '@angular/common';
   styleUrls: ['./item-navegacao.component.css'],
 })
 export class ItemNavegacaoComponent {
-  @Input() texto: string = '';
-  @Input() icone: string = '';
-  @Input() ativo: boolean = false;
+  @Input() texto = '';
+  @Input() icone = '';
+  @Input() ativo = false;
 
   @Output() aoClicar = new EventEmitter<void>();
 

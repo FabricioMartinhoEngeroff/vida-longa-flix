@@ -1,0 +1,71 @@
+<p *ngIf="favoritos.length === 0" class="mensagem-vazia">
+  Nenhum vídeo foi adicionado aos favoritos.
+</p>
+
+<!-- ✅ quando tem favoritos -->
+<div *ngIf="favoritos.length > 0">
+
+  <!-- =====================================================
+       ✅ WEB / DESKTOP
+       ===================================================== -->
+  <div *ngIf="!isMobile" class="web">
+    <div class="titulo-container">
+      <app-titulo [alinhamento]="'left'">Favoritos</app-titulo>
+
+      <button class="ver-tudo" type="button" (click)="verTudo()">
+        Ver tudo
+        <mat-icon class="icone">arrow_forward</mat-icon>
+      </button>
+    </div>
+
+    <app-carrossel>
+      <div class="video-item" *ngFor="let video of favoritos">
+        <video
+          [src]="video.url"
+          muted
+          playsinline
+          (click)="abrirModal(video)"
+          (mouseenter)="playVideo($event)"
+          (mouseleave)="pauseVideo($event)"
+        ></video>
+
+        <h3>{{ video.title }}</h3>
+
+        <button class="botao-remover" type="button" (click)="remover(video)">
+          Remover
+        </button>
+      </div>
+    </app-carrossel>
+  </div>
+
+  <!-- =====================================================
+       ✅ MOBILE / CELULAR
+       ===================================================== -->
+  <div *ngIf="isMobile" class="mobile">
+    <div class="topo-mobile">
+      <h2 class="titulo-mobile">Favoritos</h2>
+      <span class="contador">{{ favoritos.length }}</span>
+    </div>
+
+    <div class="lista-mobile">
+      <div class="card-mobile" *ngFor="let video of favoritos">
+        <video
+          [src]="video.url"
+          muted
+          playsinline
+          (click)="abrirModal(video)"
+        ></video>
+
+        <div class="info-mobile">
+          <p class="titulo-video">{{ video.title }}</p>
+
+          <button class="botao-remover-mobile" type="button" (click)="remover(video)">
+            <mat-icon>delete</mat-icon>
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

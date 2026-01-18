@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./botao-favoritar.component.css'],
 })
 export class BotaoFavoritarComponent {
-  @Input() favorito: boolean = false;
+  @Input() favorito = false;
 
   @Output() aoClicar = new EventEmitter<void>();
 

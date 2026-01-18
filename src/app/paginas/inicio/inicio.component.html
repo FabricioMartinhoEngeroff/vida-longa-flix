@@ -1,0 +1,129 @@
+<!-- =========================================
+     ✅ TITULO / HEADER (serve pros dois)
+     ========================================= -->
+<div class="titulo-container">
+  <app-titulo [alinhamento]="'left'">Reels</app-titulo>
+
+  <button class="ver-tudo" type="button" (click)="verTudo()">
+    Ver tudo
+    <mat-icon class="icone">arrow_forward</mat-icon>
+  </button>
+</div>
+
+<!-- =========================================
+     ✅ WEB / DESKTOP
+     ========================================= -->
+<div *ngIf="!isMobile" class="web">
+  <app-carrossel>
+    <div class="video-card" *ngFor="let video of videosReels">
+      <div class="video-wrapper">
+        <video
+          [src]="video.url"
+          muted
+          playsinline
+          (click)="abrirModal(video)"
+          (mouseenter)="playVideo($event)"
+          (mouseleave)="pauseVideo($event)"
+        ></video>
+      </div>
+
+      <div class="info-area">
+        <h3>{{ video.title }}</h3>
+        <p class="descricao">{{ video.description }}</p>
+      </div>
+
+      <div class="comentarios">
+        <div class="cabecalho-comentario">
+          <div class="titulo">Comentários</div>
+
+          <app-botao-favoritar
+            [favorito]="video.favorita"
+            (aoClicar)="toggleFavorite(video.id)"
+          ></app-botao-favoritar>
+        </div>
+
+        <span
+          *ngIf="(comentariosState[video.id]?.length || 0) > 2"
+          class="verTodos"
+          (click)="abrirModal(video)"
+        >
+          Ver todos os {{ comentariosState[video.id].length }} comentários
+        </span>
+
+        <span *ngFor="let c of comentariosState[video.id]?.slice(-2)">
+          {{ c }}
+        </span>
+      </div>
+
+      <div class="comentario-form">
+        <input
+          type="text"
+          placeholder="Adicione um comentário..."
+          [value]="novoComentario[video.id] || ''"
+          (input)="novoComentario[video.id] = ($any($event.target).value)"
+        />
+
+        <button type="button" (click)="adicionarComentario(video.id)">
+          Publicar
+        </button>
+      </div>
+    </div>
+  </app-carrossel>
+</div>
+
+<!-- =========================================
+     ✅ MOBILE / CELULAR (melhor UX)
+     ========================================= -->
+<div *ngIf="isMobile" class="mobile">
+  <div class="lista-mobile">
+    <div class="card-mobile" *ngFor="let video of videosReels">
+      <video
+        class="video-mobile"
+        [src]="video.url"
+        muted
+        playsinline
+        (click)="abrirModal(video)"
+      ></video>
+
+      <div class="info-mobile">
+        <div class="linha-titulo">
+          <h3 class="titulo-video">{{ video.title }}</h3>
+
+          <app-botao-favoritar
+            [favorito]="video.favorita"
+            (aoClicar)="toggleFavorite(video.id)"
+          ></app-botao-favoritar>
+        </div>
+
+        <p class="descricao-mobile">{{ video.description }}</p>
+
+        <div class="comentarios-mobile">
+          <span
+            *ngIf="(comentariosState[video.id]?.length || 0) > 2"
+            class="verTodos"
+            (click)="abrirModal(video)"
+          >
+            Ver todos os {{ comentariosState[video.id].length }} comentários
+          </span>
+
+          <span *ngFor="let c of comentariosState[video.id]?.slice(-2)">
+            {{ c }}
+          </span>
+        </div>
+
+        <div class="comentario-form mobile-form">
+          <input
+            type="text"
+            placeholder="Adicione um comentário..."
+            [value]="novoComentario[video.id] || ''"
+            (input)="novoComentario[video.id] = ($any($event.target).value)"
+          />
+
+          <button type="button" (click)="adicionarComentario(video.id)">
+            Publicar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

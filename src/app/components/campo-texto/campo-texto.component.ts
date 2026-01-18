@@ -8,10 +8,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class CampoTextoComponent {
 
-  @Input() placeholder: string = '';
-  @Input() type: string = 'text';
-  @Input() value: string = '';
-  @Input() disabled: boolean = false;
+  @Input() placeholder = '';
+  @Input() type = 'text';
+  @Input() value = '';
+  @Input() disabled = false;
 
   @Output() valueChange = new EventEmitter<string>();
   @Output() configuracaoClick = new EventEmitter<void>();

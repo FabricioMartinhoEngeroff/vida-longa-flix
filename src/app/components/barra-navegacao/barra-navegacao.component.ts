@@ -3,11 +3,11 @@ import { NgFor } from '@angular/common';
 import { Router } from '@angular/router';
 import { ItemNavegacaoComponent } from '../item-navegacao/item-navegacao.component';
 
-type ItemMenu = {
+interface ItemMenu {
   nome: string;
   icone: string;
   path: string;
-};
+}
 
 @Component({
   selector: 'app-barra-navegacao',
