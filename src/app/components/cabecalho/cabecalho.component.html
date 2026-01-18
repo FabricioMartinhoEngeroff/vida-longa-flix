@@ -5,12 +5,16 @@
       <app-titulo [alinhamento]="'left'">Vida Longa Flix</app-titulo>
     </div>
 
-    <div class="campo-texto-container">
+    <div class="acoes-direita">
       <app-campo-texto
         placeholder="Pesquisar..."
         (valueChange)="onPesquisar($event)"
         (configuracaoClick)="abrirConfiguracoes()"
       ></app-campo-texto>
+
+      <button class="btn-logout" (click)="logout()">
+        Sair
+      </button>
     </div>
   </div>
 </header>

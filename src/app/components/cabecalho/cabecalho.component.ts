@@ -19,4 +19,8 @@ export class CabecalhoComponent {
     console.log('Abrir configurações clicado!');
   }
 
+  logout() {
+  console.log("Logout clicado!");
+}
+
 }

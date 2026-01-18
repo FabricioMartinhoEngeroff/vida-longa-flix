@@ -37,7 +37,7 @@
           <div class="titulo">Comentários</div>
 
           <app-botao-favoritar
-            [favorito]="video.favorita"
+            [favorito]="video.favorita ?? false"
             (aoClicar)="toggleFavorite(video.id)"
           ></app-botao-favoritar>
         </div>
@@ -90,9 +90,9 @@
           <h3 class="titulo-video">{{ video.title }}</h3>
 
           <app-botao-favoritar
-            [favorito]="video.favorita"
-            (aoClicar)="toggleFavorite(video.id)"
-          ></app-botao-favoritar>
+  [favorito]="video.favorita ?? false"
+  (aoClicar)="toggleFavorite(video.id)"
+></app-botao-favoritar>
         </div>
 
         <p class="descricao-mobile">{{ video.description }}</p>

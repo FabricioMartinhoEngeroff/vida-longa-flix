@@ -1,15 +1,9 @@
-<div class="fundo-gradiente">
-  <div class="app-container">
-    <app-cabecalho></app-cabecalho>
+<app-cabecalho></app-cabecalho>
+<app-barra-navegacao></app-barra-navegacao>
 
-    <app-barra-navegacao></app-barra-navegacao>
+<main class="main-container">
+  <router-outlet></router-outlet>
+</main>
 
-    <main class="main-container">
-      <router-outlet></router-outlet>
-    </main>
-
-    <app-rodape></app-rodape>
-
-    <app-modal-video-zoom></app-modal-video-zoom>
-  </div>
-</div>
+<app-rodape></app-rodape>
+<app-modal-video-zoom></app-modal-video-zoom>

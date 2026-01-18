@@ -6,11 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { ModalService } from '../../services/modal/modal';
 import { VideoService } from '../../services/video/video';
 import { Video } from '../../tipos/videos';
+import { BotaoFavoritarComponent } from '../../components/botao-favoritar/botao-favoritar.component';
 
 @Component({
   selector: 'app-modal-video-zoom',
   standalone: true,
-  imports: [NgIf, NgFor, MatIconModule, FormsModule],
+  imports: [NgIf, NgFor, MatIconModule, FormsModule, BotaoFavoritarComponent],
   templateUrl: './modal-video-zoom.component.html',
   styleUrls: ['./modal-video-zoom.component.css'],
 })

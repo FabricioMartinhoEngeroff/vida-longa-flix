@@ -1,91 +1,138 @@
+/* HEADER FULL WIDTH */
 .header-estilizado {
   background-color: #7da873;
-  padding: 10px 20px;
+  width: 100%;
+  margin: 0;
+  padding: 1px 1px;
 
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
 
-  height: auto;
-  width: 100%;
+  overflow: hidden;
 }
 
-/* novo container interno pra segurar layout no desktop */
+/* Conteúdo do header */
 .header-conteudo {
   display: flex;
-  flex-wrap: wrap;
-
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
-  gap: 12px;
+  gap: 20px;
 
   width: 100%;
-  max-width: 1200px;   /* deixa mais Netflix (conteúdo central) */
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-  .header-estilizado {
-    padding: 12px 14px;
-
-    /* deixa com cara de app */
-    position: sticky;
-    top: 0;
-    z-index: 20;
-  }
-
-  .header-conteudo {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-}
-
-/* Container logo + título */
+/* LOGO + NOME (sempre à esquerda) */
 .logo-titulo-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
+
+  min-width: 230px; /* evita quebrar o título */
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-  .logo-titulo-container {
-    justify-content: center;
-    text-align: center;
-  }
-}
-
-/* Logo */
 .logo {
-  height: 50px;
-  width: 50px; /* garante formato redondo */
-  object-fit: cover;
-
-  margin: 0;
-  padding: 0;
-
+  height: 70px;
+  width: auto;          
+  max-width: 200px;     
+  object-fit: contain;
   display: block;
+  border-radius: 20px;  
+  background: transparent;
+  padding: 10px;  
+} 
 
-  background-color: #629359;
-  border-radius: 50%;
-}
-
-/* Campo texto container */
-.campo-texto-container {
-  flex: 1;
-
+/* ========= AÇÕES À DIREITA (pesquisa + logout) ========= */
+.acoes-direita {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 100px;
 
   width: 100%;
   max-width: 400px;
 }
 
+
+.acoes-direita app-campo-texto {
+  flex: 1;
+}
+
+.btn-logout {
+  height: 44px;
+  padding: 0 20px;
+
+  border-radius: 999px; 
+   border: 1px solid #2f6b3a;
+
+  background: #7ea46f; 
+  color: #0b2b0b;
+
+  font-family: "verdana-bold";
+  cursor: pointer;
+  white-space: nowrap;
+
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+
+  transition: transform 0.12s ease, background 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #6f9962;
+}
+
+.btn-logout:active {
+  transform: scale(0.97);
+}
+
+
+/* =================== MOBILE =================== */
 @media (max-width: 768px) {
-  .campo-texto-container {
-    justify-content: center;
-    max-width: 100%;
-    width: 100%;
+  .header-estilizado {
+    padding: 10px 12px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .header-conteudo {
+    flex-direction: row; 
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-titulo-container {
+    min-width: auto;
+    gap: 8px;
+  }
+
+  .logo {
+  height: 54px;
+  width: auto;          
+  max-width: 120px;     
+  object-fit: contain;
+  display: block;
+  border-radius: 10px;  
+  background: transparent;
+  padding: 2px;       
+}
+
+  /* no mobile a pesquisa diminui e não quebra */
+  .acoes-direita {
+    max-width: none;
+    width: auto;
+    flex: 1;
+    gap: 10px;
+  }
+
+  /* botão logout menor no mobile */
+  .btn-logout {
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 13px;
   }
 }
