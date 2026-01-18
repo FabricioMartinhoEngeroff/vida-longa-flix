@@ -1,8 +1,14 @@
 .carrossel-container {
   position: relative;
-  padding: 0 12px;
-  max-width: 100vw;
+
+  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
+
+  padding: 0 12px;
+
+  /* ✅ impede vazamento lateral */
+  overflow: hidden;
 }
 
 /* =========================
@@ -12,38 +18,38 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 2;
+  z-index: 5;
 
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
 
-  color: #333;
   padding: 6px;
-
   border-radius: 12px;
 
-  transition: color 0.2s ease, transform 0.12s ease;
+  color: #fff;
+  transition: transform 0.12s ease, opacity 0.2s ease;
+
   -webkit-tap-highlight-color: transparent;
 }
 
-/* hover corrigido (CSS puro) */
+/* ✅ botões não vazam pra fora */
+.scroll-button.left {
+  left: 8px;
+}
+
+.scroll-button.right {
+  right: 8px;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .scroll-button:hover {
-    color: #000;
+    opacity: 0.85;
   }
 }
 
 .scroll-button:active {
   transform: translateY(-50%) scale(0.92);
-}
-
-.scroll-button.left {
-  left: 0;
-}
-
-.scroll-button.right {
-  right: 0;
 }
 
 /* Ícone */
@@ -61,33 +67,51 @@
   flex-wrap: nowrap;
   gap: 16px;
 
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
   overflow-x: auto;
+  overflow-y: hidden;
+
+  /* ✅ padding lateral evita o card "cortar" e evita vazamento */
+  padding: 10px 12px;
+
   scroll-behavior: smooth;
-
-  padding: 10px 0;
-
-  /* swipe natural */
   -webkit-overflow-scrolling: touch;
 
-  /* snap tipo Netflix */
+  /* snap estilo netflix */
   scroll-snap-type: x mandatory;
 
-  /* melhora arrasto */
-  cursor: grab;
+  /* ✅ evita scroll puxar o body no mobile */
+  overscroll-behavior-x: contain;
+
+  /* ✅ evita seleção/drag estranho */
+  user-select: none;
+
+  /* ✅ impede pequenos vazamentos em alguns browsers */
+  scrollbar-width: none;
+}
+
+.video-list::-webkit-scrollbar {
+  height: 0;
 }
 
 .video-list:active {
   cursor: grabbing;
 }
 
-/* cada item do carrossel vai "encaixar" */
+/* cada item do carrossel */
 .video-list > * {
+  flex: 0 0 auto;
   scroll-snap-align: start;
-}
 
-/* esconder scrollbar (fica mais Netflix/app) */
-.video-list::-webkit-scrollbar {
-  height: 0;
+  /* ✅ MUITO IMPORTANTE */
+  min-width: 0;
+
+  /* ✅ nunca estoura container */
+  max-width: 100%;
 }
 
 /* =========================
@@ -95,7 +119,7 @@
 ========================= */
 @media (max-width: 768px) {
   .scroll-button {
-    display: none; /* setas somem no mobile */
+    display: none;
   }
 
   .carrossel-container {
@@ -104,6 +128,11 @@
 
   .video-list {
     gap: 12px;
-    padding: 8px 0;
+    padding: 8px 8px; /* ✅ padding lateral também no mobile */
+  }
+
+  /* ✅ esse é o ajuste que mata 100% da barra lateral */
+  .video-list > * {
+    max-width: 85vw;
   }
 }

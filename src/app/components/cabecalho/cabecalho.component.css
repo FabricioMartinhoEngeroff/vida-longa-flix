@@ -30,7 +30,7 @@
   align-items: center;
   gap: 14px;
 
-  min-width: 230px; /* evita quebrar o título */
+  min-width:0px; /* evita quebrar o título */
 }
 
 .logo {
@@ -49,15 +49,17 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 100px;
 
-  width: 100%;
-  max-width: 400px;
+  gap: 12px;          
+  width: auto;        
+  max-width: none;   
+  min-width: 0;       
 }
 
 
 .acoes-direita app-campo-texto {
   flex: 1;
+  min-width: 0;
 }
 
 .btn-logout {

@@ -19,16 +19,14 @@
    ROOT + TIPOGRAFIA
 ========================= */
 :root {
-  --bg: #0b0b0b;           /* Netflix style */
+  --bg: #0b0b0b;
   --bg-soft: #121212;
   --text: #ffffff;
   --text-soft: #cfcfcf;
 
   --radius: 12px;
-
   --container-max: 1200px;
 
-  /* facilita scaling no mobile */
   --font-base: 16px;
 }
 
@@ -40,13 +38,12 @@ html {
   /* evita scroll lateral acidental */
   overflow-x: hidden;
 
-  /* previne "tap highlight" azul no Android */
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
   min-height: 100vh;
-  min-height: 100dvh; /* importante para mobile */
+  min-height: 100dvh;
 
   font-family: Arial, sans-serif;
   line-height: 1.5;
@@ -54,12 +51,12 @@ body {
   background-color: var(--bg);
   color: var(--text);
 
+  /* garante que não apareça barra lateral */
   overflow-x: hidden;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* mobile feel */
   touch-action: manipulation;
 }
 
@@ -76,7 +73,6 @@ a {
   text-decoration: none;
 }
 
-/* melhora acessibilidade p/ navegação por teclado */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -92,8 +88,6 @@ button {
   background: transparent;
   font: inherit;
   color: inherit;
-
-  /* melhora clique no mobile */
   touch-action: manipulation;
 }
 
@@ -109,7 +103,6 @@ iframe {
   display: block;
 }
 
-/* input melhor no mobile */
 input,
 textarea {
   font: inherit;
@@ -122,7 +115,7 @@ textarea::placeholder {
 }
 
 /* =========================
-   MELHORIAS MOBILE (Netflix-style)
+   MELHORIAS MOBILE
 ========================= */
 @media (max-width: 768px) {
   :root {
@@ -130,10 +123,9 @@ textarea::placeholder {
   }
 
   body {
-    /* melhora scroll suave no iOS */
     -webkit-overflow-scrolling: touch;
 
-    /* ✅ espaço pro menu fixo + safe-area iPhone */
-    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    /* ✅ removido o padding que criava espaço extra e “barra” embaixo */
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
