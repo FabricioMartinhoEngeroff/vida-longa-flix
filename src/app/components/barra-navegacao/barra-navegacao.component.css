@@ -11,8 +11,13 @@
   gap: 32px;
   width: 100%;
   margin: 0 auto;
+
+  /* Netflix style desktop */
+  max-width: 1200px;
+  border-radius: 0 0 14px 14px;
 }
 
+/* Mobile: barra fixa */
 @media (max-width: 768px) {
   .barra-navegacao {
     position: fixed;
@@ -20,12 +25,20 @@
     left: 0;
     right: 0;
 
-    z-index: 10;
-    gap: 10px;
-    padding: 8px;
+    z-index: 50;
+    gap: 8px;
+
+    padding: 8px 10px;
 
     justify-content: space-around;
     background-color: #7da873;
     box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.25);
+
+    /* remove max-width no mobile */
+    max-width: 100%;
+    border-radius: 14px 14px 0 0;
+
+    /* iPhone safe-area */
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
   }
 }

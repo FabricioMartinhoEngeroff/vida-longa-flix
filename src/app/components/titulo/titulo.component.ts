@@ -8,7 +8,7 @@ export type AlinhamentoTitulo = 'left' | 'center' | 'right';
   templateUrl: './titulo.component.html',
   styleUrls: ['./titulo.component.css'],
   standalone: true,
-  imports: [CommonModule], // 
+  imports: [CommonModule],
 })
 export class TituloComponent {
   @Input() alinhamento: AlinhamentoTitulo = 'left';

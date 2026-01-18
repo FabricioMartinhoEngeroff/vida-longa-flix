@@ -7,7 +7,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   standalone: true,
 })
 export class CampoTextoComponent {
-
   @Input() placeholder = '';
   @Input() type = 'text';
   @Input() value = '';
@@ -17,15 +16,17 @@ export class CampoTextoComponent {
   @Output() configuracaoClick = new EventEmitter<void>();
 
   onInput(event: Event) {
+    if (this.disabled) return;
+
     const input = event.target as HTMLInputElement;
     const novoValor = input.value;
 
-    this.value = novoValor; 
-    this.valueChange.emit(novoValor); 
+    this.value = novoValor;
+    this.valueChange.emit(novoValor);
   }
 
   onConfiguracaoClick() {
+    if (this.disabled) return;
     this.configuracaoClick.emit();
   }
 }
-

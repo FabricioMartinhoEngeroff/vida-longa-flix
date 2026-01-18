@@ -2,19 +2,44 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px;
 
+  /* melhor clique/toque */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px;
+  border-radius: 12px;
+
+  font-size: 24px;
   color: #b78afa;
 
-  &:hover {
+  transition: color 0.2s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* hover só no desktop */
+@media (hover: hover) and (pointer: fine) {
+  .botao:hover {
     color: #8b5cd6;
   }
 }
 
+.botao:active {
+  transform: scale(0.92);
+}
+
+.botao:focus-visible {
+  outline: 2px solid rgba(183, 138, 250, 0.5);
+  outline-offset: 2px;
+}
+
 .botao.favorito {
   color: #8b5cd6;
+}
 
-  &:hover {
+@media (hover: hover) and (pointer: fine) {
+  .botao.favorito:hover {
     color: #6a0dad;
   }
 }
@@ -24,4 +49,17 @@
   width: 24px;
   height: 24px;
   font-size: 24px;
+}
+
+/* mobile: dedo precisa área maior */
+@media (max-width: 768px) {
+  .botao {
+    padding: 10px;
+  }
+
+  :deep(mat-icon) {
+    width: 26px;
+    height: 26px;
+    font-size: 26px;
+  }
 }

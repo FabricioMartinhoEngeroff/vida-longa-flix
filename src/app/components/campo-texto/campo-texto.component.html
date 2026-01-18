@@ -7,17 +7,19 @@
       [value]="value"
       [disabled]="disabled"
       (input)="onInput($event)"
+      autocomplete="off"
+      inputmode="search"
+      aria-label="Campo de busca"
     />
 
-    <!-- Ícone da lupa dentro do input -->
     <img class="icone-lupa" src="/assets/icones/search.png" alt="search" />
   </div>
 
-  <!-- Botão da engrenagem -->
   <button
     type="button"
     class="configuracao-container"
     (click)="onConfiguracaoClick()"
+    [disabled]="disabled"
     aria-label="Configurações"
   >
     <span class="icone-config">⚙</span>

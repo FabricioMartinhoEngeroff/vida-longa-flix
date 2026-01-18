@@ -9,12 +9,16 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./carrossel.component.css'],
 })
 export class CarrosselComponent {
-  @ViewChild('carrossel', { static: true }) carrosselRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('carrossel', { static: true })
+  carrosselRef!: ElementRef<HTMLDivElement>;
 
   scroll(direcao: 'left' | 'right') {
-    const scrollAmount = direcao === 'left' ? -300 : 300;
+    const el = this.carrosselRef.nativeElement;
 
-    this.carrosselRef.nativeElement.scrollBy({
+    // scroll proporcional ao tamanho do carrossel
+    const scrollAmount = Math.round(el.clientWidth * 0.8) * (direcao === 'left' ? -1 : 1);
+
+    el.scrollBy({
       left: scrollAmount,
       behavior: 'smooth',
     });

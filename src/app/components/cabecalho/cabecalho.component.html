@@ -1,14 +1,16 @@
 <header class="header-estilizado">
-  <div class="logo-titulo-container">
-    <img class="logo" src="/assets/images/Logo.png" alt="Logo" />
-    <app-titulo [alinhamento]="'left'">Vida Longa Flix</app-titulo>
-  </div>
+  <div class="header-conteudo">
+    <div class="logo-titulo-container">
+      <img class="logo" src="/assets/images/Logo.png" alt="Logo" />
+      <app-titulo [alinhamento]="'left'">Vida Longa Flix</app-titulo>
+    </div>
 
-  <div class="campo-texto-container">
-    <app-campo-texto
-      placeholder="Pesquisar..."
-      (valueChange)="onPesquisar($event)"
-      (configuracaoClick)="abrirConfiguracoes()"
-    ></app-campo-texto>
+    <div class="campo-texto-container">
+      <app-campo-texto
+        placeholder="Pesquisar..."
+        (valueChange)="onPesquisar($event)"
+        (configuracaoClick)="abrirConfiguracoes()"
+      ></app-campo-texto>
+    </div>
   </div>
 </header>

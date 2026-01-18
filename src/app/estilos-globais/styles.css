@@ -132,5 +132,8 @@ textarea::placeholder {
   body {
     /* melhora scroll suave no iOS */
     -webkit-overflow-scrolling: touch;
+
+    /* ✅ espaço pro menu fixo + safe-area iPhone */
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
 }

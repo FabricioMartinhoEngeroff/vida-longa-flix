@@ -18,4 +18,11 @@ export class ItemNavegacaoComponent {
   clicar() {
     this.aoClicar.emit();
   }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.clicar();
+    }
+  }
 }
