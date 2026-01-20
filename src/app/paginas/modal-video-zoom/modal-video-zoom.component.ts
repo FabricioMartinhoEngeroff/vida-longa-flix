@@ -28,22 +28,27 @@ export class ModalVideoZoomComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.videoSelecionado = this.modalService.videoSelecionado as unknown as Video | null;
+  this.modalService.videoSelecionado$.subscribe((video) => {
+    this.videoSelecionado = video as unknown as Video | null;
 
-    if (!this.videoSelecionado) return;
+    if (!this.videoSelecionado) {
+      this.videoAtualizado = null;
+      return;
+    }
 
-    // pega o vídeo atualizado do service (igual teu find no videosReels)
     this.videoAtualizado =
-      this.videoService.videosReels.find(
-        (v) => v.id === this.videoSelecionado?.id
-      ) ?? null;
-  }
+      this.videoService.videosReels.find((v) => v.id === this.videoSelecionado?.id) ??
+      this.videoSelecionado;
+  });
+}
 
   fecharModal(): void {
-    this.modalService.fechar();
-    this.videoSelecionado = null;
-    this.videoAtualizado = null;
-  }
+  this.modalService.fechar();
+  this.videoSelecionado = null;
+  this.videoAtualizado = null;
+  this.comentarios = [];
+  this.novoComentario = '';
+}
 
   impedirFechar(event: MouseEvent): void {
     event.stopPropagation();

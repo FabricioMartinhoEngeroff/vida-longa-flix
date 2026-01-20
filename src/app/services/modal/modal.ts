@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { HistoricoViewsService } from '../historico-views/historico-views';
 
 export interface Video {
   id: string;
@@ -12,25 +13,26 @@ export interface Video {
 export class ModalService {
   private readonly videoSelecionadoSubject = new BehaviorSubject<Video | null>(null);
 
-  /** equivalente: videoSelecionado */
   readonly videoSelecionado$ = this.videoSelecionadoSubject.asObservable();
 
-  /** equivalente ao getter */
+  constructor(private historicoViews: HistoricoViewsService) {}
+
   get videoSelecionado(): Video | null {
     return this.videoSelecionadoSubject.value;
   }
 
-  /** equivalente: isModalOpen */
   get isModalOpen(): boolean {
     return !!this.videoSelecionado;
   }
 
-  /** equivalente: abrirModal(video) */
   abrir(video: Video): void {
+    const email = localStorage.getItem('userEmail') || 'guest@local';
+
+    this.historicoViews.registrarView(email, video.id);
+
     this.videoSelecionadoSubject.next(video);
   }
 
-  /** equivalente: fecharModal() */
   fechar(): void {
     this.videoSelecionadoSubject.next(null);
   }

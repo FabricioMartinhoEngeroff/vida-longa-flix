@@ -5,6 +5,8 @@ import { CabecalhoComponent } from '../../components/cabecalho/cabecalho.compone
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ModalVideoZoomComponent } from '../../paginas/modal-video-zoom/modal-video-zoom.component';
+
+
 @Component({
   selector: 'app-pagina-base',
   standalone: true,

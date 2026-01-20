@@ -3,9 +3,13 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 10px;
+  padding: 0 2px;
   margin-bottom: 10px;
+
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .ver-tudo {
@@ -32,28 +36,24 @@
    ========================= */
 
 .video-card {
-  width: 90vw;
-  max-width: 320px;
-  min-width: 250px;
 
+  flex: 0 0 auto;
+  width: 280px;
+  max-width: 85vw;
   background: rgba(98, 147, 89, 0.15);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-
   padding: 12px;
-  margin: 0 8px;
+  margin: 0 !important;
 
   display: flex;
   flex-direction: column;
-}
-
-.video-wrapper {
-  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .video-wrapper video {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 1px;
   object-fit: cover;
   cursor: pointer;
 }

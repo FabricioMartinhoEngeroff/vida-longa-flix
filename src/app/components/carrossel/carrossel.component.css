@@ -1,14 +1,22 @@
+/* =========================
+   CARROSSEL (BLINDADO)
+========================= */
+
 .carrossel-container {
   position: relative;
 
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-
-  padding: 0 12px;
-
-  /* ✅ impede vazamento lateral */
   overflow: hidden;
+  padding: 0 10px;
+}
+
+.scroll-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; 
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -27,13 +35,12 @@
   padding: 6px;
   border-radius: 12px;
 
-  color: #fff;
+  color: #050505;
   transition: transform 0.12s ease, opacity 0.2s ease;
 
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ✅ botões não vazam pra fora */
 .scroll-button.left {
   left: 8px;
 }
@@ -63,54 +70,47 @@
    Lista (Web + Mobile)
 ========================= */
 .video-list {
+  overflow-x: hidden !important;
   display: flex;
   flex-wrap: nowrap;
-  gap: 16px;
 
   width: 100%;
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
-
   overflow-x: auto;
   overflow-y: hidden;
-
-  /* ✅ padding lateral evita o card "cortar" e evita vazamento */
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 10px 0;
 
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 
-  /* snap estilo netflix */
   scroll-snap-type: x mandatory;
 
-  /* ✅ evita scroll puxar o body no mobile */
   overscroll-behavior-x: contain;
 
-  /* ✅ evita seleção/drag estranho */
   user-select: none;
 
-  /* ✅ impede pequenos vazamentos em alguns browsers */
-  scrollbar-width: none;
+
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
 .video-list::-webkit-scrollbar {
-  height: 0;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .video-list:active {
   cursor: grabbing;
 }
 
-/* cada item do carrossel */
+/* Cada item do carrossel */
 .video-list > * {
   flex: 0 0 auto;
   scroll-snap-align: start;
-
-  /* ✅ MUITO IMPORTANTE */
   min-width: 0;
-
-  /* ✅ nunca estoura container */
   max-width: 100%;
 }
 
@@ -127,12 +127,13 @@
   }
 
   .video-list {
+     overflow-x: hidden !important;
     gap: 12px;
-    padding: 8px 8px; /* ✅ padding lateral também no mobile */
+    padding: 8px 0;
   }
 
-  /* ✅ esse é o ajuste que mata 100% da barra lateral */
   .video-list > * {
+    width: 85vw;
     max-width: 85vw;
   }
 }

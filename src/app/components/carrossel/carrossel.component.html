@@ -8,8 +8,10 @@
     <mat-icon>chevron_left</mat-icon>
   </button>
 
-  <div #carrossel class="video-list" tabindex="0">
-    <ng-content></ng-content>
+  <div class="scroll-wrapper">
+    <div #carrossel class="video-list" tabindex="0">
+      <ng-content></ng-content>
+    </div>
   </div>
 
   <button

@@ -1,0 +1,18 @@
+<h2 style="margin: 20px 0; font-size: 26px; color: #6a0dad;">
+  Mais vistos
+</h2>
+
+<p *ngIf="videosOrdenados.length === 0" style="opacity: 0.7;">
+  Nenhum vídeo assistido ainda.
+</p>
+
+<div class="grid">
+  <div class="card" *ngFor="let video of videosOrdenados" (click)="abrirModal(video)">
+    <video [src]="video.url" muted playsinline></video>
+
+    <div class="info">
+      <strong>{{ video.title }}</strong>
+      <span>{{ video.viewsCount }} views</span>
+    </div>
+  </div>
+</div>

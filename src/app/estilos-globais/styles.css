@@ -125,7 +125,26 @@ textarea::placeholder {
   body {
     -webkit-overflow-scrolling: touch;
 
-    /* ✅ removido o padding que criava espaço extra e “barra” embaixo */
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important; 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box; 
+}
+
