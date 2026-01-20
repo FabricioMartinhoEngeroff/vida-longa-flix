@@ -1,0 +1,43 @@
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #0066cc;
+  color: white;
+
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+
+  margin-top: 12px;
+
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.2s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+  background-color: #0066cc;
+  opacity: 0.95;
+}
+
+/* toque mobile */
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* disabled */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ✅ mobile (um pouco maior para dedo) */
+@media (max-width: 768px) {
+  .btn {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+}

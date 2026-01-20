@@ -1,0 +1,35 @@
+<div class="campo-container">
+  <div class="input-field" [class.has-error]="!!error">
+    <!-- Ícone da esquerda -->
+    <span *ngIf="iconeEsquerda" class="icone-esquerda">
+      {{ iconeEsquerda }}
+    </span>
+
+    <!-- Input -->
+    <input
+      [type]="inputType"
+      [placeholder]="placeholder"
+      [name]="name"
+      [id]="id"
+      [value]="value"
+      (input)="onInput($event)"
+      [attr.autocomplete]="autocomplete"
+    />
+
+    <!-- Olhinho senha -->
+    <button
+      *ngIf="campoSenha"
+      type="button"
+      class="btn-olho"
+      (click)="alternarVisibilidadeSenha()"
+      aria-label="Mostrar ou esconder senha"
+    >
+      {{ senhaVisivel ? '🙈' : '👁' }}
+    </button>
+  </div>
+
+  <!-- Erro -->
+  <p class="error-text" *ngIf="error">
+    {{ error }}
+  </p>
+</div>
