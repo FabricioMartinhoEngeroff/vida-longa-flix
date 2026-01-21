@@ -1,0 +1,35 @@
+<section class="container">
+  <aside class="painel-esquerdo">
+    <div class="logo">
+      <span class="logo-texto">BMHE</span>
+      <span class="logo-texto">Analytics</span>
+    </div>
+
+    <h2>Seja bem-vindo!</h2>
+    <p>Política de Privacidade</p>
+  </aside>
+
+  <main class="painel-direito">
+    <div class="conteudo-direito">
+      <ng-container *ngIf="isRegistering; else loginTemplate">
+        <app-registrar></app-registrar>
+
+        <div class="link-area">
+          <span class="link" (click)="alternarModo()">
+            Já possui uma conta? Faça login...
+          </span>
+        </div>
+      </ng-container>
+
+      <ng-template #loginTemplate>
+        <app-login></app-login>
+
+        <div class="link-area">
+          <span class="link" (click)="alternarModo()">
+            Já tem uma conta? Criar conta.
+          </span>
+        </div>
+      </ng-template>
+    </div>
+  </main>
+</section>

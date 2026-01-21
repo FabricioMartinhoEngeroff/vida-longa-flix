@@ -1,0 +1,62 @@
+<section class="painel-direito">
+  <div class="caixa-login">
+    <h2>Bem-vindo ao BMHE Analytics</h2>
+
+    <form [formGroup]="form" (ngSubmit)="entrar()">
+      <div class="container-form">
+
+        <!-- Email -->
+        <div class="campo">
+          <label class="sr-only" for="email">E-mail</label>
+          <div class="input-wrapper">
+            <span class="icone">✉️</span>
+
+            <input
+              id="email"
+              type="email"
+              placeholder="E-mail"
+              formControlName="email"
+              class="input"
+            />
+          </div>
+
+          <small class="erro" *ngIf="mensagemErro('email')">
+            {{ mensagemErro('email') }}
+          </small>
+        </div>
+
+        <!-- Senha -->
+        <div class="campo">
+          <label class="sr-only" for="password">Senha</label>
+          <div class="input-wrapper">
+            <span class="icone">🔒</span>
+
+            <input
+              id="password"
+              type="password"
+              placeholder="Senha"
+              formControlName="password"
+              class="input"
+            />
+          </div>
+
+          <small class="erro" *ngIf="mensagemErro('password')">
+            {{ mensagemErro('password') }}
+          </small>
+        </div>
+
+      </div>
+
+      <app-botao-primario texto="Entrar" [disabled]="carregando" />
+    </form>
+
+    <footer class="rodape">
+      <span
+        class="link"
+        [routerLink]="['/registrar']"
+      >
+        Já tem uma conta? Criar conta.
+      </span>
+    </footer>
+  </div>
+</section>

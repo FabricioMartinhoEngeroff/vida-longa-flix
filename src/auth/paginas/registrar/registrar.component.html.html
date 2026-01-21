@@ -1,0 +1,106 @@
+<section class="painel-direito">
+  <div class="caixa-login">
+    <h2>Crie sua conta</h2>
+
+    <form (ngSubmit)="cadastrar()" [formGroup]="form">
+      <div class="container-form">
+
+        <div class="linha">
+          <app-campo-formulario
+            id="nome"
+            placeholder="Nome completo"
+            [control]="f.nome"
+            icone="👤"
+            [mensagemErro]="erroCampo('nome')"
+          />
+          <app-campo-formulario
+            id="email"
+            placeholder="E-mail"
+            tipo="email"
+            [control]="f.email"
+            icone="✉️"
+            [mensagemErro]="erroCampo('email')"
+          />
+        </div>
+
+        <div class="linha">
+          <app-campo-formulario
+            id="cpf"
+            placeholder="CPF"
+            [control]="f.cpf"
+            icone="🪪"
+            [mensagemErro]="erroCampo('cpf')"
+          />
+          <app-campo-formulario
+            id="telefone"
+            placeholder="Telefone"
+            [control]="f.telefone"
+            icone="📞"
+            [mensagemErro]="erroCampo('telefone')"
+          />
+        </div>
+
+        <div class="linha" formGroupName="endereco">
+          <app-campo-formulario
+            id="rua"
+            placeholder="Rua"
+            [control]="end.rua"
+            icone="📍"
+            [mensagemErro]="erroCampo('endereco.rua')"
+          />
+          <app-campo-formulario
+            id="bairro"
+            placeholder="Bairro"
+            [control]="end.bairro"
+            icone="🏢"
+            [mensagemErro]="erroCampo('endereco.bairro')"
+          />
+        </div>
+
+        <div class="linha" formGroupName="endereco">
+          <app-campo-formulario
+            id="cidade"
+            placeholder="Cidade"
+            [control]="end.cidade"
+            icone="🏙️"
+            [mensagemErro]="erroCampo('endereco.cidade')"
+          />
+          <app-campo-formulario
+            id="estado"
+            placeholder="Estado"
+            [control]="end.estado"
+            icone="🌎"
+            [mensagemErro]="erroCampo('endereco.estado')"
+          />
+        </div>
+
+        <div class="linha" formGroupName="endereco">
+          <app-campo-formulario
+            id="cep"
+            placeholder="CEP"
+            [control]="end.cep"
+            icone="🏛️"
+            [mensagemErro]="erroCampo('endereco.cep')"
+          />
+          <app-campo-formulario
+            id="senha"
+            placeholder="Senha"
+            tipo="password"
+            [control]="f.senha"
+            icone="🔒"
+            [mensagemErro]="erroCampo('senha')"
+          />
+        </div>
+
+      </div>
+
+      <app-botao-primario texto="Cadastrar" [disabled]="carregando" />
+    </form>
+
+    <footer class="rodape">
+      <span class="link" [routerLink]="['/login']">
+        Já possui uma conta? Faça login...
+      </span>
+    </footer>
+  </div>
+</section>

@@ -1,0 +1,102 @@
+/* =========================
+   LAYOUT GERAL (RightPanel)
+========================= */
+.painel-direito {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 32px 16px;
+
+  /* fundo semelhante ao estilo flix */
+  background: radial-gradient(circle at top, #1d1d1d, #0b0b0b 60%);
+}
+
+/* =========================
+   CAIXA LOGIN (LoginBox)
+========================= */
+.caixa-login {
+  width: 100%;
+  max-width: 920px;
+
+  border-radius: 20px;
+
+  padding: 32px;
+  background: rgba(20, 20, 20, 0.85);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(12px);
+}
+
+/* =========================
+   TITULO
+========================= */
+.caixa-login h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+
+  margin-bottom: 22px;
+}
+
+/* =========================
+   CONTAINER FORM
+========================= */
+.container-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* =========================
+   LINHAS (Row)
+========================= */
+.linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* =========================
+   RODAPE
+========================= */
+.rodape {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.link {
+  cursor: pointer;
+  color: #cfcfcf;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 768px) {
+  .caixa-login {
+    padding: 22px;
+    border-radius: 16px;
+  }
+
+  .linha {
+    grid-template-columns: 1fr;
+  }
+
+  .caixa-login h2 {
+    font-size: 22px;
+  }
+}
