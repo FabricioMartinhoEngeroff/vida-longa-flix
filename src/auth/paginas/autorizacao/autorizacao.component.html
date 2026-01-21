@@ -1,21 +1,18 @@
-<section class="container">
-  <aside class="painel-esquerdo">
-    <div class="logo">
-      <span class="logo-texto">BMHE</span>
-      <span class="logo-texto">Analytics</span>
-    </div>
-
+<section class="auth-container">
+  <aside class="auth-left-panel">
+    <h1 class="auth-logo-text">BMHE</h1>
+    <h1 class="auth-logo-text">Analytics</h1>
     <h2>Seja bem-vindo!</h2>
     <p>Política de Privacidade</p>
   </aside>
 
-  <main class="painel-direito">
+  <main class="auth-right-panel">
     <div class="conteudo-direito">
       <ng-container *ngIf="isRegistering; else loginTemplate">
         <app-registrar></app-registrar>
 
-        <div class="link-area">
-          <span class="link" (click)="alternarModo()">
+        <div class="auth-footer">
+          <span class="auth-toggle-text" (click)="alternarModo()">
             Já possui uma conta? Faça login...
           </span>
         </div>
@@ -24,8 +21,8 @@
       <ng-template #loginTemplate>
         <app-login></app-login>
 
-        <div class="link-area">
-          <span class="link" (click)="alternarModo()">
+        <div class="auth-footer">
+          <span class="auth-toggle-text" (click)="alternarModo()">
             Já tem uma conta? Criar conta.
           </span>
         </div>

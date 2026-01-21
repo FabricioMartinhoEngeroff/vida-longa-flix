@@ -1,0 +1,146 @@
+/* =========================
+   AUTH LAYOUT (Container)
+========================= */
+.auth-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #e3eefc;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-left-panel {
+  flex: 1;
+  background-color: #e3eefc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.auth-right-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+.auth-login-box {
+  width: 100%;
+  max-width: 1000px;
+  padding: 50px;
+  background: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.auth-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* =========================
+   INPUT FIELD (InputField styled-component)
+========================= */
+.auth-input-field {
+  display: flex;
+  align-items: center;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  padding: 12px;
+  background: #fff;
+  font-size: 18px;
+  width: 100%;
+  position: relative;
+  transition: border 0.3s ease;
+}
+
+.auth-input-field input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  width: 100%;
+  background: transparent;
+}
+
+/* icone (pode ser emoji ou svg) */
+.auth-input-field .icone {
+  margin-right: 8px;
+  color: #0066cc;
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+/* foco */
+.auth-input-field:focus-within {
+  border: 2px solid #0066cc;
+  box-shadow: 0 0 5px rgba(0, 102, 204, 0.5);
+}
+
+/* erro */
+.auth-input-field.erro {
+  border: 2px solid red;
+}
+
+.auth-input-field.erro:focus-within {
+  border: 2px solid red;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.auth-input-field.erro .icone {
+  color: red;
+}
+
+/* =========================
+   TEXTOS (Footer / LogoText / ToggleText / ErrorText)
+========================= */
+.auth-footer {
+  margin-top: 20px;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  color: #0066cc;
+  cursor: pointer;
+}
+
+.auth-error-text {
+  font-size: 14px;
+  color: red;
+  margin-top: 5px;
+  text-align: left;
+}
+
+.auth-logo-text {
+  font-size: 32px;
+  font-weight: bold;
+  color: #0066cc;
+  margin-bottom: 10px;
+}
+
+.auth-toggle-text {
+  font-size: 16px;
+  color: #0066cc;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.auth-toggle-text:hover {
+  text-decoration: underline;
+}

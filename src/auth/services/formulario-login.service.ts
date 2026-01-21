@@ -111,20 +111,24 @@ export class FormularioLoginService {
 
   private configurarMascaras() {
     // CPF
-    this.form.controls.cpf.valueChanges.subscribe((valor) => {
-      const mascarado = this.maskCPF(valor);
-      if (mascarado !== valor) {
-        this.form.controls.cpf.setValue(mascarado, { emitEvent: false });
-      }
+   this.form.controls.cpf.valueChanges.subscribe((valor: string | null) => {
+  const v = valor ?? '';
+  const mascarado = this.maskCPF(v);
+
+  if (mascarado !== v) {
+    this.form.controls.cpf.setValue(mascarado, { emitEvent: false });
+  }
     });
 
     // Telefone
-    this.form.controls.telefone.valueChanges.subscribe((valor) => {
-      const mascarado = this.maskPhone(valor);
-      if (mascarado !== valor) {
-        this.form.controls.telefone.setValue(mascarado, { emitEvent: false });
-      }
-    });
+    this.form.controls.telefone.valueChanges.subscribe((valor: string | null) => {
+  const v = valor ?? '';
+  const mascarado = this.maskPhone(v);
+
+  if (mascarado !== v) {
+    this.form.controls.telefone.setValue(mascarado, { emitEvent: false });
+  }
+});
   }
 
   private configurarErrosDinamicos() {
