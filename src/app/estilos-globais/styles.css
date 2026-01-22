@@ -1,5 +1,8 @@
 @import "./app/estilos-globais/styles.css";
 @import "./app/estilos-globais/botoes.css";
+@import "./app/auth/estilos-globais-auth/estilos.css";
+@import "./app/auth/estilos-globais-auth/estilo-layout.css";
+
 
 /* =========================
    RESET + BASE
@@ -147,4 +150,3 @@ html, body {
 *, *::before, *::after {
   box-sizing: border-box; 
 }
-

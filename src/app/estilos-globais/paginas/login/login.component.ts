@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { BotaoPrimarioComponent } from '../../loginComponents/botao-primario/botao-primario.component';
+import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-primario/botao-primario.component';
 
 type LoginForm = {
   email: FormControl<string>;

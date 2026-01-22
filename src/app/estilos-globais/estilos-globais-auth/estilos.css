@@ -1,0 +1,103 @@
+@import "./app/auth/estilos-globais-auth/estilos.css";
+@import "./app/auth/estilos-globais-auth/estilo-layout.css";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #e3eefc;
+}
+
+
+/* =========================
+   AUTH - INPUTS (tema verde)
+   ========================= */
+
+.auth-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.campo {
+  width: 100%;
+}
+
+.auth-input-field {
+  position: relative;
+  width: 100%;
+}
+
+.auth-input-field input {
+  height: 48px;
+  width: 100%;
+
+  padding: 0 40px 0 42px; /* espaço pro ícone */
+  border-radius: 12px;
+
+  border: 1px solid #147a03;
+  background-color: #7ea76c;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+
+  font-size: 16px;
+  color: #000;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input-field input::placeholder {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.auth-input-field input:focus {
+  border: 2px solid #7c3aed; /* roxo focus igual teu tema */
+  outline: none;
+}
+
+.auth-input-field .icone {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.auth-error-text {
+  font-size: 13px;
+  color: #b91c1c;
+  margin-top: 6px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.auth-input-field.erro input {
+  border: 2px solid #b91c1c;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.2);
+}
+
+/* Responsivo - inputs empilhados */
+@media (max-width: 768px) {
+  .auth-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+

@@ -1,0 +1,99 @@
+/* Página inteira */
+.auth-container {
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  background: #eaf3e7; /* verde bem claro */
+}
+
+/* Painel esquerdo */
+.auth-left-panel {
+  padding: 48px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+
+  background: #7da873; /* mesma cor do header */
+  color: #0b0b0b;
+
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.auth-logo-text {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: #0b0b0b;
+}
+
+.auth-left-panel h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 10px;
+}
+
+.auth-left-panel p {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Painel direito */
+.auth-right-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+/* Card do formulário */
+.conteudo-direito {
+  width: 100%;
+  max-width: 720px;
+  padding: 40px;
+
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+/* Footer toggle */
+.auth-footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-toggle-text {
+  cursor: pointer;
+  color: #147a03; /* verde borda */
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.auth-toggle-text:hover {
+  text-decoration: underline;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .auth-container {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-left-panel {
+    text-align: center;
+    align-items: center;
+  }
+
+  .auth-logo-text {
+    font-size: 38px;
+  }
+
+  .conteudo-direito {
+    padding: 28px 18px;
+    border-radius: 14px;
+  }
+}

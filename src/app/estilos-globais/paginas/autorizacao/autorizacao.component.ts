@@ -5,12 +5,13 @@ import { LoginComponent } from '../login/login.component';
 import { RegistrarComponent } from '../registrar/registrar.component';
 
 @Component({
-   selector: 'app-autorizacao',
+  selector: 'app-autorizacao',
   standalone: true,
   imports: [CommonModule, LoginComponent, RegistrarComponent],
-  templateUrl: './auth-page.component.html',
-  styleUrl: './auth-page.component.css',
+  templateUrl: './autorizacao.component.html',
+  styleUrl: './autorizacao.component.css',
 })
+
 export class AutorizacaoComponent {
   isRegistering = false;
 
