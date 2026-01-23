@@ -1,97 +1,106 @@
 .campo-container {
   width: 100%;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;          /* espaço entre input e erro */
+  margin-bottom: 5px; /* espaço entre um campo e outro */
 }
 
-/* wrapper do input */
-.input-field {
-  width: 100%;
+.input-shell{
   position: relative;
-
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
 
-  padding: 10px 12px;
-  border-radius: 12px;
-
+  border: 1px solid var(--auth-border);
   background: #fff;
-  border: 1px solid #ccc;
 
-  box-sizing: border-box;
+  border-radius: 14px;
+  height: 52px;
+
+  transition: border-color .18s ease, box-shadow .18s ease;
 }
 
-/* erro */
-.input-field.has-error {
-  border: 1px solid #dc2626;
+.input-shell:focus-within{
+  border-color: var(--auth-border-focus);
+  box-shadow: var(--auth-focus-ring);
 }
 
-/* ícone esquerda */
-.icone-esquerda {
-  font-size: 18px;
-  line-height: 1;
-  opacity: 0.75;
-  user-select: none;
+.left-icon{
+  width: 44px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--auth-primary);
+  opacity: .95;
 }
 
-/* input */
-.input-field input {
-  width: 100%;
-  border: none;
+.input{
+  flex: 1;
+  height: 52px;
+  border: 0;
   outline: none;
-
-  font-size: 15px;
-  color: #111;
-
   background: transparent;
 
-  /* evita zoom no iOS */
-  min-height: 20px;
+  font-size: 16px; /* mobile friendly */
+  color: #111827;
+
+  padding-right: 44px; /* reserva pro olho */
 }
 
-/* placeholder */
-.input-field input::placeholder {
-  color: rgba(0, 0, 0, 0.55);
+.input::placeholder{
+  color: #94a3b8;
 }
 
-/* olhinho */
-.btn-olho {
+.right-action{
   position: absolute;
-  right: 10px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
 
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+
+  border: 0;
   background: transparent;
-  border: none;
-
   cursor: pointer;
-  padding: 6px;
-  border-radius: 10px;
+  color: #64748b;
 
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
+  transition: background .15s ease, transform .12s ease, color .15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
-.btn-olho:active {
-  transform: translateY(-50%) scale(0.95);
+.right-action:hover{
+  background: rgba(2, 6, 23, 0.05);
+  color: #0f172a;
 }
 
-/* texto do erro */
-.error-text {
+.right-action:active{
+  transform: translateY(-50%) scale(.95);
+}
+
+.has-error{
+  border-color: var(--auth-danger);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+.error{
   margin-top: 6px;
   font-size: 13px;
-  color: #dc2626;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--auth-danger);
 }
 
-/* ✅ mobile */
-@media (max-width: 768px) {
-  .input-field {
-    padding: 12px 12px;
-  }
-
-  .input-field input {
-    font-size: 16px;
-  }
+/* Mobile */
+@media (max-width: 520px){
+  .input-shell{ height: 54px; }
+  .left-icon{ height: 54px; }
+  .input{ height: 54px; }
 }

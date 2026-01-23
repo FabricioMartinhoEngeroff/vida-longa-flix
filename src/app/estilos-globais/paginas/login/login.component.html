@@ -3,54 +3,25 @@
 
   <form [formGroup]="form" (ngSubmit)="entrar()">
     <div class="auth-form-container">
-      <!-- Email -->
-      <div class="campo">
-        <div
-          class="auth-input-field"
-          [class.erro]="mensagemErro('email')"
-        >
-          <span class="icone">✉️</span>
-          <input
-            id="email"
-            type="email"
-            placeholder="E-mail"
-            formControlName="email"
-          />
-        </div>
+      <app-campo-formulario
+        formControlName="email"
+        type="email"
+        icon="mail"
+        placeholder="E-mail"
+        autocomplete="email"
+        [error]="mensagemErro('email')"
+      ></app-campo-formulario>
 
-        <p class="auth-error-text" *ngIf="mensagemErro('email')">
-          {{ mensagemErro('email') }}
-        </p>
-      </div>
-
-      <!-- Senha -->
-      <div class="campo">
-        <div
-          class="auth-input-field"
-          [class.erro]="mensagemErro('password')"
-        >
-          <span class="icone">🔒</span>
-          <input
-            id="password"
-            type="password"
-            placeholder="Senha"
-            formControlName="password"
-          />
-        </div>
-
-        <p class="auth-error-text" *ngIf="mensagemErro('password')">
-          {{ mensagemErro('password') }}
-        </p>
-      </div>
+      <app-campo-formulario
+        formControlName="password"
+        type="password"
+        icon="lock"
+        placeholder="Senha"
+        autocomplete="current-password"
+        [error]="mensagemErro('password')"
+      ></app-campo-formulario>
     </div>
 
-    <app-botao-primario texto="Entrar" [disabled]="carregando" />
+    <app-botao-primario texto="Entrar" [disabled]="carregando"></app-botao-primario>
   </form>
-
-  <!-- ⚠️ esse footer é opcional pois tu também tem no AuthPage -->
-  <div class="auth-footer">
-    <span class="auth-toggle-text" [routerLink]="['/registrar']">
-      Já tem uma conta? Criar conta.
-    </span>
-  </div>
 </div>

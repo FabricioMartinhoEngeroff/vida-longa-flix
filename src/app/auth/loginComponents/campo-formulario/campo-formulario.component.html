@@ -1,35 +1,31 @@
 <div class="campo-container">
-  <div class="input-field" [class.has-error]="!!error">
-    <!-- Ícone da esquerda -->
-    <span *ngIf="iconeEsquerda" class="icone-esquerda">
-      {{ iconeEsquerda }}
+  <div class="input-shell" [class.has-error]="!!error" [class.is-disabled]="disabled">
+    <span class="left-icon">
+      <app-auth-icon [name]="icon"></app-auth-icon>
     </span>
 
-    <!-- Input -->
     <input
+      class="input"
       [type]="inputType"
       [placeholder]="placeholder"
-      [name]="name"
-      [id]="id"
       [value]="value"
       (input)="onInput($event)"
+      (blur)="blur()"
+      [disabled]="disabled"
       [attr.autocomplete]="autocomplete"
     />
 
-    <!-- Olhinho senha -->
+    <!-- botão olho (só aparece se type=password) -->
     <button
-      *ngIf="campoSenha"
+      *ngIf="type === 'password'"
       type="button"
-      class="btn-olho"
-      (click)="alternarVisibilidadeSenha()"
-      aria-label="Mostrar ou esconder senha"
+      class="right-action"
+      (click)="toggleSenha()"
+      [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
     >
-      {{ senhaVisivel ? '🙈' : '👁' }}
+      <app-auth-icon [name]="rightIcon"></app-auth-icon>
     </button>
   </div>
 
-  <!-- Erro -->
-  <p class="error-text" *ngIf="error">
-    {{ error }}
-  </p>
+  <p class="error" *ngIf="error">{{ error }}</p>
 </div>

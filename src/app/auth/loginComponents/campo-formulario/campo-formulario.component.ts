@@ -1,58 +1,74 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, forwardRef } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { AuthIconComponent, AuthIconName } from '../auth-icon/auth-icon.component';
 
 @Component({
   selector: 'app-campo-formulario',
   standalone: true,
-  imports: [NgIf, FormsModule],
+  imports: [NgIf, AuthIconComponent],
   templateUrl: './campo-formulario.component.html',
   styleUrls: ['./campo-formulario.component.css'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => CampoFormularioComponent),
+      multi: true,
+    },
+  ],
 })
-export class CampoFormularioComponent {
-  /** texto/label do campo */
-  @Input() placeholder: string = '';
-
-  /** nome e id do input */
-  @Input() name: string = '';
-  @Input() id: string = '';
-
-  /** tipo do input */
-  @Input() type: string = 'text';
-
-  /** valor */
-  @Input() value: string = '';
-
-  /** autocomplete */
+export class CampoFormularioComponent implements ControlValueAccessor {
+  @Input() placeholder = '';
+  @Input() type: 'text' | 'email' | 'password' | 'tel' = 'text';
   @Input() autocomplete: string = 'off';
 
-  /** se é campo de senha (habilita olhinho) */
-  @Input() campoSenha: boolean = false;
+  /** nome do ícone (SVG) */
+  @Input() icon: AuthIconName = 'mail';
 
-  /** mensagem de erro */
+  /** erro (texto) vindo do componente pai */
   @Input() error: string | null = null;
 
-  /** ícone à esquerda (pode ser emoji ou texto) */
-  @Input() iconeEsquerda: string = '';
+  disabled = false;
+  value = '';
 
-  /** output equivalente ao onChange */
-  @Output() valueChange = new EventEmitter<string>();
+  senhaVisivel = false;
 
-  senhaVisivel: boolean = false;
+  private onChange: (v: string) => void = () => {};
+  private onTouched: () => void = () => {};
 
-  alternarVisibilidadeSenha(): void {
+  writeValue(v: string): void {
+    this.value = v ?? '';
+  }
+  registerOnChange(fn: (v: string) => void): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
+  onInput(ev: Event) {
+    const v = (ev.target as HTMLInputElement).value;
+    this.value = v;
+    this.onChange(v);
+  }
+
+  blur() {
+    this.onTouched();
+  }
+
+  toggleSenha() {
     this.senhaVisivel = !this.senhaVisivel;
   }
 
-  onInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.valueChange.emit(target.value);
+  get inputType() {
+    if (this.type !== 'password') return this.type;
+    return this.senhaVisivel ? 'text' : 'password';
   }
 
-  get inputType(): string {
-    if (this.campoSenha) {
-      return this.senhaVisivel ? 'text' : 'password';
-    }
-    return this.type;
+  get rightIcon(): AuthIconName {
+    return this.senhaVisivel ? 'eyeOff' : 'eye';
   }
 }

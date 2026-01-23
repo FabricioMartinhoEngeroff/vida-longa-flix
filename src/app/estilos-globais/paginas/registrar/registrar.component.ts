@@ -21,8 +21,9 @@ import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-prim
     BotaoPrimarioComponent,
   ],
   templateUrl: './registrar.component.html',
-  styleUrl: './registrar.component.css',
+  styleUrls: ['./registrar.component.css'],
 })
+
 export class RegistrarComponent {
   carregando = false;
   form: any;
@@ -36,6 +37,7 @@ export class RegistrarComponent {
       endereco: this.fb.group({
         rua: ['', [Validators.required]],
         bairro: ['', [Validators.required]],
+        numero: ['', [Validators.required]], 
         cidade: ['', [Validators.required]],
         estado: ['', [Validators.required]],
         cep: ['', [Validators.required]],

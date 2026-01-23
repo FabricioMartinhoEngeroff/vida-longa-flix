@@ -1,12 +1,10 @@
 @import "./app/estilos-globais/styles.css";
 @import "./app/estilos-globais/botoes.css";
-@import "./app/auth/estilos-globais-auth/estilos.css";
-@import "./app/auth/estilos-globais-auth/estilo-layout.css";
 
+@import "./app/estilos-globais/estilos-globais-auth/estilos.css";
+@import "./app/estilos-globais/estilos-globais-auth/estilo-layout.css";
 
-/* =========================
-   RESET + BASE
-========================= */
+/* RESET + BASE (interno do app) */
 *,
 *::before,
 *::after {
@@ -16,7 +14,18 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
 }
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: #ffffff;
+}
+
 
 /* =========================
    ROOT + TIPOGRAFIA
@@ -149,4 +158,10 @@ html, body {
 
 *, *::before, *::after {
   box-sizing: border-box; 
+}
+
+.auth-login-box{
+  width: 100%;
+  max-width: 860px; /* cadastro fica igual protótipo */
+  margin: 0 auto;
 }

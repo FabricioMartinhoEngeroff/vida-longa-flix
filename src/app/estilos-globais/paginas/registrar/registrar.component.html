@@ -4,195 +4,114 @@
   <form [formGroup]="form" (ngSubmit)="cadastrar()">
     <div class="auth-form-container">
       <div class="auth-row">
-        <!-- Nome -->
-        <div class="campo">
-          <div class="auth-input-field" [class.erro]="erroCampo('nome')">
-            <span class="icone">👤</span>
-            <input
-              id="nome"
-              type="text"
-              placeholder="Nome completo"
-              formControlName="nome"
-            />
-          </div>
+        <app-campo-formulario
+          formControlName="email"
+          type="email"
+          icon="mail"
+          placeholder="E-mail"
+          autocomplete="email"
+          [error]="erroCampo('email')"
+        ></app-campo-formulario>
 
-          <p class="auth-error-text" *ngIf="erroCampo('nome')">
-            {{ erroCampo('nome') }}
-          </p>
-        </div>
-
-        <!-- Email -->
-        <div class="campo">
-          <div class="auth-input-field" [class.erro]="erroCampo('email')">
-            <span class="icone">✉️</span>
-            <input
-              id="email"
-              type="email"
-              placeholder="E-mail"
-              formControlName="email"
-            />
-          </div>
-
-          <p class="auth-error-text" *ngIf="erroCampo('email')">
-            {{ erroCampo('email') }}
-          </p>
-        </div>
+        <app-campo-formulario
+          formControlName="nome"
+          type="text"
+          icon="user"
+          placeholder="Nome completo"
+          autocomplete="name"
+          [error]="erroCampo('nome')"
+        ></app-campo-formulario>
       </div>
 
       <div class="auth-row">
-        <!-- CPF -->
-        <div class="campo">
-          <div class="auth-input-field" [class.erro]="erroCampo('cpf')">
-            <span class="icone">🪪</span>
-            <input
-              id="cpf"
-              type="text"
-              placeholder="CPF"
-              formControlName="cpf"
-            />
-          </div>
+        <app-campo-formulario
+          formControlName="cpf"
+          type="text"
+          icon="id"
+          placeholder="CPF"
+          autocomplete="off"
+          [error]="erroCampo('cpf')"
+        ></app-campo-formulario>
 
-          <p class="auth-error-text" *ngIf="erroCampo('cpf')">
-            {{ erroCampo('cpf') }}
-          </p>
-        </div>
-
-        <!-- Telefone -->
-        <div class="campo">
-          <div class="auth-input-field" [class.erro]="erroCampo('telefone')">
-            <span class="icone">📞</span>
-            <input
-              id="telefone"
-              type="text"
-              placeholder="Telefone"
-              formControlName="telefone"
-            />
-          </div>
-
-          <p class="auth-error-text" *ngIf="erroCampo('telefone')">
-            {{ erroCampo('telefone') }}
-          </p>
-        </div>
+        <app-campo-formulario
+          formControlName="telefone"
+          type="tel"
+          icon="phone"
+          placeholder="Telefone"
+          autocomplete="tel"
+          [error]="erroCampo('telefone')"
+        ></app-campo-formulario>
       </div>
 
-      <!-- Endereço -->
       <div formGroupName="endereco">
         <div class="auth-row">
-          <!-- Rua -->
-          <div class="campo">
-            <div class="auth-input-field" [class.erro]="erroCampo('endereco.rua')">
-              <span class="icone">📍</span>
-              <input
-                id="rua"
-                type="text"
-                placeholder="Rua"
-                formControlName="rua"
-              />
-            </div>
+          <app-campo-formulario
+            formControlName="rua"
+            type="text"
+            icon="pin"
+            placeholder="Rua"
+            [error]="erroCampo('endereco.rua')"
+          ></app-campo-formulario>
 
-            <p class="auth-error-text" *ngIf="erroCampo('endereco.rua')">
-              {{ erroCampo('endereco.rua') }}
-            </p>
-          </div>
-
-          <!-- Bairro -->
-          <div class="campo">
-            <div class="auth-input-field" [class.erro]="erroCampo('endereco.bairro')">
-              <span class="icone">🏢</span>
-              <input
-                id="bairro"
-                type="text"
-                placeholder="Bairro"
-                formControlName="bairro"
-              />
-            </div>
-
-            <p class="auth-error-text" *ngIf="erroCampo('endereco.bairro')">
-              {{ erroCampo('endereco.bairro') }}
-            </p>
-          </div>
+          <app-campo-formulario
+            formControlName="numero"
+            type="text"
+            icon="hash"
+            placeholder="Número"
+            [error]="erroCampo('endereco.numero')"
+          ></app-campo-formulario>
         </div>
 
         <div class="auth-row">
-          <!-- Cidade -->
-          <div class="campo">
-            <div class="auth-input-field" [class.erro]="erroCampo('endereco.cidade')">
-              <span class="icone">🏙️</span>
-              <input
-                id="cidade"
-                type="text"
-                placeholder="Cidade"
-                formControlName="cidade"
-              />
-            </div>
+          <app-campo-formulario
+            formControlName="bairro"
+            type="text"
+            icon="home"
+            placeholder="Bairro"
+            [error]="erroCampo('endereco.bairro')"
+          ></app-campo-formulario>
 
-            <p class="auth-error-text" *ngIf="erroCampo('endereco.cidade')">
-              {{ erroCampo('endereco.cidade') }}
-            </p>
-          </div>
-
-          <!-- Estado -->
-          <div class="campo">
-            <div class="auth-input-field" [class.erro]="erroCampo('endereco.estado')">
-              <span class="icone">🌎</span>
-              <input
-                id="estado"
-                type="text"
-                placeholder="Estado"
-                formControlName="estado"
-              />
-            </div>
-
-            <p class="auth-error-text" *ngIf="erroCampo('endereco.estado')">
-              {{ erroCampo('endereco.estado') }}
-            </p>
-          </div>
+          <app-campo-formulario
+            formControlName="cidade"
+            type="text"
+            icon="city"
+            placeholder="Cidade"
+            [error]="erroCampo('endereco.cidade')"
+          ></app-campo-formulario>
         </div>
 
         <div class="auth-row">
-          <!-- CEP -->
-          <div class="campo">
-            <div class="auth-input-field" [class.erro]="erroCampo('endereco.cep')">
-              <span class="icone">🏛️</span>
-              <input
-                id="cep"
-                type="text"
-                placeholder="CEP"
-                formControlName="cep"
-              />
-            </div>
+          <app-campo-formulario
+            formControlName="estado"
+            type="text"
+            icon="globe"
+            placeholder="Estado"
+            [error]="erroCampo('endereco.estado')"
+          ></app-campo-formulario>
 
-            <p class="auth-error-text" *ngIf="erroCampo('endereco.cep')">
-              {{ erroCampo('endereco.cep') }}
-            </p>
-          </div>
-
-          <!-- Senha -->
-          <div class="campo">
-            <div class="auth-input-field" [class.erro]="erroCampo('senha')">
-              <span class="icone">🔒</span>
-              <input
-                id="senha"
-                type="password"
-                placeholder="Senha"
-                formControlName="senha"
-              />
-            </div>
-
-            <p class="auth-error-text" *ngIf="erroCampo('senha')">
-              {{ erroCampo('senha') }}
-            </p>
-          </div>
+          <app-campo-formulario
+            formControlName="cep"
+            type="text"
+            icon="hash"
+            placeholder="CEP"
+            [error]="erroCampo('endereco.cep')"
+          ></app-campo-formulario>
         </div>
       </div>
+
+      <app-campo-formulario
+        formControlName="senha"
+        type="password"
+        icon="lock"
+        placeholder="Senha"
+        autocomplete="new-password"
+        [error]="erroCampo('senha')"
+      ></app-campo-formulario>
     </div>
 
-    <app-botao-primario texto="Cadastrar" [disabled]="carregando" />
+    <app-botao-primario
+      texto="Cadastrar"
+      [disabled]="carregando"
+    ></app-botao-primario>
   </form>
-
-  <div class="auth-footer">
-    <span class="auth-toggle-text" [routerLink]="['/login']">
-      Já possui uma conta? Faça login...
-    </span>
-  </div>
 </div>

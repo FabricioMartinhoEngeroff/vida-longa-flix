@@ -1,13 +1,14 @@
-<section class="auth-container">
+<section class="auth-scope auth-container">
   <aside class="auth-left-panel">
-    <h1 class="auth-logo-text">BMHE</h1>
-    <h1 class="auth-logo-text">Analytics</h1>
-    <h2>Seja bem-vindo!</h2>
-    <p>Política de Privacidade</p>
+    <div class="auth-brand">
+      <div class="auth-brand-title">BMHE<br />Analytics</div>
+      <div class="auth-brand-welcome">Seja bem-vindo!</div>
+      <div class="auth-brand-link">Política de Privacidade</div>
+    </div>
   </aside>
 
   <main class="auth-right-panel">
-    <div class="conteudo-direito">
+    <div class="auth-card">
       <ng-container *ngIf="isRegistering; else loginTemplate">
         <app-registrar></app-registrar>
 

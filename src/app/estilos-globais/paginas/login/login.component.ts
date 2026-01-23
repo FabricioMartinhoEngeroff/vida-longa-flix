@@ -9,6 +9,7 @@ import {
 import { RouterModule } from '@angular/router';
 
 import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-primario/botao-primario.component';
+import { CampoFormularioComponent } from '../../../auth/loginComponents/campo-formulario/campo-formulario.component';
 
 type LoginForm = {
   email: FormControl<string>;
@@ -23,7 +24,9 @@ type LoginForm = {
     ReactiveFormsModule,
     RouterModule,
     BotaoPrimarioComponent,
+    CampoFormularioComponent,
   ],
+  
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
