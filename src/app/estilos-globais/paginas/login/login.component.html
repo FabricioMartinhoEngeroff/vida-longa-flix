@@ -1,5 +1,5 @@
 <div class="auth-login-box">
-  <h2>Bem-vindo ao BMHE Analytics</h2>
+  <h2>Acesso ao Vida Longa Flix</h2>
 
   <form [formGroup]="form" (ngSubmit)="entrar()">
     <div class="auth-form-container">
@@ -44,12 +44,13 @@
           Esqueci minha senha
         </a>
       </div>
-      
     </div>
+    
+<app-botao-primario
+  text="Entrar"
+  [disabled]="carregando"
+  type="submit"
+></app-botao-primario>
 
-    <app-botao-primario 
-      texto="Entrar" 
-      [disabled]="carregando"
-    ></app-botao-primario>
   </form>
 </div>

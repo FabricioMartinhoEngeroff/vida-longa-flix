@@ -10,7 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class BotaoPrimarioComponent {
   @Input() text: string = 'Entrar';
   @Input() disabled: boolean = false;
-  @Input() type: 'button' | 'submit' = 'button';
+  @Input() type: 'button' | 'submit' = 'submit';
 
   @Output() aoClicar = new EventEmitter<void>();
 

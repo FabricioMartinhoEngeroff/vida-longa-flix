@@ -15,20 +15,21 @@ export class ServicoAutenticacao {
   ) {}
 
   async login(email: string, password: string): Promise<LoginResponse> {
-    const response = await firstValueFrom(
-      this.http.post<LoginResponse>(`${this.api.baseURL}/auth/login`, {
-        email,
-        password,
-      })
-    );
+  const e = (email ?? '').trim().toLowerCase();
+const p = (password ?? '').trim();
 
-    if (!response?.token) {
-      throw new Error('Token não retornado.');
-    }
+  console.log('DEBUG:', { email, password, e, p });
 
-    localStorage.setItem(this.TOKEN_KEY, response.token);
-    return response;
+  // ✅ BYPASS: não chama backend
+  if (e === 'fa.engeroff@gmail.com' && p === '@Fabricio123456789') {
+    const responseFake = { token: 'token_dev_123' } as LoginResponse;
+    localStorage.setItem(this.TOKEN_KEY, responseFake.token);
+    return responseFake;
   }
+
+  // ✅ Se não bater, bloqueia (pra nunca tentar localhost)
+  throw new Error('BYPASS ativo: use o e-mail e senha DEV.');
+}
 
   async register(userData: DadosCadastroUsuario): Promise<any> {
     const response = await firstValueFrom(

@@ -10,7 +10,8 @@ import { Router, RouterModule } from '@angular/router';
 
 import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-primario/botao-primario.component';
 import { CampoFormularioComponent } from '../../../auth/loginComponents/campo-formulario/campo-formulario.component';
-import { LoginForm } from '../../../auth/tipos/login-form.types'; // ← IMPORTAR
+import { LoginForm } from '../../../auth/tipos/login-form.types';
+import { ServicoAutenticacao} from '../../../auth/api/servico-autenticacao';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,7 @@ import { LoginForm } from '../../../auth/tipos/login-form.types'; // ← IMPORTA
     ReactiveFormsModule,
     RouterModule,
     BotaoPrimarioComponent,
-    CampoFormularioComponent,
+    CampoFormularioComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -31,7 +32,8 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private servicoAutenticacao: ServicoAutenticacao
   ) {
     this.form = this.fb.group<LoginForm>({
       email: new FormControl('', { 
@@ -59,21 +61,22 @@ export class LoginComponent {
   }
 
   async entrar() {
-    this.form.markAllAsTouched();
-    if (this.form.invalid) return;
+  this.form.markAllAsTouched();
+  if (this.form.invalid) return;
 
-    this.carregando = true;
-    
-    try {
-      const dados = this.form.getRawValue();
-      console.log('📤 Dados login:', dados);
-      
-      // TODO: Integrar com backend
-      
-    } catch (error) {
-      console.error('❌ Erro:', error);
-    } finally {
-      this.carregando = false;
-    }
+  this.carregando = true;
+
+  try {
+    const { email, password } = this.form.getRawValue();
+    await this.servicoAutenticacao.login(email, password);
+
+    // ✅ vai pra tela pós-login
+   this.router.navigateByUrl('/app');
+  } catch (e) {
+    // ✅ mostrar erro na tela (pode ser texto simples)
+    console.error(e);
+  } finally {
+    this.carregando = false;
   }
+}
 }

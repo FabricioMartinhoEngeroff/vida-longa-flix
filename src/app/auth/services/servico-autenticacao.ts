@@ -56,6 +56,7 @@ export class AuthService {
     return {
       id: '1',
       nome: 'Usuário Teste',
+      email: 'fa.engeroff@gmail.com', 
       telefone: '',
       cpf: '',
       endereco: { rua: '', bairro: '', cidade: '', estado: '', cep: '' },
