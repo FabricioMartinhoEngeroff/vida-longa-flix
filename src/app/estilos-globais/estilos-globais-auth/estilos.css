@@ -45,7 +45,7 @@
   :root {
     --auth-page-pad: 18px;
     --auth-card-pad: 18px;
-    --auth-gap: 12px;
+    --auth-gap: 16px;
     --auth-title-size: 22px;
     --auth-brand-size: 34px;
     --auth-welcome-size: 20px;
@@ -77,13 +77,6 @@
   font-weight: 900;
   color: var(--auth-text);
   margin-bottom: 16px;
-}
-
-/* Container do form */
-.auth-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--auth-gap);
 }
 
 /* Linhas 2 colunas no cadastro */
@@ -184,14 +177,27 @@
   text-decoration: underline;
 }
 
+/* =========================
+   AUTH FORM CONTAINER
+========================= */
+.auth-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-gap);
+}
+
 /* Mobile: inputs maiores e linhas empilhadas */
 @media (max-width: 520px) {
+  .auth-form-container {
+    gap: 16px; /* NOVO: gap maior em mobile */
+  }
+
   .auth-row {
     grid-template-columns: 1fr;
   }
 
   .auth-input-field input {
     height: 48px;
-    font-size: 16px; /* evita zoom no iOS */
+    font-size: 16px;
   }
 }

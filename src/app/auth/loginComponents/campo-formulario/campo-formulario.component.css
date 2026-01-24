@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
 
-  border: 1px solid var(--auth-border);
+  border: 1px solid #333333;
   background: #fff;
 
   border-radius: 14px;
@@ -98,9 +98,116 @@
   color: var(--auth-danger);
 }
 
+/* Variante sem ícone (opcional) */
+.input-shell.no-icon .left-icon {
+  display: none;
+}
+
+.input-shell.no-icon .input {
+  padding-left: 16px;
+}
+
+.char-counter {
+  position: absolute;
+  right: 12px;
+  bottom: 6px;
+  
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+/* Fica laranja quando > 90% */
+.char-counter.near-limit {
+  color: #f59e0b;
+}
+
+/* Fica vermelho no limite */
+.char-counter.at-limit {
+  color: #dc2626;
+}
+
+
+
+/* =========================
+   CONTADOR DE CARACTERES
+========================= */
+.contador-caracteres {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;  /* Cinza padrão */
+  
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+/* Afasta do botão olho em campos de senha */
+.input-shell:has(.right-action) .contador-caracteres {
+  right: 52px;
+}
+
+/* Laranja quando > 90% */
+.contador-caracteres.perto-limite {
+  color: #f59e0b;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+/* Vermelho no limite */
+.contador-caracteres.no-limite {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Label acima do campo */
+.campo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+.obrigatorio {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
 /* Mobile */
+@media (max-width: 520px) {
+  .campo-label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .contador-caracteres {
+    font-size: 10px;
+  }
+}
+
 @media (max-width: 520px){
   .input-shell{ height: 54px; }
   .left-icon{ height: 54px; }
   .input{ height: 54px; }
+  
+  .char-counter {
+    font-size: 11px;
+    bottom: 7px;
+  }
 }

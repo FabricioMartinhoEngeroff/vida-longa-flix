@@ -9,6 +9,8 @@ import { Router, RouterModule } from '@angular/router';
 
 import { CampoFormularioComponent } from '../../../auth/loginComponents/campo-formulario/campo-formulario.component';
 import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-primario/botao-primario.component';
+import { IndicadorSenhaComponent } from '../../../auth/loginComponents/indicador-senha/indicador-senha.component'; // ← ADICIONAR
+import { validadorSenhaForte, ForcaSenha } from '../../../auth/utils/validador-senha-forte'; // ← ADICIONAR
 
 @Component({
   selector: 'app-registrar',
@@ -19,11 +21,11 @@ import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-prim
     RouterModule,
     CampoFormularioComponent,
     BotaoPrimarioComponent,
+    IndicadorSenhaComponent, // ← ADICIONAR
   ],
   templateUrl: './registrar.component.html',
   styleUrls: ['./registrar.component.css'],
 })
-
 export class RegistrarComponent {
   carregando = false;
   form: any;
@@ -42,8 +44,18 @@ export class RegistrarComponent {
         estado: ['', [Validators.required]],
         cep: ['', [Validators.required]],
       }),
-      senha: ['', [Validators.required, Validators.minLength(6)]],
+      // ✅ MODIFICADO: Adiciona validador de senha forte
+      senha: ['', [
+        Validators.required, 
+        Validators.minLength(8),
+        validadorSenhaForte(ForcaSenha.MEDIA) // ← Exige senha MÉDIA ou melhor
+      ]],
     });
+  }
+
+  // ✅ ADICIONAR: Getter para pegar senha atual
+  get senhaAtual(): string {
+    return this.form.get('senha')?.value || '';
   }
 
   get f() {
@@ -62,6 +74,15 @@ export class RegistrarComponent {
     if (control.errors['email']) return 'E-mail inválido';
     if (control.errors['minlength'])
       return `Mínimo de ${control.errors['minlength'].requiredLength} caracteres`;
+    
+    // ✅ ADICIONAR: Tratamento de erro de senha fraca
+    if (control.errors['senhaFraca']) {
+      const requisitos = control.errors['senhaFraca'].requisitosFaltando;
+      if (requisitos && requisitos.length > 0) {
+        return requisitos[0]; // Retorna primeiro requisito faltando
+      }
+      return 'Senha não atende aos requisitos de segurança';
+    }
 
     return 'Valor inválido';
   }
@@ -75,9 +96,6 @@ export class RegistrarComponent {
     try {
       const dados = this.form.getRawValue();
       console.log('Cadastrar:', dados);
-
-      // ✅ aqui vai ficar o request real (futuro)
-      // await this.autenticacaoService.cadastrar(dados);
 
       this.router.navigateByUrl('/login');
     } finally {

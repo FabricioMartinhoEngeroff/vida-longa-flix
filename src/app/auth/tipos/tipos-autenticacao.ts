@@ -1,20 +1,27 @@
-export interface EnderecoCadastro {
-  rua: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-}
+import { Endereco } from './endereco';
 
 export interface DadosCadastroUsuario {
-  name: string;
+  nome: string;      
   email: string;
-  password: string;
+  senha: string;     
   cpf: string;
   telefone: string;
-  endereco: EnderecoCadastro;
+  endereco: Endereco;
+}
+
+export interface DadosLogin {
+  email: string;
+  password: string;
+  manterConectado: boolean;
 }
 
 export interface LoginResponse {
   token: string;
+  user: UsuarioAutenticado;
+}
+
+export interface UsuarioAutenticado {
+  id: number;
+  nome: string;
+  email: string;
 }

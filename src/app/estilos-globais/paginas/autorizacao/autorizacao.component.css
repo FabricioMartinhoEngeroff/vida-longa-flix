@@ -1,65 +1,80 @@
-/* Página inteira */
+/* =========================
+   LAYOUT PRINCIPAL
+========================= */
 .auth-container {
   min-height: 100vh;
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  background: #eaf3e7; /* verde bem claro */
+  display: flex;
+  background: #ffffff; /* fundo branco direita */
 }
 
-/* Painel esquerdo */
+/* =========================
+   PAINEL ESQUERDO (Verde)
+========================= */
 .auth-left-panel {
-  padding: 48px 36px;
+  flex: 1;
+  background: #7da873; /* ✅ VERDE igual ao header */
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 18px;
-
-  background: #7da873; /* mesma cor do header */
-  color: #0b0b0b;
-
+  padding: 48px 36px;
+  text-align: center;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.auth-logo-text {
+.auth-brand {
+  max-width: 560px;
+}
+
+.auth-brand-title {
   font-size: 48px;
   font-weight: 900;
   letter-spacing: 1px;
   line-height: 1;
+  color: #0b0b0b; /* preto */
+}
+
+.auth-brand-welcome {
+  margin-top: 14px;
+  font-size: 20px;
+  font-weight: 800;
   color: #0b0b0b;
 }
 
-.auth-left-panel h2 {
-  font-size: 20px;
-  font-weight: 800;
+.auth-brand-link {
   margin-top: 10px;
-}
-
-.auth-left-panel p {
   font-size: 14px;
+  color: #0b0b0b;
   opacity: 0.8;
 }
 
-/* Painel direito */
+/* =========================
+   PAINEL DIREITO (Branco)
+========================= */
 .auth-right-panel {
+  flex: 1.2;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; /* ✅ CENTRALIZA verticalmente */
+  justify-content: center; /* ✅ CENTRALIZA horizontalmente */
   padding: 30px 20px;
+  background: #ffffff;
 }
 
-/* Card do formulário */
-.conteudo-direito {
+/* =========================
+   CARD DO FORMULÁRIO
+========================= */
+.auth-card {
   width: 100%;
-  max-width: 720px;
-  padding: 40px;
-
+  max-width: 720px; /* ✅ largura ideal para 2 colunas */
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+  padding: 40px;
 }
 
-/* Footer toggle */
+/* =========================
+   FOOTER (link toggle)
+========================= */
 .auth-footer {
   margin-top: 14px;
   display: flex;
@@ -68,32 +83,63 @@
 
 .auth-toggle-text {
   cursor: pointer;
-  color: #147a03; /* verde borda */
+  color: #6a0dad; /* ✅ ROXO igual aos botões */
   font-weight: 700;
   font-size: 14px;
 }
 
 .auth-toggle-text:hover {
   text-decoration: underline;
+  color: #8b5cd6; /* roxo mais claro no hover */
 }
 
-/* Responsivo */
+/* =========================
+   RESPONSIVO
+========================= */
+
+/* Tablet: empilha painéis */
 @media (max-width: 900px) {
   .auth-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .auth-left-panel {
     text-align: center;
-    align-items: center;
+    padding-bottom: 10px;
   }
 
-  .auth-logo-text {
+  .auth-brand-title {
     font-size: 38px;
   }
 
-  .conteudo-direito {
+  .auth-card {
     padding: 28px 18px;
     border-radius: 14px;
+  }
+}
+
+/* Tablet pequeno: empilha campos */
+@media (max-width: 720px) {
+  .auth-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mobile: compacta tudo */
+@media (max-width: 520px) {
+  .auth-left-panel {
+    padding: 24px 18px 16px;
+  }
+
+  .auth-brand-title {
+    font-size: 32px;
+  }
+
+  .auth-brand-welcome {
+    font-size: 16px;
+  }
+
+  .auth-card {
+    padding: 20px;
   }
 }

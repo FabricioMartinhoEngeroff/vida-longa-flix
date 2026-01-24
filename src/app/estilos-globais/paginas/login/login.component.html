@@ -3,25 +3,53 @@
 
   <form [formGroup]="form" (ngSubmit)="entrar()">
     <div class="auth-form-container">
+      
+      <!-- E-mail -->
       <app-campo-formulario
+        label="E-mail"
+        placeholder="seu@email.com"
         formControlName="email"
         type="email"
         icon="mail"
-        placeholder="E-mail"
         autocomplete="email"
+        [maxlength]="254"
+        [showCounter]="true"
         [error]="mensagemErro('email')"
       ></app-campo-formulario>
 
+      <!-- Senha -->
       <app-campo-formulario
+        label="Senha"
+        placeholder="Digite sua senha"
         formControlName="password"
         type="password"
         icon="lock"
-        placeholder="Senha"
         autocomplete="current-password"
+        [maxlength]="128"
+        [showCounter]="true"
         [error]="mensagemErro('password')"
       ></app-campo-formulario>
+
+      <!-- ✅ ADICIONAR: Checkbox "Manter conectado" -->
+      <div class="opcoes-login">
+        <label class="checkbox-manter-conectado">
+          <input 
+            type="checkbox" 
+            formControlName="manterConectado"
+          />
+          <span>Manter conectado</span>
+        </label>
+
+        <a class="link-esqueci-senha" routerLink="/recuperar-senha">
+          Esqueci minha senha
+        </a>
+      </div>
+      
     </div>
 
-    <app-botao-primario texto="Entrar" [disabled]="carregando"></app-botao-primario>
+    <app-botao-primario 
+      texto="Entrar" 
+      [disabled]="carregando"
+    ></app-botao-primario>
   </form>
 </div>

@@ -51,7 +51,7 @@
   align-items: flex-start;
   justify-content: center;
   padding: var(--auth-page-pad);
-   padding-top: 50px;
+  padding-top: 50px;
   background: var(--auth-bg-right);
 }
 
@@ -86,9 +86,6 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--auth-gap);
 }
-@media (max-width: 520px){
-  .auth-row { grid-template-columns: 1fr; }
-}
 
 /* Links */
 .auth-links {
@@ -122,24 +119,49 @@
   }
 }
 
-/* Mobile: empilha e deixa card mais “touch-friendly” */
+@media (max-width: 720px) {
+  .auth-row {
+    grid-template-columns: 1fr; /* empilha os campos */
+  }
+}
+
+/* Mobile: empilha e deixa card mais "touch-friendly" */
 @media (max-width: 520px) {
+  
+  .auth-left-panel {
+    padding: 24px 18px 16px; /* reduz drasticamente o padding */
+    min-height: auto; /* deixa o painel só do tamanho do conteúdo */
+  }
+  
+  /* NOVO: Logo menor em mobile */
+  .auth-brand-title {
+    font-size: 28px; /* sobrescreve o tamanho do :root */
+  }
+  
+  /* NOVO: Texto de boas-vindas menor */
+  .auth-brand-welcome {
+    font-size: 16px; /* reduz tamanho */
+    margin-top: 8px; /* aproxima do título */
+  }
+  
+  .auth-brand-link {
+    display: none;
+  }
+
   .auth-right-panel {
     align-items: flex-start;
+    padding: 14px;        /* MUDOU: era var(--auth-page-pad) = 18px */
+    padding-top: 8px;     /* MUDOU: era 50px - agora quase cola no topo */
   }
 
   .auth-card {
-    border-radius: 14px;
+    border-radius: 16px;  /* MUDOU: era 14px */
+    padding: 20px;        /* NOVO: era var(--auth-card-pad) = 18px */
   }
 
+  /* MANTIDO: empilha campos do formulário */
   .auth-row {
     grid-template-columns: 1fr;
   }
 
-  /* evita “cortar” em celulares pequenos: deixa rolar */
- .auth-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 14px; /* aumenta se quiser */
-}
 }

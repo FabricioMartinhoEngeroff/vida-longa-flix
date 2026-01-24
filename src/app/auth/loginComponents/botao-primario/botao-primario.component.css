@@ -1,7 +1,7 @@
 .btn {
   width: 100%;
   padding: 12px;
-  background-color: #0066cc;
+  background-color: #6a0dad;
   color: white;
 
   font-size: 16px;
@@ -17,7 +17,7 @@
 }
 
 .btn:hover {
-  background-color: #0066cc;
+  background-color: #8b5cd6;
   opacity: 0.95;
 }
 
@@ -27,10 +27,10 @@
 }
 
 /* disabled */
-.btn:disabled {
-  opacity: 0.6;
+
+.btn-primary:disabled {
+  background-color: #ccc;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* ✅ mobile (um pouco maior para dedo) */
@@ -39,5 +39,11 @@
     padding: 14px;
     font-size: 16px;
     border-radius: 10px;
+  }
+}
+ @media (max-width: 520px) {
+  .btn-primary {
+    height: 52px;
+    font-size: 16px;
   }
 }

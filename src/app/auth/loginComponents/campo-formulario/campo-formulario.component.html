@@ -1,4 +1,5 @@
 <div class="campo-container">
+
   <div class="input-shell" [class.has-error]="!!error" [class.is-disabled]="disabled">
     <span class="left-icon">
       <app-auth-icon [name]="icon"></app-auth-icon>
@@ -7,24 +8,31 @@
     <input
       class="input"
       [type]="inputType"
-      [placeholder]="placeholder"
+      [placeholder]="placeholderDinamico"
       [value]="value"
+      [attr.maxlength]="maxlength"
       (input)="onInput($event)"
       (blur)="blur()"
       [disabled]="disabled"
       [attr.autocomplete]="autocomplete"
     />
 
-    <!-- botão olho (só aparece se type=password) -->
     <button
       *ngIf="type === 'password'"
       type="button"
       class="right-action"
       (click)="toggleSenha()"
-      [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
     >
       <app-auth-icon [name]="rightIcon"></app-auth-icon>
     </button>
+
+      <span 
+      *ngIf="showCounter && maxlength" 
+      class="contador-caracteres"
+      [ngClass]="contadorClasse"
+    >
+      {{ contadorTexto }}
+    </span>
   </div>
 
   <p class="error" *ngIf="error">{{ error }}</p>

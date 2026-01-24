@@ -1,10 +1,9 @@
 import { errosValidacao } from './erros-validacao';
+import { calcularForcaSenha, ForcaSenha, CONFIGURACAO_SENHA } from './validador-senha-forte';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const cpfRegex = /^\d{11}$/;
 const phoneRegex = /^\d{10,11}$/;
-const passwordRegex =
-  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
 
 export function validarEmail(email: string): string | null {
   if (!email) return errosValidacao.required;
@@ -30,17 +29,29 @@ export function validarTelefone(telefone: string): string | null {
   return null;
 }
 
+/**
+ * ✅ REFATORADO: Validação de senha forte
+ * Usa o novo validador com requisitos médios
+ */
 export function validarSenha(senha: string): string | null {
   if (!senha) return errosValidacao.required;
-  if (senha.length < 8) return errosValidacao.passwordTooShort;
-  if (!passwordRegex.test(senha)) return errosValidacao.invalidPassword;
+  
+  const resultado = calcularForcaSenha(senha);
+  
+  // Exige ao menos senha MÉDIA (configurável)
+  if (resultado.forca < CONFIGURACAO_SENHA.nivelMinimoForca) {
+    // Retorna primeiro requisito faltando
+    if (resultado.requisitosFaltando.length > 0) {
+      return resultado.requisitosFaltando[0];
+    }
+    return errosValidacao.senhaFraca;
+  }
 
   return null;
 }
 
 /**
- * Valida campos vazios em objetos aninhados.
- * Ex: endereco.rua
+ * Valida campos vazios em objetos aninhados
  */
 export function validarCamposVazios(
   campos: Record<string, any>,

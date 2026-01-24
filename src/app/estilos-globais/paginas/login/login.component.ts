@@ -6,15 +6,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-primario/botao-primario.component';
 import { CampoFormularioComponent } from '../../../auth/loginComponents/campo-formulario/campo-formulario.component';
-
-type LoginForm = {
-  email: FormControl<string>;
-  password: FormControl<string>;
-};
+import { LoginForm } from '../../../auth/tipos/login-form.types'; // ← IMPORTAR
 
 @Component({
   selector: 'app-login',
@@ -26,19 +22,27 @@ type LoginForm = {
     BotaoPrimarioComponent,
     CampoFormularioComponent,
   ],
-  
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
   carregando = false;
-
   form!: ReturnType<FormBuilder['group']>;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {
     this.form = this.fb.group<LoginForm>({
-      email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-      password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] }),
+      email: new FormControl('', { 
+        nonNullable: true, 
+        validators: [Validators.required, Validators.email] 
+      }),
+      password: new FormControl('', { 
+        nonNullable: true, 
+        validators: [Validators.required, Validators.minLength(6)] 
+      }),
+      manterConectado: new FormControl(false, { nonNullable: true })
     });
   }
 
@@ -59,9 +63,15 @@ export class LoginComponent {
     if (this.form.invalid) return;
 
     this.carregando = true;
+    
     try {
-      const dados = this.form.getRawValue(); // ✅ { email: string; password: string }
-      console.log('Login:', dados);
+      const dados = this.form.getRawValue();
+      console.log('📤 Dados login:', dados);
+      
+      // TODO: Integrar com backend
+      
+    } catch (error) {
+      console.error('❌ Erro:', error);
     } finally {
       this.carregando = false;
     }
