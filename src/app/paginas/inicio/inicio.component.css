@@ -1,3 +1,6 @@
+/* =========================================
+   TÍTULO / HEADER
+   ========================================= */
 .titulo-container {
   display: flex;
   flex-wrap: wrap;
@@ -6,7 +9,6 @@
   gap: 10px;
   padding: 0 2px;
   margin-bottom: 10px;
-
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -31,12 +33,10 @@
   margin-left: 3px;
 }
 
-/* =========================
-   ✅ WEB / DESKTOP
-   ========================= */
-
+/* =========================================
+   WEB / DESKTOP - VIDEO CARD
+   ========================================= */
 .video-card {
-
   flex: 0 0 auto;
   width: 280px;
   max-width: 85vw;
@@ -44,20 +44,87 @@
   border-radius: 12px;
   padding: 12px;
   margin: 0 !important;
-
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   overflow: hidden;
 }
 
-.video-wrapper video {
+/* ✅ WRAPPER CAPA + PREVIEW */
+.video-wrapper {
+  position: relative;
   width: 100%;
-  border-radius: 1px;
-  object-fit: cover;
+  padding-top: 56.25%; /* 16:9 */
+  overflow: hidden;
+  border-radius: 8px;
   cursor: pointer;
+  background: #000;
 }
 
+/* Capa (thumbnail) */
+.capa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.capa.oculta {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Play sobreposto */
+.play-sobreposto {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.play-sobreposto.oculto {
+  opacity: 0;
+}
+
+.play-sobreposto mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
+}
+
+.video-wrapper:hover .play-sobreposto:not(.oculto) {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Vídeo preview */
+.video-previa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.video-previa.visivel {
+  opacity: 1;
+}
+
+/* =========================================
+   INFORMAÇÕES DO VÍDEO
+   ========================================= */
 .info-area {
   margin-top: 8px;
 }
@@ -73,6 +140,9 @@
   color: #555;
 }
 
+/* =========================================
+   COMENTÁRIOS
+   ========================================= */
 .comentarios {
   margin-top: 8px;
   font-size: 12px;
@@ -107,6 +177,9 @@
   text-decoration: underline;
 }
 
+/* =========================================
+   FORM COMENTÁRIO
+   ========================================= */
 .comentario-form {
   display: flex;
   flex-wrap: wrap;
@@ -138,10 +211,9 @@
   background-color: #8b5cd6;
 }
 
-/* =========================
-   ✅ MOBILE
-   ========================= */
-
+/* =========================================
+   MOBILE
+   ========================================= */
 .mobile {
   padding: 0 12px 90px;
 }
@@ -159,10 +231,36 @@
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
 }
 
-.video-mobile {
+/* Video mobile */
+.video-mobile-wrapper {
+  position: relative;
   width: 100%;
   height: 220px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #000;
+}
+
+.capa-mobile {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.play-mobile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  opacity: 0.9;
+}
+
+.play-mobile mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
 }
 
 .info-mobile {
@@ -196,6 +294,16 @@
 
 .mobile-form {
   margin-top: 10px;
+}
+
+/* =========================================
+   RESPONSIVO
+   ========================================= */
+@media (max-width: 768px) {
+  /* Desktop preview não funciona no mobile */
+  .video-previa {
+    display: none;
+  }
 }
 
 @media (max-width: 500px) {

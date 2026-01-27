@@ -6,9 +6,9 @@ import { FavoritosComponent } from './paginas/favoritos/favoritos.component';
 import { MaisVistosComponent } from './paginas/mais-vistos/mais-vistos.component';
 import { NaoEncontradaComponent } from './paginas/nao-encontrada/nao-encontrada.component';
 
-import { AutorizacaoComponent } from './estilos-globais/paginas/autorizacao/autorizacao.component';
-import { LoginComponent } from './estilos-globais/paginas/login/login.component';
-import { RegistrarComponent } from './estilos-globais/paginas/registrar/registrar.component';
+import { AutorizacaoComponent } from '../app/auth/paginas/autorizacao/autorizacao.component';
+import { LoginComponent } from '../app/auth/paginas/login/login.component';
+import { RegistrarComponent } from '../app/auth/paginas/registrar/registrar.component';
 
 export const routes: Routes = [
 

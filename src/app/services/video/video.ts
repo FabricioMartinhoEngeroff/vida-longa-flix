@@ -46,6 +46,7 @@ export class VideoService {
       title: video.title,
       description: video.description,
       url: video.url,
+      capa: video.capa || video.url, // ← ADICIONAR (fallback para url se não tiver capa)
 
       category: { id: '0', name: 'Sem categoria' },
       comments: [],

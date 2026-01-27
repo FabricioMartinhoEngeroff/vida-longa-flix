@@ -20,6 +20,7 @@ export interface Video {
   title: string;
   description: string;
   url: string;
+  capa:string
 
   category: Category;
   comments: Comment[];

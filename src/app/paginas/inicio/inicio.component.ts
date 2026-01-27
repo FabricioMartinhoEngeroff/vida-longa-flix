@@ -1,38 +1,41 @@
-import { Component, HostListener, OnInit } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
+import { BotaoFavoritarComponent } from '../../components/botao-favoritar/botao-favoritar.component';
 import { CarrosselComponent } from '../../components/carrossel/carrossel.component';
 import { TituloComponent } from '../../components/titulo/titulo.component';
-import { BotaoFavoritarComponent } from '../../components/botao-favoritar/botao-favoritar.component';
-
-import { VideoService } from '../../services/video/video';
 import { ModalService } from '../../services/modal/modal';
+import { VideoService } from '../../services/video/video';
 import { Video } from '../../tipos/videos';
+
 @Component({
   selector: 'app-inicio',
   standalone: true,
   imports: [
-    NgIf,
     NgFor,
+    NgIf,
     MatIconModule,
-    CarrosselComponent,
     TituloComponent,
+    CarrosselComponent,
     BotaoFavoritarComponent,
   ],
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css'],
 })
+
 export class InicioComponent implements OnInit {
-  isMobile: boolean = window.innerWidth <= 768;
-
   videosReels: Video[] = [];
+  isMobile = false;
 
-  // comentários por vídeo (id => string[])
-  comentariosState: Record<string, string[]> = {};
+  // Estado de comentários
+  comentariosState: { [videoId: string]: string[] } = {};  
+  novoComentario: { [videoId: string]: string } = {};      
 
-  // input por vídeo (id => string)
-  novoComentario: Record<string, string> = {};
+  // Preview ao hover
+  mostrandoPrevia: { [id: string]: boolean } = {};         
+  private timeoutsHover: { [id: string]: any } = {};       
+  private readonly DELAY_HOVER = 2000;
 
   constructor(
     private videoService: VideoService,
@@ -40,60 +43,78 @@ export class InicioComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.videosReels = this.videoService.videosReels;
-
-    // cria o estado inicial dos comentários (igual teu useState com map)
-    this.comentariosState = Object.fromEntries(
-      this.videosReels.map((video) => [
-        video.id,
-        video.comments?.map((c: any) => `${c.user?.name ?? 'user'}: ${c.text}`) ?? [],
-      ])
-    );
-  }
+  this.videoService.videosReels$.subscribe(videos => {
+    this.videosReels = videos;
+  });
+  this.verificarMobile();
+}
 
   @HostListener('window:resize')
-  onResize(): void {
+  onResize() {
+    this.verificarMobile();
+  }
+
+  verificarMobile() {
     this.isMobile = window.innerWidth <= 768;
   }
 
-  verTudo(): void {
-    console.log('Ver tudo');
+  aoPassarMouseVideo(videoId: string, event: Event) {  
+    const wrapper = event.currentTarget as HTMLElement;
+    const videoEl = wrapper.querySelector('video') as HTMLVideoElement;
+
+    if (this.timeoutsHover[videoId]) {
+      clearTimeout(this.timeoutsHover[videoId]);
+    }
+
+    this.timeoutsHover[videoId] = setTimeout(() => {
+      this.mostrandoPrevia[videoId] = true;
+      videoEl.currentTime = 0;
+      videoEl.muted = true;
+      videoEl.play().catch(() => {
+        console.log('Autoplay bloqueado');
+      });
+    }, this.DELAY_HOVER);
   }
 
-  abrirModal(video: Video): void {
+  aoSairMouseVideo(videoId: string, event: Event) {  
+    const wrapper = event.currentTarget as HTMLElement;
+    const videoEl = wrapper.querySelector('video') as HTMLVideoElement;
+
+    if (this.timeoutsHover[videoId]) {
+      clearTimeout(this.timeoutsHover[videoId]);
+      delete this.timeoutsHover[videoId];
+    }
+
+    this.mostrandoPrevia[videoId] = false;
+    videoEl.pause();
+    videoEl.currentTime = 0;
+  }
+
+  abrirModal(video: Video) {
     this.modalService.abrir(video);
   }
 
-  toggleFavorite(videoId: string): void {
+  toggleFavorite(videoId: string) {  
     this.videoService.toggleFavorite(videoId);
-    // atualiza lista local (caso o service altere referência)
-    this.videosReels = [...this.videoService.videosReels];
   }
 
-  adicionarComentario(videoId: string): void {
-    const texto = this.novoComentario[videoId];
+  adicionarComentario(videoId: string) {  
+    const texto = this.novoComentario[videoId]?.trim();
     if (!texto) return;
 
-    const comentario = `Você: ${texto}`;
+    if (!this.comentariosState[videoId]) {
+      this.comentariosState[videoId] = [];
+    }
 
-    this.comentariosState = {
-      ...this.comentariosState,
-      [videoId]: [...(this.comentariosState[videoId] || []), comentario],
-    };
+    this.comentariosState[videoId] = [
+      ...this.comentariosState[videoId],
+      `Você: ${texto}`,
+    ];
 
-    this.novoComentario = { ...this.novoComentario, [videoId]: '' };
+    this.novoComentario[videoId] = '';
   }
 
-  // hover play/pause (só desktop)
-  playVideo(event: Event): void {
-    if (this.isMobile) return;
-    const video = event.target as HTMLVideoElement;
-    video.play();
-  }
-
-  pauseVideo(event: Event): void {
-    if (this.isMobile) return;
-    const video = event.target as HTMLVideoElement;
-    video.pause();
+  verTudo() {
+    console.log('Ver tudo clicado');
   }
 }

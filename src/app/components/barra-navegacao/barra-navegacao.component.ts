@@ -18,13 +18,13 @@ interface ItemMenu {
   styleUrls: ['./barra-navegacao.component.css'],
 })
 export class BarraNavegacaoComponent {
-  itens: ItemMenu[] = [
-    { nome: 'Início', icone: 'assets/icones/home-ativo.png', path: '/' },
-    { nome: 'Mais vistas', icone: 'assets/icones/mais-vistas-ativo.png', path: '/mais-vistas' },
-    { nome: 'Favoritos', icone: 'assets/icones/mais-curtidas-ativo.png', path: '/favoritos' },
-    { nome: 'Reels', icone: 'assets/icones/novas-ativo.png', path: '/novas' },
-    { nome: 'Surpreenda', icone: 'assets/icones/surpreenda-me-ativo.png', path: '/surpreenda' },
-  ];
+ itens: ItemMenu[] = [
+  { nome: 'Início', icone: 'assets/icones/home-ativo.png', path: '/app' },
+  { nome: 'Mais vistas', icone: 'assets/icones/mais-vistas-ativo.png', path: '/app/mais-vistos' },
+  { nome: 'Favoritos', icone: 'assets/icones/mais-curtidas-ativo.png', path: '/app/favoritos' },
+  { nome: 'Reels', icone: 'assets/icones/novas-ativo.png', path: '/app' },
+  { nome: 'Surpreenda', icone: 'assets/icones/surpreenda-me-ativo.png', path: '/app' },
+];
 
   ativo: string = this.itens[0].nome;
 

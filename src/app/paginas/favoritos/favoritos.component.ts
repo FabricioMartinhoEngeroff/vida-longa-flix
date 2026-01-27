@@ -29,13 +29,11 @@ export class FavoritosComponent implements OnInit {
     private videoService: VideoService
   ) {}
 
-  ngOnInit(): void {
-    this.carregar();
-  }
-
-  carregar(): void {
-    this.favoritos = this.favoritosService.listarFavoritos();
-  }
+ ngOnInit(): void {
+  this.favoritosService.favoritos$.subscribe(favoritos => {
+    this.favoritos = favoritos;
+  });
+}
 
   @HostListener('window:resize')
   onResize(): void {
@@ -53,7 +51,6 @@ export class FavoritosComponent implements OnInit {
 
   remover(video: Video): void {
     this.videoService.toggleFavorite(video.id);
-    this.carregar();
   }
 
   playVideo(event: Event): void {
