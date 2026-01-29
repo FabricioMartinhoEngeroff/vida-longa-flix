@@ -1,0 +1,91 @@
+<div class="menu-usuario-container">
+  <!-- Botão do perfil -->
+  <button 
+    class="btn-perfil" 
+    (click)="toggleMenu()"
+    [attr.aria-label]="'Menu de ' + usuario.nome"
+    [attr.aria-expanded]="menuAberto"
+  >
+    <!-- Foto do usuário ou avatar padrão -->
+    <div class="avatar">
+      <img 
+        *ngIf="usuario.foto" 
+        [src]="usuario.foto" 
+        [alt]="usuario.nome"
+      />
+      <mat-icon *ngIf="!usuario.foto">account_circle</mat-icon>
+    </div>
+    
+    <!-- Seta indicadora -->
+    <mat-icon class="seta" [class.aberto]="menuAberto">
+      expand_more
+    </mat-icon>
+  </button>
+
+  <!-- Dropdown -->
+  <div 
+    class="dropdown" 
+    [class.aberto]="menuAberto"
+    (click)="$event.stopPropagation()"
+  >
+   
+  <div class="dropdown-header">
+  <!-- ✅ Avatar clicável com drag & drop -->
+  <div 
+    class="avatar-grande clicavel"
+    [class.arrastando]="arrastandoFoto"
+    (click)="selecionarFoto()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    title="Clique ou arraste uma foto"
+  >
+    <img 
+      *ngIf="usuario.foto" 
+      [src]="usuario.foto" 
+      [alt]="usuario.nome"
+    />
+    <mat-icon *ngIf="!usuario.foto">account_circle</mat-icon>
+    
+    <!-- Ícone de câmera ao passar o mouse -->
+    <div class="overlay-camera">
+      <mat-icon>photo_camera</mat-icon>
+    </div>
+  </div>
+  
+  <div class="info-usuario">
+    <strong class="nome">{{ usuario.nome }}</strong>
+    <span class="email">{{ usuario.email }}</span>
+  </div>
+</div>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <!-- Opções do menu -->
+    <button class="opcao-menu" (click)="irParaPerfil()">
+      <mat-icon>person</mat-icon>
+      <span>Meu Perfil</span>
+    </button>
+
+    <button class="opcao-menu" (click)="irParaConfiguracoes()">
+      <mat-icon>settings</mat-icon>
+      <span>Configurações</span>
+    </button>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <button class="opcao-menu sair" (click)="sair()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
+  </div>
+
+  <!-- Backdrop (fundo escuro ao abrir) -->
+  <div 
+    class="backdrop" 
+    [class.visivel]="menuAberto"
+    (click)="fecharMenu()"
+  ></div>
+</div>
