@@ -1,0 +1,96 @@
+<div class="backdrop" [class.visivel]="aberta" (click)="onFechar()">
+  <div class="modal" [class.visivel]="aberta" (click)="$event.stopPropagation()">
+    
+    <!-- Botão X -->
+    <button class="btn-fechar" (click)="onFechar()" type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <!-- Título -->
+    <h2 class="titulo">Mudar senha</h2>
+
+    <!-- Formulário -->
+    <form (ngSubmit)="onConfirmar()">
+      
+      <!-- Senha Atual -->
+      <div class="campo">
+        <label for="senhaAtual">Senha Atual *</label>
+        <div class="input-wrapper">
+          <input
+            id="senhaAtual"
+            [type]="mostrarSenhaAtual ? 'text' : 'password'"
+            [(ngModel)]="senhaAtual"
+            name="senhaAtual"
+            placeholder="Digite sua senha atual"
+            autocomplete="current-password"
+          />
+          <button
+            class="btn-olho"
+            type="button"
+            (click)="toggleMostrarSenha('atual')"
+          >
+            <mat-icon>{{ mostrarSenhaAtual ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nova Senha -->
+      <div class="campo">
+        <label for="novaSenha">Nova Senha *</label>
+        <div class="input-wrapper">
+          <input
+            id="novaSenha"
+            [type]="mostrarNovaSenha ? 'text' : 'password'"
+            [(ngModel)]="novaSenha"
+            name="novaSenha"
+            placeholder="Digite a nova senha"
+            autocomplete="new-password"
+          />
+          <button
+            class="btn-olho"
+            type="button"
+            (click)="toggleMostrarSenha('nova')"
+          >
+            <mat-icon>{{ mostrarNovaSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirmação -->
+      <div class="campo">
+        <label for="confirmacao">Confirmação da nova senha *</label>
+        <div class="input-wrapper">
+          <input
+            id="confirmacao"
+            [type]="mostrarConfirmacao ? 'text' : 'password'"
+            [(ngModel)]="confirmacaoSenha"
+            name="confirmacao"
+            placeholder="Confirme a nova senha"
+            autocomplete="new-password"
+          />
+          <button
+            class="btn-olho"
+            type="button"
+            (click)="toggleMostrarSenha('confirmacao')"
+          >
+            <mat-icon>{{ mostrarConfirmacao ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mensagem de erro -->
+      <p *ngIf="erro" class="erro">{{ erro }}</p>
+
+      <!-- Botões -->
+      <div class="botoes">
+        <button class="btn-cancelar" type="button" (click)="onFechar()">
+          Fechar
+        </button>
+
+        <button class="btn-confirmar" type="submit">
+          Mudar senha
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

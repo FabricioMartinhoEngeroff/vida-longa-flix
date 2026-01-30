@@ -2,17 +2,24 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { ModalConfirmacaoComponent } from '../modal-confirmacao/modal-confirmacao.component';
+import { ModalMudarSenhaComponent } from '../modal-mudar-senha/modal-mudar-senha.component';
+
 
 @Component({
   selector: 'app-menu-usuario',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, ModalConfirmacaoComponent,ModalMudarSenhaComponent ],
   templateUrl: './menu-usuario.component.html',
   styleUrls: ['./menu-usuario.component.css']
 })
 export class MenuUsuarioComponent {
   menuAberto = false;
+  modalSairAberta = false;
   arrastandoFoto = false; 
+  modalMudarSenhaAberta = false; 
+  mostrarMensagemSucesso = false; 
+  
   
   // Dados do usuário (depois virá do backend)
   usuario = {
@@ -103,11 +110,41 @@ export class MenuUsuarioComponent {
   }
 
   sair() {
-    console.log('🚪 Logout');
+    this.modalSairAberta = true; 
+    this.fecharMenu();
+  }
+
+  // ← ADICIONAR
+  confirmarSaida() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
     this.router.navigate(['/autorizacao']);
   }
+
+  // ← ADICIONAR
+  cancelarSaida() {
+    this.modalSairAberta = false;
+  }
+
+  mudarSenha() {
+  this.modalMudarSenhaAberta = true;
+  this.fecharMenu();
+}
+
+fecharModalSenha() {
+  this.modalMudarSenhaAberta = false;
+}
+
+confirmarMudancaSenha(dados: { senhaAtual: string; novaSenha: string }) {
+  console.log('🔐 Mudar senha:', dados);
+  // TODO: Enviar para backend
+  this.modalMudarSenhaAberta = false;
+  this.mostrarMensagemSucesso = true; 
+  
+  setTimeout(() => {
+    this.mostrarMensagemSucesso = false;
+  }, 3000);
+}
 }

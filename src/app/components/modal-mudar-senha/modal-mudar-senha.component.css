@@ -1,0 +1,217 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  opacity: 0;
+  visibility: hidden;
+  
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.backdrop.visivel {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  
+  max-width: 450px;
+  width: 90%;
+  
+  transform: scale(0.9);
+  opacity: 0;
+  
+  transition: all 0.3s ease;
+}
+
+.modal.visivel {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Botão fechar */
+.btn-fechar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  
+  width: 32px;
+  height: 32px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  
+  color: #6b7280;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.btn-fechar:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.btn-fechar mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Título */
+.titulo {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 20px 0;
+}
+
+/* Campos */
+.campo {
+  margin-bottom: 16px;
+}
+
+.campo label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  
+  font-size: 14px;
+  color: #111;
+  
+  transition: border-color 0.2s ease;
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: #6a0dad;
+}
+
+.btn-olho {
+  position: absolute;
+  right: 8px;
+  
+  width: 32px;
+  height: 32px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  
+  color: #6b7280;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.btn-olho:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.btn-olho mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Erro */
+.erro {
+  margin: 12px 0;
+  padding: 10px;
+  
+  background: #fee2e2;
+  color: #dc2626;
+  
+  font-size: 13px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* Botões */
+.botoes {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-cancelar,
+.btn-confirmar {
+  flex: 1;
+  padding: 10px 24px;
+  
+  border: none;
+  border-radius: 8px;
+  
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.btn-cancelar {
+  background: transparent;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.btn-cancelar:hover {
+  background: #f9fafb;
+}
+
+.btn-confirmar {
+  background: #6a0dad;
+  color: white;
+}
+
+.btn-confirmar:hover {
+  background: #8b5cd6;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .modal {
+    max-width: 380px;
+    padding: 20px;
+  }
+
+  .botoes {
+    flex-direction: column-reverse;
+  }
+}
