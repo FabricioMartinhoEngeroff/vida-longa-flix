@@ -53,4 +53,15 @@ if (token === 'token_dev_123') {
       return null;
     }
   }
+
+  sair() {
+    // Limpa dados do usuário
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    
+    // Redireciona para login
+    this.router.navigate(['/autorizacao']);
+  }
 }

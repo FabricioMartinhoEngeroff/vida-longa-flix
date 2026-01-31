@@ -4,12 +4,18 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ModalConfirmacaoComponent } from '../modal-confirmacao/modal-confirmacao.component';
 import { ModalMudarSenhaComponent } from '../modal-mudar-senha/modal-mudar-senha.component';
-
+import { NotificacaoService } from '../../services/mensagem-alerta/mensagem-alerta.service';
+import { UsuarioAutenticacaoService } from '../../auth/api/usuario-autenticacao.service';
 
 @Component({
   selector: 'app-menu-usuario',
   standalone: true,
-  imports: [CommonModule, MatIconModule, ModalConfirmacaoComponent,ModalMudarSenhaComponent ],
+  imports: [
+    CommonModule, 
+    MatIconModule, 
+    ModalConfirmacaoComponent,
+    ModalMudarSenhaComponent
+  ],
   templateUrl: './menu-usuario.component.html',
   styleUrls: ['./menu-usuario.component.css']
 })
@@ -17,18 +23,19 @@ export class MenuUsuarioComponent {
   menuAberto = false;
   modalSairAberta = false;
   arrastandoFoto = false; 
-  modalMudarSenhaAberta = false; 
-  mostrarMensagemSucesso = false; 
+  modalMudarSenhaAberta = false;
   
-  
-  // Dados do usuário (depois virá do backend)
   usuario = {
     nome: 'Fabricio Engeroff',
     email: 'fa.engeroff@gmail.com',
     foto: null as string | null 
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private notificacaoService: NotificacaoService,
+    private usuarioAuth: UsuarioAutenticacaoService
+  ) {}
 
   toggleMenu() {
     this.menuAberto = !this.menuAberto;
@@ -51,31 +58,26 @@ export class MenuUsuarioComponent {
     input.click();
   }
 
-  // ✅ NOVO: Processar foto (drag ou click)
   processarFoto(file: File) {
     if (!file.type.startsWith('image/')) {
-      alert('Por favor, selecione apenas imagens');
+      this.notificacaoService.erro('Por favor, selecione apenas imagens');
       return;
     }
 
-    // Limitar tamanho (2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert('Imagem muito grande. Máximo 2MB');
+      this.notificacaoService.aviso('Imagem muito grande. Máximo 2MB');
       return;
     }
 
-    // Converter para base64
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.usuario.foto = e.target.result;
-      console.log('✅ Foto atualizada');
+      this.notificacaoService.sucesso('Foto atualizada com sucesso!');
       // TODO: Enviar para backend
-      // this.http.post('/api/usuario/foto', { foto: this.usuario.foto }).subscribe();
     };
     reader.readAsDataURL(file);
   }
 
-  // ✅ NOVO: Drag & Drop
   onDragOver(event: DragEvent) {
     event.preventDefault();
     this.arrastandoFoto = true;
@@ -96,17 +98,14 @@ export class MenuUsuarioComponent {
     }
   }
 
-
   irParaPerfil() {
     console.log('🧑 Ir para perfil');
     this.fecharMenu();
-    // TODO: this.router.navigate(['/app/perfil']);
   }
 
   irParaConfiguracoes() {
     console.log('⚙️ Ir para configurações');
     this.fecharMenu();
-    // TODO: this.router.navigate(['/app/configuracoes']);
   }
 
   sair() {
@@ -114,37 +113,34 @@ export class MenuUsuarioComponent {
     this.fecharMenu();
   }
 
-  // ← ADICIONAR
-  confirmarSaida() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    this.router.navigate(['/autorizacao']);
-  }
+confirmarSaida() {
+  this.usuarioAuth.sair();  // ← DRY, usa o service
+}
 
-  // ← ADICIONAR
   cancelarSaida() {
     this.modalSairAberta = false;
   }
 
-  mudarSenha() {
-  this.modalMudarSenhaAberta = true;
-  this.fecharMenu();
-}
+  fecharModalSenha() {
+    this.modalMudarSenhaAberta = false;
+  }
 
-fecharModalSenha() {
-  this.modalMudarSenhaAberta = false;
-}
-
-confirmarMudancaSenha(dados: { senhaAtual: string; novaSenha: string }) {
-  console.log('🔐 Mudar senha:', dados);
-  // TODO: Enviar para backend
-  this.modalMudarSenhaAberta = false;
-  this.mostrarMensagemSucesso = true; 
-  
-  setTimeout(() => {
-    this.mostrarMensagemSucesso = false;
-  }, 3000);
-}
+  confirmarMudancaSenha(dados: { senhaAtual: string; novaSenha: string }) {
+    console.log('🔐 Mudar senha:', dados);
+    
+    // TODO: Quando tiver backend, será assim:
+    // this.authService.mudarSenha(dados).subscribe({
+    //   next: () => {
+    //     this.notificacaoService.sucesso('Senha alterada com sucesso!');
+    //   },
+    //   error: (erro) => {
+    //     this.notificacaoService.erro(erro.message || 'Erro ao alterar senha');
+    //   }
+    // });
+    
+    // Por enquanto (simulando sucesso):
+    this.modalMudarSenhaAberta = false;
+    this.fecharMenu();
+    this.notificacaoService.sucesso('Senha alterada com sucesso!');
+  }
 }

@@ -1,0 +1,80 @@
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+
+@Component({
+  selector: 'app-mensagem-sucesso',
+  standalone: true,
+  imports: [CommonModule, MatIconModule],
+  template: `
+    <div class="mensagem" [class.visivel]="visivel">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ texto }}</span>
+    </div>
+  `,
+  styles: [`
+    .mensagem {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      
+      padding: 15px 10px;
+      background: #7da873;
+      color: white;
+      
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      
+      font-size: 16px;
+      font-weight: 900;
+      
+      min-width: 400px;
+      max-width: 600px;
+      
+      opacity: 0;
+      visibility: hidden;
+      
+      transition: all 0.4s ease;
+      z-index: 99999;
+    }
+    
+    .mensagem.visivel {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .mensagem mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    
+    @media (max-width: 768px) {
+      .mensagem {
+        min-width: 320px;
+        max-width: 90%;
+        padding: 16px 24px;
+        font-size: 15px;
+        bottom: 20px;
+      }
+      
+      .mensagem mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  `]
+})
+export class MensagemSucessoComponent {
+  @Input() visivel = false;
+  @Input() texto = 'Sucesso!';
+}

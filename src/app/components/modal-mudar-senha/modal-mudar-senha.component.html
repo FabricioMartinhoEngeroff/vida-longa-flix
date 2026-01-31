@@ -1,15 +1,12 @@
 <div class="backdrop" [class.visivel]="aberta" (click)="onFechar()">
   <div class="modal" [class.visivel]="aberta" (click)="$event.stopPropagation()">
     
-    <!-- Botão X -->
     <button class="btn-fechar" (click)="onFechar()" type="button">
       <mat-icon>close</mat-icon>
     </button>
 
-    <!-- Título -->
     <h2 class="titulo">Mudar senha</h2>
 
-    <!-- Formulário -->
     <form (ngSubmit)="onConfirmar()">
       
       <!-- Senha Atual -->
@@ -54,6 +51,13 @@
             <mat-icon>{{ mostrarNovaSenha ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
+        
+        <!-- Indicador de senha -->
+        <app-indicador-senha 
+          [senha]="novaSenha"
+          [mostrarRequisitos]="true"
+          *ngIf="novaSenha.length > 0"
+        ></app-indicador-senha>
       </div>
 
       <!-- Confirmação -->

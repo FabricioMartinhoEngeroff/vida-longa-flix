@@ -1,5 +1,4 @@
 <div class="indicador-senha" *ngIf="senha">
-  <!-- Barra de progresso colorida -->
   <div class="barra-forca">
     <div 
       class="barra-preenchida" 
@@ -8,19 +7,11 @@
     ></div>
   </div>
 
-  <!-- Mensagem da força -->
   <p class="mensagem-forca" [style.color]="resultado.cor">
     <strong>{{ resultado.mensagem }}</strong>
-    <span *ngIf="resultado.forca >= 2"> ✓</span>
   </p>
 
-  <!-- Lista de requisitos faltando -->
   <ul class="lista-requisitos" *ngIf="mostrarRequisitos && resultado.requisitosFaltando.length > 0">
-    <li *ngFor="let req of resultado.requisitosFaltando">• {{ req }}</li>
+    <li *ngFor="let req of resultado.requisitosFaltando">{{ req }}</li>
   </ul>
-
-  <!-- Mensagem de sucesso -->
-  <p class="mensagem-sucesso" *ngIf="resultado.requisitosFaltando.length === 0">
-    ✓ Senha atende todos os requisitos de segurança
-  </p>
 </div>

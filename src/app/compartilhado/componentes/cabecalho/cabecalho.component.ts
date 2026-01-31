@@ -4,13 +4,14 @@ import { CampoTextoComponent } from '../campo-texto/campo-texto.component';
 import { TituloComponent } from '../titulo/titulo.component';
 import { NotificacoesComponent } from '../notificações/notificacoes.component';
 import { MenuUsuarioComponent } from '../menu-usuario/menu-usuario.component';
+import { BotaoSairComponent } from '../botao-sair/botao-sair.component';
 
 @Component({
   selector: 'app-cabecalho',
   templateUrl: './cabecalho.component.html',
   styleUrls: ['./cabecalho.component.css'],
   standalone: true,
-  imports: [CampoTextoComponent, TituloComponent, NotificacoesComponent, MenuUsuarioComponent],
+  imports: [CampoTextoComponent, TituloComponent, NotificacoesComponent, MenuUsuarioComponent, BotaoSairComponent ],
 })
 export class CabecalhoComponent {
   private router = inject(Router);
