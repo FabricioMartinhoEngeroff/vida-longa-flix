@@ -9,8 +9,10 @@
 
   <main class="auth-right-panel">
     <div class="auth-card">
-      <ng-container *ngIf="isRegistering; else loginTemplate">
-        <app-registrar></app-registrar>
+      
+      <!-- Cadastro -->
+      <ng-container *ngIf="isRegistering">
+        <app-registrar (alternarParaLogin)="alternarModo()"></app-registrar>
 
         <div class="auth-footer">
           <span class="auth-toggle-text" (click)="alternarModo()">
@@ -19,15 +21,11 @@
         </div>
       </ng-container>
 
-      <ng-template #loginTemplate>
-        <app-login></app-login>
+      <!-- Login -->
+      <ng-container *ngIf="!isRegistering">
+        <app-login (irParaCadastro)="alternarModo()"></app-login>
+      </ng-container>
 
-        <div class="auth-footer">
-          <span class="auth-toggle-text" (click)="alternarModo()">
-            Já tem uma conta? Criar conta.
-          </span>
-        </div>
-      </ng-template>
     </div>
   </main>
 </section>

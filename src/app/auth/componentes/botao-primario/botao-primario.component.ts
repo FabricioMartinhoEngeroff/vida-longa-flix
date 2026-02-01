@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-botao-primario',
@@ -6,16 +6,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   templateUrl: './botao-primario.component.html',
   styleUrls: ['./botao-primario.component.css'],
 })
-
 export class BotaoPrimarioComponent {
-  @Input() text: string = 'Entrar';
+  @Input() texto: string = 'Entrar'; 
   @Input() disabled: boolean = false;
   @Input() type: 'button' | 'submit' = 'submit';
-
-  @Output() aoClicar = new EventEmitter<void>();
-
-  clicar(): void {
-    if (this.disabled) return;
-    this.aoClicar.emit();
-  }
 }

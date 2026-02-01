@@ -47,10 +47,18 @@
     </div>
     
 <app-botao-primario
-  text="Entrar"
+  texto="Entrar"
   [disabled]="carregando"
   type="submit"
 ></app-botao-primario>
+
+<div class="divisor">
+  <span>Não tem uma conta?</span>
+</div>
+
+<button type="button" class="btn-criar-conta" (click)="cadastrar()">
+  Criar conta
+</button>
 
   </form>
 </div>

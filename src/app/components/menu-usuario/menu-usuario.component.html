@@ -99,6 +99,13 @@
     (confirmar)="confirmarMudancaSenha($event)"
   ></app-modal-mudar-senha>
 
+  <app-modal-perfil-usuario
+  [aberta]="modalPerfilAberta"
+  [usuario]="usuario"
+  (fechar)="fecharModalPerfil()"
+  (salvar)="salvarPerfil($event)"
+  (abrirMudarSenha)="modalMudarSenhaAberta = true"
+></app-modal-perfil-usuario>
  
   <!-- Backdrop -->
   <div 

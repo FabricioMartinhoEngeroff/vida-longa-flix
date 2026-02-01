@@ -6,6 +6,7 @@ import { ModalConfirmacaoComponent } from '../modal-confirmacao/modal-confirmaca
 import { ModalMudarSenhaComponent } from '../modal-mudar-senha/modal-mudar-senha.component';
 import { NotificacaoService } from '../../services/mensagem-alerta/mensagem-alerta.service';
 import { UsuarioAutenticacaoService } from '../../auth/api/usuario-autenticacao.service';
+import { ModalPerfilUsuarioComponent } from '../modal-perfil-usuario/modal-perfil-usuario.component';
 
 @Component({
   selector: 'app-menu-usuario',
@@ -14,7 +15,8 @@ import { UsuarioAutenticacaoService } from '../../auth/api/usuario-autenticacao.
     CommonModule, 
     MatIconModule, 
     ModalConfirmacaoComponent,
-    ModalMudarSenhaComponent
+    ModalMudarSenhaComponent,
+    ModalPerfilUsuarioComponent
   ],
   templateUrl: './menu-usuario.component.html',
   styleUrls: ['./menu-usuario.component.css']
@@ -24,6 +26,8 @@ export class MenuUsuarioComponent {
   modalSairAberta = false;
   arrastandoFoto = false; 
   modalMudarSenhaAberta = false;
+  modalPerfilAberta = false;
+
   
   usuario = {
     nome: 'Fabricio Engeroff',
@@ -99,9 +103,25 @@ export class MenuUsuarioComponent {
   }
 
   irParaPerfil() {
-    console.log('🧑 Ir para perfil');
-    this.fecharMenu();
-  }
+  this.modalPerfilAberta = true;  
+  this.fecharMenu();
+}
+
+fecharModalPerfil() {
+  this.modalPerfilAberta = false;
+}
+
+salvarPerfil(dados: any) {
+  console.log('💾 Salvar perfil:', dados);
+  // TODO: Enviar para backend
+  this.modalPerfilAberta = false;
+  this.notificacaoService.sucesso('Perfil atualizado com sucesso!');
+}
+
+abrirMudarSenhaDePerfil() {
+  this.modalPerfilAberta = false;
+  this.modalMudarSenhaAberta = true;
+}
 
   irParaConfiguracoes() {
     console.log('⚙️ Ir para configurações');

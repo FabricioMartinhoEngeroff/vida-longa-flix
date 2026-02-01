@@ -41,11 +41,77 @@
   text-decoration: underline;
 }
 
+.divisor {
+  margin: 20px 0;
+  text-align: center;
+  position: relative;
+}
+
+.divisor::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.divisor span {
+  position: relative;
+  padding: 0 16px;
+  background: white;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  z-index: 1;
+}
+
+/* Botão criar conta */
+.btn-criar-conta {
+  width: 100%;
+  padding: 12px 24px;
+  
+  border: 2px solid #6a0dad;
+  border-radius: 8px;
+  background: transparent;
+  
+  font-size: 16px;
+  font-weight: 600;
+  color: #6a0dad;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.btn-criar-conta:hover {
+  background: #6a0dad;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(106, 13, 173, 0.2);
+}
+
+.btn-criar-conta:active {
+  transform: translateY(0);
+}
+
 /* Mobile */
 @media (max-width: 520px) {
   .opcoes-login {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .divisor {
+    margin: 16px 0;
+  }
+  
+  .btn-criar-conta {
+    font-size: 15px;
+    padding: 11px 20px;
   }
 }
