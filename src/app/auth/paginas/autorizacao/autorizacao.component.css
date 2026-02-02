@@ -1,134 +1,153 @@
-/* =========================
-   LAYOUT PRINCIPAL
-========================= */
-.auth-container {
-  min-height: 100vh;
-  width: 100%;
+/* Container principal */
+.auth-scope {
   display: flex;
-  background: #ffffff; /* fundo branco direita */
+  min-height: 100vh;
 }
 
-/* =========================
-   PAINEL ESQUERDO (Verde)
-========================= */
+.auth-container {
+  width: 100%;
+  display: flex;
+}
+
+/* Painel esquerdo */
 .auth-left-panel {
   flex: 1;
-  background: #7da873; /* ✅ VERDE igual ao header */
+  background: #7da873;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 36px;
-  text-align: center;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 40px;
 }
 
 .auth-brand {
-  max-width: 560px;
+  text-align: center;
+  color: #000;
 }
 
 .auth-brand-title {
   font-size: 48px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  line-height: 1;
-  color: #0b0b0b; /* preto */
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.2;
 }
 
 .auth-brand-welcome {
-  margin-top: 14px;
-  font-size: 20px;
-  font-weight: 800;
-  color: #0b0b0b;
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 40px;
 }
 
-.auth-brand-link {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #0b0b0b;
-  opacity: 0.8;
-}
-
-/* =========================
-   PAINEL DIREITO (Branco)
-========================= */
+/* Painel direito */
 .auth-right-panel {
-  flex: 1.2;
+  flex: 1;
   display: flex;
-  align-items: center; /* ✅ CENTRALIZA verticalmente */
-  justify-content: center; /* ✅ CENTRALIZA horizontalmente */
-  padding: 30px 20px;
-  background: #ffffff;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: white;
 }
 
-/* =========================
-   CARD DO FORMULÁRIO
-========================= */
 .auth-card {
   width: 100%;
-  max-width: 720px; /* ✅ largura ideal para 2 colunas */
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
-  padding: 40px;
+  max-width: 500px;
 }
 
-/* =========================
-   FOOTER (link toggle)
-========================= */
-.auth-footer {
-  margin-top: 14px;
-  display: flex;
-  justify-content: center;
+.auth-login-box {
+  width: 100%;
 }
 
-.auth-toggle-text {
-  cursor: pointer;
-  color: #6a0dad; /* ✅ ROXO igual aos botões */
+.auth-login-box h2 {
+  font-size: 26px;
   font-weight: 700;
+  color: #0b0b0b;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.subtitulo {
+  text-align: center;
+  color: #6b7280;
   font-size: 14px;
+  margin: 0 0 20px 0;
 }
 
-.auth-toggle-text:hover {
+.auth-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #6a0dad;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Erro token */
+.erro-token {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.erro-token h2 {
+  font-size: 24px;
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.erro-token p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+/* Link voltar */
+.link-voltar {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.link-voltar a {
+  color: #6a0dad;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.link-voltar a:hover {
   text-decoration: underline;
-  color: #8b5cd6; /* roxo mais claro no hover */
 }
 
-/* =========================
-   RESPONSIVO
-========================= */
-
-/* Tablet: empilha painéis */
-@media (max-width: 900px) {
+/* Mobile */
+@media (max-width: 768px) {
   .auth-container {
     flex-direction: column;
   }
 
   .auth-left-panel {
-    text-align: center;
-    padding-bottom: 10px;
-  }
-
-  .auth-brand-title {
-    font-size: 38px;
-  }
-
-  .auth-card {
-    padding: 28px 18px;
-    border-radius: 14px;
-  }
-}
-
-/* Tablet pequeno: empilha campos */
-@media (max-width: 720px) {
-  .auth-row {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Mobile: compacta tudo */
-@media (max-width: 520px) {
-  .auth-left-panel {
-    padding: 24px 18px 16px;
+    padding: 30px 20px;
   }
 
   .auth-brand-title {
@@ -136,10 +155,10 @@
   }
 
   .auth-brand-welcome {
-    font-size: 16px;
+    font-size: 18px;
   }
 
-  .auth-card {
+  .auth-right-panel {
     padding: 20px;
   }
 }

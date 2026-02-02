@@ -40,11 +40,12 @@
           <span>Manter conectado</span>
         </label>
 
-        <a class="link-esqueci-senha" routerLink="/recuperar-senha">
-          Esqueci minha senha
-        </a>
+        <a class="link-esqueci-senha" (click)="abrirRecuperarSenha()">
+  Esqueci minha senha
+</a>
       </div>
     </div>
+
     
 <app-botao-primario
   texto="Entrar"
@@ -62,3 +63,8 @@
 
   </form>
 </div>
+
+<app-recuperar-senha
+  [aberta]="recuperarAberta"
+  (fechar)="fecharRecuperarSenha()"
+></app-recuperar-senha>
