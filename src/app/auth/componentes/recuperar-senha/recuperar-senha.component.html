@@ -1,0 +1,39 @@
+<div class="backdrop" [class.visivel]="aberta" (click)="onFechar()">
+  <div class="modal" [class.visivel]="aberta" (click)="$event.stopPropagation()">
+    
+    <button class="btn-fechar" (click)="onFechar()" type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <h2 class="titulo">Recuperar senha</h2>
+    
+    <p class="descricao">
+      Digite seu e-mail e enviaremos um link para redefinir sua senha.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onEnviar()">
+      
+      <app-campo-formulario
+        label="E-mail"
+        placeholder="seu@email.com"
+        formControlName="email"
+        type="email"
+        icon="mail"
+        autocomplete="email"
+        [maxlength]="254"
+        [showCounter]="true"
+        [error]="erroCampo('email')"
+      ></app-campo-formulario>
+
+      <div class="botoes">
+        <button class="btn-cancelar" type="button" (click)="onFechar()">
+          Cancelar
+        </button>
+
+        <button class="btn-enviar" type="submit" [disabled]="enviando">
+          {{ enviando ? 'Enviando...' : 'Enviar link' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

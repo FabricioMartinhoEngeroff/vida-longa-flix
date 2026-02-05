@@ -1,56 +1,47 @@
-<div class="auth-login-box">
-  <h2>Crie sua conta</h2>
+<div class="backdrop" [class.visivel]="aberta" (click)="onFechar()">
+  <div class="modal" [class.visivel]="aberta" (click)="$event.stopPropagation()">
+    
+    <button class="btn-fechar" (click)="onFechar()" type="button">
+      <mat-icon>close</mat-icon>
+    </button>
 
-  <form [formGroup]="form" (ngSubmit)="cadastrar()">
-    <div class="auth-form-container">
+    <h2 class="titulo">Meu Perfil</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSalvar()">
       
-      <!-- Linha 1: E-mail + Nome -->
-      <div class="auth-row">
-        <!-- Email com mensagem -->
-        <div class="campo-com-mensagem">
-          <app-campo-formulario
-            label="E-mail"
-            placeholder="seu@email.com"
-            formControlName="email"
-            type="email"
-            icon="mail"
-            autocomplete="email"
-            [maxlength]="254"
-            [showCounter]="true"
-            [error]="erroCampo('email')"
-          ></app-campo-formulario>
+      <!-- Email + Nome (readonly) -->
+      <div class="linha-campos">
+        <app-campo-formulario
+          label="E-mail"
+          placeholder="seu@email.com"
+          formControlName="email"
+          type="email"
+          icon="mail"
+          [maxlength]="254"
+          [showCounter]="true"
+          [error]="erroCampo('email')"
+        ></app-campo-formulario>
 
-          <app-mensagem-ajuste-email
-            *ngIf="erroEmailTipo"
-            [tipoErro]="erroEmailTipo"
-            [mensagemCustom]="erroEmailMensagem"
-            [dominioProblematico]="dominioProblematico"
-          ></app-mensagem-ajuste-email>
-        </div>
-
-        <!-- Nome -->
         <app-campo-formulario
           label="Nome completo"
           placeholder="Digite seu nome"
           formControlName="nome"
           type="text"
           icon="user"
-          autocomplete="name"
           [maxlength]="100"
           [showCounter]="true"
           [error]="erroCampo('nome')"
         ></app-campo-formulario>
       </div>
 
-      <!-- Linha 2: CPF + Telefone -->
-      <div class="auth-row">
+      <!-- CPF + Telefone -->
+      <div class="linha-campos">
         <app-campo-formulario
           label="CPF"
           placeholder="000.000.000-00"
           formControlName="cpf"
           icon="id"
           mascara="cpf"
-          autocomplete="off"
           [maxlength]="14"
           [showCounter]="true"
           [error]="erroCampo('cpf')"
@@ -63,18 +54,16 @@
           type="tel"
           icon="phone"
           mascara="telefone"
-          autocomplete="tel"
           [maxlength]="15"
           [showCounter]="false"
           [error]="erroCampo('telefone')"
         ></app-campo-formulario>
       </div>
 
-      <!-- Grupo: Endereço -->
       <div formGroupName="endereco">
         
-        <!-- Linha 3: Rua + Número -->
-        <div class="auth-row">
+        <!-- Rua + Número -->
+        <div class="linha-campos">
           <app-campo-formulario
             label="Rua"
             placeholder="Digite o nome da rua"
@@ -98,8 +87,8 @@
           ></app-campo-formulario>
         </div>
 
-        <!-- Linha 4: Bairro + Cidade -->
-        <div class="auth-row">
+        <!-- Bairro + Cidade -->
+        <div class="linha-campos">
           <app-campo-formulario
             label="Bairro"
             placeholder="Digite o bairro"
@@ -123,8 +112,8 @@
           ></app-campo-formulario>
         </div>
 
-        <!-- Linha 5: Estado + CEP -->
-        <div class="auth-row">
+        <!-- Estado + CEP -->
+        <div class="linha-campos">
           <app-campo-formulario
             label="Estado"
             placeholder="UF"
@@ -147,34 +136,24 @@
             [error]="erroCampo('endereco.cep')"
           ></app-campo-formulario>
         </div>
-
       </div>
 
-      <!-- Senha (linha única) -->
-      <app-campo-formulario
-  label="Senha"
-  placeholder="Digite sua senha"
-  formControlName="senha"
-  type="password"
-  icon="lock"
-  autocomplete="new-password"
-  [maxlength]="128"
-  [showCounter]="true"
-  [error]="erroCampo('senha')"
-></app-campo-formulario>
+      <!-- Botão Mudar Senha -->
+      <button type="button" class="btn-mudar-senha" (click)="onAbrirMudarSenha()">
+        <mat-icon>lock</mat-icon>
+        <span>Mudar Senha</span>
+      </button>
 
-<app-indicador-senha
-  [senha]="senhaAtual"
-  [mostrarRequisitos]="true"
-></app-indicador-senha>
+      <!-- Botões -->
+      <div class="botoes">
+        <button class="btn-cancelar" type="button" (click)="onFechar()">
+          Cancelar
+        </button>
 
-    </div>
-
-    <!-- Botão de cadastro -->
-    <app-botao-primario
-      texto="Cadastrar"
-      [disabled]="carregando"
-      type="submit"
-    ></app-botao-primario>
-  </form>
+        <button class="btn-salvar" type="submit">
+          Salvar Alterações
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

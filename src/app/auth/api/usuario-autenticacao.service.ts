@@ -9,6 +9,9 @@ import { Usuario } from '../tipos/usuario';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioAutenticacaoService {
+  sair() {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     private http: HttpClient,
     private api: ApiService,

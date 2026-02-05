@@ -1,0 +1,87 @@
+cat > /home/fabricio/Desktop/vida-longa-flix/src/app/auth/paginas/redefinir-senha/redefinir-senha.component.html << 'EOF'
+<div class="container">
+  <h2>Redefinir Senha</h2>
+  <p>Página em construção</p>
+</div>
+EOF<section class="auth-scope auth-container">
+  <aside class="auth-left-panel">
+    <div class="auth-brand">
+      <div class="auth-brand-title">Vida Longa Flix<br />Saúde</div>
+      <div class="auth-brand-welcome">Redefina sua senha</div>
+      <div class="auth-brand-link">Segurança em primeiro lugar</div>
+    </div>
+  </aside>
+
+  <main class="auth-right-panel">
+    <div class="auth-card">
+      
+      <!-- Loading -->
+      <div *ngIf="validandoToken" class="loading-state">
+        <div class="spinner"></div>
+        <p>Validando link...</p>
+      </div>
+
+      <!-- Token inválido -->
+      <div *ngIf="!validandoToken && !tokenValido" class="erro-state">
+        <mat-icon class="icone-erro">error_outline</mat-icon>
+        <h2>Link inválido</h2>
+        <p>Este link pode ter expirado ou já foi utilizado.</p>
+        <p class="redirect-info">Redirecionando para o login...</p>
+      </div>
+
+      <!-- Formulário -->
+      <div *ngIf="!validandoToken && tokenValido" class="auth-login-box">
+        <h2>Redefinir senha</h2>
+        <p class="subtitulo">Digite sua nova senha abaixo</p>
+
+        <form [formGroup]="form" (ngSubmit)="redefinir()">
+          <div class="auth-form-container">
+            
+            <!-- Nova Senha -->
+            <app-campo-formulario
+              label="Nova Senha"
+              placeholder="Digite a nova senha"
+              formControlName="novaSenha"
+              type="password"
+              icon="lock"
+              autocomplete="new-password"
+              [maxlength]="128"
+              [showCounter]="true"
+              [error]="erroCampo('novaSenha')"
+            ></app-campo-formulario>
+
+            <app-indicador-senha
+              [senha]="senhaAtual"
+              [mostrarRequisitos]="true"
+            ></app-indicador-senha>
+
+            <!-- Confirmar Senha -->
+            <app-campo-formulario
+              label="Confirmar Nova Senha"
+              placeholder="Digite novamente"
+              formControlName="confirmacaoSenha"
+              type="password"
+              icon="lock"
+              autocomplete="new-password"
+              [maxlength]="128"
+              [showCounter]="false"
+              [error]="erroCampo('confirmacaoSenha')"
+            ></app-campo-formulario>
+
+          </div>
+
+          <app-botao-primario
+            texto="Redefinir senha"
+            [disabled]="carregando"
+            type="submit"
+          ></app-botao-primario>
+
+          <div class="link-voltar">
+            <a routerLink="/login">← Voltar para o login</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </main>
+</section>

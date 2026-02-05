@@ -7,11 +7,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { BotaoPrimarioComponent } from '../../componentes/botao-primario/botao-primario.component';
+import { CampoFormularioComponent } from '../../componentes/campo-formulario/campo-formulario.component';
+import { LoginForm } from '../../tipos/login-form.types';
+import { ServicoAutenticacao } from '../../api/servico-autenticacao';
 
-import { BotaoPrimarioComponent } from '../../../auth/loginComponents/botao-primario/botao-primario.component';
-import { CampoFormularioComponent } from '../../../auth/loginComponents/campo-formulario/campo-formulario.component';
-import { LoginForm } from '../../../auth/tipos/login-form.types';
-import { ServicoAutenticacao} from '../../../auth/api/servico-autenticacao';
 
 @Component({
   selector: 'app-login',
@@ -61,22 +61,22 @@ export class LoginComponent {
   }
 
   async entrar() {
-  this.form.markAllAsTouched();
-  if (this.form.invalid) return;
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
 
-  this.carregando = true;
+    this.carregando = true;
 
-  try {
-    const { email, password } = this.form.getRawValue();
-    await this.servicoAutenticacao.login(email, password);
+    try {
+      const { email, password } = this.form.getRawValue();
+      await this.servicoAutenticacao.login(email, password);
 
-    // ✅ vai pra tela pós-login
-   this.router.navigateByUrl('/app');
-  } catch (e) {
-    // ✅ mostrar erro na tela (pode ser texto simples)
-    console.error(e);
-  } finally {
-    this.carregando = false;
+      // ✅ vai pra tela pós-login
+      this.router.navigateByUrl('/app');
+    } catch (e) {
+      // ✅ mostrar erro na tela (pode ser texto simples)
+      console.error(e);
+    } finally {
+      this.carregando = false;
+    }
   }
-}
 }

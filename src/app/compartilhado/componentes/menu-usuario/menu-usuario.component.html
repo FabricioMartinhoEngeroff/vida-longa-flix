@@ -1,0 +1,116 @@
+<div class="menu-usuario-container">
+  <!-- Botão do perfil -->
+  <button 
+    class="btn-perfil" 
+    (click)="toggleMenu()"
+    [attr.aria-label]="'Menu de ' + usuario.nome"
+    [attr.aria-expanded]="menuAberto"
+  >
+    <div class="avatar">
+      <img 
+        *ngIf="usuario.foto" 
+        [src]="usuario.foto" 
+        [alt]="usuario.nome"
+      />
+      <mat-icon *ngIf="!usuario.foto">account_circle</mat-icon>
+    </div>
+    
+    <mat-icon class="seta" [class.aberto]="menuAberto">
+      expand_more
+    </mat-icon>
+  </button>
+
+  <!-- Dropdown -->
+  <div 
+    class="dropdown" 
+    [class.aberto]="menuAberto"
+    (click)="$event.stopPropagation()"
+  >
+   
+    <div class="dropdown-header">
+      <div 
+        class="avatar-grande clicavel"
+        [class.arrastando]="arrastandoFoto"
+        (click)="selecionarFoto()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        title="Clique ou arraste uma foto"
+      >
+        <img 
+          *ngIf="usuario.foto" 
+          [src]="usuario.foto" 
+          [alt]="usuario.nome"
+        />
+        <mat-icon *ngIf="!usuario.foto">account_circle</mat-icon>
+        
+        <div class="overlay-camera">
+          <mat-icon>photo_camera</mat-icon>
+        </div>
+      </div>
+      
+      <div class="info-usuario">
+        <strong class="nome">{{ usuario.nome }}</strong>
+        <span class="email">{{ usuario.email }}</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="opcao-menu" (click)="irParaPerfil()">
+      <mat-icon>person</mat-icon>
+      <span>Meu Perfil</span>
+    </button>
+
+    <button class="opcao-menu" (click)="irParaConfiguracoes()">
+      <mat-icon>settings</mat-icon>
+      <span>Configurações</span>
+    </button>
+
+    <!-- ✅ MOVER PARA AQUI -->
+    <button class="opcao-menu" (click)="modalMudarSenhaAberta = true">
+      <mat-icon>lock</mat-icon>
+      <span>Mudar Senha</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="opcao-menu sair" (click)="sair()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
+  </div>
+
+  <!-- Modals -->
+  <app-modal-confirmacao
+    [aberta]="modalSairAberta"
+    titulo="Atenção"
+    mensagem="Deseja realmente sair do sistema?"
+    textoBotaoConfirmar="Sair"
+    textoBotaoCancelar="Cancelar"
+    [tipoPerigo]="true"
+    (confirmar)="confirmarSaida()"
+    (cancelar)="cancelarSaida()"
+  ></app-modal-confirmacao>
+
+  <app-modal-mudar-senha
+    [aberta]="modalMudarSenhaAberta"
+    (fechar)="fecharModalSenha()"
+    (confirmar)="confirmarMudancaSenha($event)"
+  ></app-modal-mudar-senha>
+
+  <app-modal-perfil-usuario
+  [aberta]="modalPerfilAberta"
+  [usuario]="usuario"
+  (fechar)="fecharModalPerfil()"
+  (salvar)="salvarPerfil($event)"
+  (abrirMudarSenha)="modalMudarSenhaAberta = true"
+></app-modal-perfil-usuario>
+ 
+  <!-- Backdrop -->
+  <div 
+    class="backdrop" 
+    [class.visivel]="menuAberto"
+    (click)="fecharMenu()"
+  ></div>
+</div>
