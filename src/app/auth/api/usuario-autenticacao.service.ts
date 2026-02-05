@@ -9,9 +9,6 @@ import { Usuario } from '../tipos/usuario';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioAutenticacaoService {
-  sair() {
-    throw new Error('Method not implemented.');
-  }
   constructor(
     private http: HttpClient,
     private api: ApiService,
@@ -20,23 +17,23 @@ export class UsuarioAutenticacaoService {
   ) {}
 
   async fetchAuthenticatedUser(): Promise<Usuario | null> {
-  const token = this.auth.getToken();
-if (token === 'token_dev_123') {
-  return {
-    id: '1',
-    nome: 'Fabricio (DEV)',
-    email: 'fa.engeroff@gmail.com',
-    telefone: '',
-    cpf: '',
-    endereco: { rua: '', bairro: '', cidade: '', estado: '', cep: '' },
-  };
-}
+    const token = this.auth.getToken();
+    if (token === 'token_dev_123') {
+      return {
+        id: '1',
+        nome: 'Fabricio (DEV)',
+        email: 'fa.engeroff@gmail.com',
+        telefone: '',
+        cpf: '',
+        endereco: { rua: '', bairro: '', cidade: '', estado: '', cep: '' },
+      };
+    }
 
-  if (!token) {
-    alert('Sessão expirada. Faça login novamente.');
-    this.router.navigateByUrl('/login');
-    return null;
-  }
+    if (!token) {
+      alert('Sessão expirada. Faça login novamente.');
+      this.router.navigateByUrl('/login');
+      return null;
+    }
 
     try {
       const headers = new HttpHeaders({
@@ -54,7 +51,7 @@ if (token === 'token_dev_123') {
     }
   }
 
-  sair() {
+  logout() {
     // Limpa dados do usuário
     localStorage.removeItem('token');
     localStorage.removeItem('user');

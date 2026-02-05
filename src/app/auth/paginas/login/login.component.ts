@@ -7,11 +7,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+
 import { BotaoPrimarioComponent } from '../../componentes/botao-primario/botao-primario.component';
 import { CampoFormularioComponent } from '../../componentes/campo-formulario/campo-formulario.component';
+import { RecuperarSenhaComponent } from '../../componentes/recuperar-senha/recuperar-senha.component';
 import { LoginForm } from '../../tipos/login-form.types';
 import { ServicoAutenticacao } from '../../api/servico-autenticacao';
-
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ import { ServicoAutenticacao } from '../../api/servico-autenticacao';
     ReactiveFormsModule,
     RouterModule,
     BotaoPrimarioComponent,
-    CampoFormularioComponent
+    CampoFormularioComponent,
+    RecuperarSenhaComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -29,6 +31,7 @@ import { ServicoAutenticacao } from '../../api/servico-autenticacao';
 export class LoginComponent {
   carregando = false;
   form!: ReturnType<FormBuilder['group']>;
+  recuperarAberta = false;
 
   constructor(
     private fb: FormBuilder,
@@ -70,13 +73,23 @@ export class LoginComponent {
       const { email, password } = this.form.getRawValue();
       await this.servicoAutenticacao.login(email, password);
 
-      // ✅ vai pra tela pós-login
       this.router.navigateByUrl('/app');
     } catch (e) {
-      // ✅ mostrar erro na tela (pode ser texto simples)
       console.error(e);
     } finally {
       this.carregando = false;
     }
+  }
+
+  abrirRecuperarSenha() {
+    this.recuperarAberta = true;
+  }
+
+  fecharRecuperarSenha() {
+    this.recuperarAberta = false;
+  }
+
+  cadastrar() {
+    this.router.navigateByUrl('/registrar');
   }
 }

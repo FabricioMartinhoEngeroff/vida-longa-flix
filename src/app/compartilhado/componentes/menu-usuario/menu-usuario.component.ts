@@ -134,7 +134,7 @@ abrirMudarSenhaDePerfil() {
   }
 
 confirmarSaida() {
-  this.usuarioAuth.sair();  // ← DRY, usa o service
+  this.usuarioAuth.logout();  // ← DRY, usa o service
 }
 
   cancelarSaida() {

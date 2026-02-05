@@ -78,7 +78,7 @@ export class BotaoSairComponent {
   constructor(private usuarioAuth: UsuarioAutenticacaoService) {}  // ← SERVICE EXISTENTE
 
   confirmarSaida() {
-    this.usuarioAuth.sair();  // ← USA O MÉTODO QUE JÁ EXISTE
+    this.usuarioAuth.logout();  // ← USA O MÉTODO QUE JÁ EXISTE
   }
 
   cancelarSaida() {
