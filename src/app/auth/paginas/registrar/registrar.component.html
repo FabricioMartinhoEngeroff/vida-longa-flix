@@ -1,180 +1,76 @@
 <div class="auth-login-box">
   <h2>Crie sua conta</h2>
+  <p class="subtitulo">Complete seu perfil depois dentro do app 😊</p>
 
   <form [formGroup]="form" (ngSubmit)="cadastrar()">
     <div class="auth-form-container">
       
-      <!-- Linha 1: E-mail + Nome -->
-      <div class="auth-row">
-        <!-- Email com mensagem -->
-        <div class="campo-com-mensagem">
-          <app-campo-formulario
-            label="E-mail"
-            placeholder="seu@email.com"
-            formControlName="email"
-            type="email"
-            icon="mail"
-            autocomplete="email"
-            [maxlength]="254"
-            [showCounter]="true"
-            [error]="erroCampo('email')"
-          ></app-campo-formulario>
-
-          <app-mensagem-ajuste-email
-            *ngIf="erroEmailTipo"
-            [tipoErro]="erroEmailTipo"
-            [mensagemCustom]="erroEmailMensagem"
-            [dominioProblematico]="dominioProblematico"
-          ></app-mensagem-ajuste-email>
-        </div>
-
-        <!-- Nome -->
+      <!-- ✅ Email com mensagem de validação -->
+      <div class="campo-com-mensagem">
         <app-campo-formulario
-          label="Nome completo"
-          placeholder="Digite seu nome"
-          formControlName="nome"
-          type="text"
-          icon="user"
-          autocomplete="name"
-          [maxlength]="100"
+          label="E-mail"
+          placeholder="seu@email.com"
+          formControlName="email"
+          type="email"
+          icon="mail"
+          autocomplete="email"
+          [maxlength]="254"
           [showCounter]="true"
-          [error]="erroCampo('nome')"
-        ></app-campo-formulario>
-      </div>
-
-      <!-- Linha 2: CPF + Telefone -->
-      <div class="auth-row">
-        <app-campo-formulario
-          label="CPF"
-          placeholder="000.000.000-00"
-          formControlName="cpf"
-          icon="id"
-          mascara="cpf"
-          autocomplete="off"
-          [maxlength]="14"
-          [showCounter]="true"
-          [error]="erroCampo('cpf')"
+          [error]="erroCampo('email')"
         ></app-campo-formulario>
 
-        <app-campo-formulario
-          label="Telefone"
-          placeholder="(00) 00000-0000"
-          formControlName="telefone"
-          type="tel"
-          icon="phone"
-          mascara="telefone"
-          autocomplete="tel"
-          [maxlength]="15"
-          [showCounter]="false"
-          [error]="erroCampo('telefone')"
-        ></app-campo-formulario>
+        <app-mensagem-ajuste-email
+          *ngIf="erroEmailTipo"
+          [tipoErro]="erroEmailTipo"
+          [mensagemCustom]="erroEmailMensagem"
+          [dominioProblematico]="dominioProblematico"
+        ></app-mensagem-ajuste-email>
       </div>
 
-      <!-- Grupo: Endereço -->
-      <div formGroupName="endereco">
-        
-        <!-- Linha 3: Rua + Número -->
-        <div class="auth-row">
-          <app-campo-formulario
-            label="Rua"
-            placeholder="Digite o nome da rua"
-            formControlName="rua"
-            type="text"
-            icon="pin"
-            [maxlength]="200"
-            [showCounter]="true"
-            [error]="erroCampo('endereco.rua')"
-          ></app-campo-formulario>
-
-          <app-campo-formulario
-            label="Número"
-            placeholder="Digite o número"
-            formControlName="numero"
-            type="text"
-            icon="hash"
-            [maxlength]="10"
-            [showCounter]="false"
-            [error]="erroCampo('endereco.numero')"
-          ></app-campo-formulario>
-        </div>
-
-        <!-- Linha 4: Bairro + Cidade -->
-        <div class="auth-row">
-          <app-campo-formulario
-            label="Bairro"
-            placeholder="Digite o bairro"
-            formControlName="bairro"
-            type="text"
-            icon="home"
-            [maxlength]="100"
-            [showCounter]="true"
-            [error]="erroCampo('endereco.bairro')"
-          ></app-campo-formulario>
-
-          <app-campo-formulario
-            label="Cidade"
-            placeholder="Digite a cidade"
-            formControlName="cidade"
-            type="text"
-            icon="city"
-            [maxlength]="100"
-            [showCounter]="true"
-            [error]="erroCampo('endereco.cidade')"
-          ></app-campo-formulario>
-        </div>
-
-        <!-- Linha 5: Estado + CEP -->
-        <div class="auth-row">
-          <app-campo-formulario
-            label="Estado"
-            placeholder="UF"
-            formControlName="estado"
-            type="text"
-            icon="globe"
-            [maxlength]="2"
-            [showCounter]="false"
-            [error]="erroCampo('endereco.estado')"
-          ></app-campo-formulario>
-
-          <app-campo-formulario
-            label="CEP"
-            placeholder="00000-000"
-            formControlName="cep"
-            icon="hash"
-            mascara="cep"
-            [maxlength]="9"
-            [showCounter]="true"
-            [error]="erroCampo('endereco.cep')"
-          ></app-campo-formulario>
-        </div>
-
-      </div>
-
-      <!-- Senha (linha única) -->
+      <!-- ✅ Nome completo -->
       <app-campo-formulario
-  label="Senha"
-  placeholder="Digite sua senha"
-  formControlName="senha"
-  type="password"
-  icon="lock"
-  autocomplete="new-password"
-  [maxlength]="128"
-  [showCounter]="true"
-  [error]="erroCampo('senha')"
-></app-campo-formulario>
+        label="Nome completo"
+        placeholder="Digite seu nome"
+        formControlName="nome"
+        type="text"
+        icon="user"
+        autocomplete="name"
+        [maxlength]="100"
+        [showCounter]="true"
+        [error]="erroCampo('nome')"
+      ></app-campo-formulario>
 
-<app-indicador-senha
-  [senha]="senhaAtual"
-  [mostrarRequisitos]="true"
-></app-indicador-senha>
+      <!-- ✅ Senha com indicador de força -->
+      <app-campo-formulario
+        label="Senha"
+        placeholder="Digite sua senha"
+        formControlName="senha"
+        type="password"
+        icon="lock"
+        autocomplete="new-password"
+        [maxlength]="128"
+        [showCounter]="true"
+        [error]="erroCampo('senha')"
+      ></app-campo-formulario>
+
+      <app-indicador-senha
+        [senha]="senhaAtual"
+        [mostrarRequisitos]="true"
+      ></app-indicador-senha>
 
     </div>
 
     <!-- Botão de cadastro -->
     <app-botao-primario
-      texto="Cadastrar"
+      texto="Criar Conta"
       [disabled]="carregando"
       type="submit"
     ></app-botao-primario>
+
+    <!-- Link para login -->
+    <p class="link-login">
+      Já tem uma conta? 
+      <a routerLink="/autorizacao">Faça login</a>
+    </p>
   </form>
 </div>

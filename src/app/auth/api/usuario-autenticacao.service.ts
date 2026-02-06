@@ -5,10 +5,14 @@ import { Router } from '@angular/router';
 
 import { ApiService } from './api.service';
 import { ServicoAutenticacao } from './servico-autenticacao';
-import { Usuario } from '../tipos/usuario';
+import { Usuario } from '../tipos/usuario.types';
+
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioAutenticacaoService {
+  registrar(dados: any) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     private http: HttpClient,
     private api: ApiService,
@@ -16,18 +20,27 @@ export class UsuarioAutenticacaoService {
     private router: Router
   ) {}
 
-  async fetchAuthenticatedUser(): Promise<Usuario | null> {
-    const token = this.auth.getToken();
-    if (token === 'token_dev_123') {
-      return {
-        id: '1',
-        nome: 'Fabricio (DEV)',
-        email: 'fa.engeroff@gmail.com',
-        telefone: '',
-        cpf: '',
-        endereco: { rua: '', bairro: '', cidade: '', estado: '', cep: '' },
-      };
-    }
+ async fetchAuthenticatedUser(): Promise<Usuario | null> {
+  const token = this.auth.getToken();
+  if (token === 'token_dev_123') {
+    return {
+      id: '1',
+      nome: 'Fabricio (DEV)',
+      email: 'fa.engeroff@gmail.com',
+      telefone: '',
+      cpf: '',
+      endereco: { 
+        rua: '', 
+        numero: '',   
+        bairro: '', 
+        cidade: '', 
+        estado: '', 
+        cep: '' 
+      },
+      foto: null,
+      perfilCompleto: false
+    };
+  }
 
     if (!token) {
       alert('Sessão expirada. Faça login novamente.');

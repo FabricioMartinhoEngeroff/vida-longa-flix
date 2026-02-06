@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -9,6 +9,7 @@ import { IndicadorSenhaComponent } from '../../componentes/indicador-senha/indic
 import { validadorSenhaForte, ForcaSenha } from '../../utils/validador-senha-forte';
 import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { EmailService } from '../../servicos/email/email.service';
+import { UsuarioAutenticacaoService } from '../../api/usuario-autenticacao.service';
 import { MensagemAjusteEmailComponent, TipoErroEmail } from '../../../compartilhado/componentes/mensagem-alertas/mensagem-ajuste-email.component';
 
 @Component({
@@ -27,8 +28,6 @@ import { MensagemAjusteEmailComponent, TipoErroEmail } from '../../../compartilh
   styleUrls: ['./registrar.component.css'],
 })
 export class RegistrarComponent {
-  @Output() alternarParaLogin = new EventEmitter<void>();
-  
   carregando = false;
   form: any;
 
@@ -40,8 +39,10 @@ export class RegistrarComponent {
     private fb: FormBuilder, 
     private router: Router, 
     private notificacaoService: NotificacaoService,
-    private emailService: EmailService  
+    private emailService: EmailService,
+    private authService: UsuarioAutenticacaoService
   ) {
+    // ✅ APENAS 3 CAMPOS - Registro simplificado
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -51,9 +52,8 @@ export class RegistrarComponent {
         validadorSenhaForte(ForcaSenha.FORTE)
       ]],
     });
-  
 
-  this.form.get('email')?.valueChanges.subscribe(() => {
+    this.form.get('email')?.valueChanges.subscribe(() => {
       this.atualizarErroEmail();
     });
   }
@@ -113,57 +113,56 @@ export class RegistrarComponent {
   }
 
   async cadastrar() {
-  this.form.markAllAsTouched();
-   this.atualizarErroEmail();
+    this.form.markAllAsTouched();
+    this.atualizarErroEmail();
 
-   const emailControl = this.form.get('email');
+    const emailControl = this.form.get('email');
     if (emailControl?.errors?.['emailTemporario'] || emailControl?.errors?.['emailSuspeito']) {
       this.notificacaoService.erro('Por favor, use um email válido e profissional');
       return;
     }
   
-  // ✅ ADICIONE: Detecta erro específico de senha fraca
-  const senhaControl = this.form.get('senha');
-  if (senhaControl?.errors?.['senhaFraca']) {
-    const requisitos = senhaControl.errors['senhaFraca'].requisitosFaltando;
-    if (requisitos && requisitos.length > 0) {
-      this.notificacaoService.aviso(requisitos[0]); // Toast com requisito faltando
+    const senhaControl = this.form.get('senha');
+    if (senhaControl?.errors?.['senhaFraca']) {
+      const requisitos = senhaControl.errors['senhaFraca'].requisitosFaltando;
+      if (requisitos && requisitos.length > 0) {
+        this.notificacaoService.aviso(requisitos[0]);
+        return;
+      }
+    }
+  
+    if (this.form.invalid) {
+      this.notificacaoService.aviso('Corrija os erros antes de cadastrar');
       return;
     }
+
+    this.carregando = true;
+
+    try {
+      const dados = this.form.getRawValue();
+
+      // 1. Registrar usuário (faz login automático)
+      await this.authService.registrar(dados);
+
+      // 2. Enviar email de boas-vindas (em background)
+      this.emailService.enviarBoasVindas({
+        nome: dados.nome,
+        email: dados.email
+      }).catch(erro => console.error('Erro ao enviar email:', erro));
+
+      // 3. Notificar sucesso
+      this.notificacaoService.sucesso('Conta criada! Complete seu perfil para começar 🎉');
+
+      // 4. Redirecionar para app (login automático já feito)
+      setTimeout(() => {
+        this.router.navigateByUrl('/app');
+      }, 800);
+
+    } catch (e: any) {
+      this.notificacaoService.erro(e.message || 'Erro ao criar conta');
+      console.error(e);
+    } finally {
+      this.carregando = false;
+    }
   }
-  
-  // Verifica outros erros
-  if (this.form.invalid) {
-    this.notificacaoService.aviso('Corrija os erros antes de cadastrar');
-    return;
-  }
-
-  this.carregando = true;
-
-  try {
-    const dados = this.form.getRawValue();
-    console.log('✅ Dados do cadastro:', dados);
-
-    // Simula delay do backend
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Envia email de boas-vindas
-    await this.emailService.enviarBoasVindas({
-      nome: dados.nome,
-      email: dados.email
-    });
-
-    this.notificacaoService.sucesso('Conta criada! Entrando...');
-    
-    setTimeout(() => {
-      this.router.navigateByUrl('/app');
-    }, 1000);
-    
-  } catch (e) {
-    this.notificacaoService.erro('Erro ao criar conta');
-    console.error(e);
-  } finally {
-    this.carregando = false;
-  }
-}
 }
