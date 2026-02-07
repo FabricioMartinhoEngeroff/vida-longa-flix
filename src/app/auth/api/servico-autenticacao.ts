@@ -17,20 +17,17 @@ export class ServicoAutenticacao {
 
   async login(email: string, password: string): Promise<LoginResponse> {
   const e = (email ?? '').trim().toLowerCase();
-const p = (password ?? '').trim();
+  const p = (password ?? '').trim();
 
-  console.log('DEBUG:', { email, password, e, p });
-
-  // ✅ BYPASS: não chama backend
   if (e === 'fa.engeroff@gmail.com' && p === '@Fabricio123456789') {
     const responseFake = { token: 'token_dev_123' } as LoginResponse;
     localStorage.setItem(this.TOKEN_KEY, responseFake.token);
     return responseFake;
   }
 
-  // ✅ Se não bater, bloqueia (pra nunca tentar localhost)
   throw new Error('BYPASS ativo: use o e-mail e senha DEV.');
 }
+
 
   async register(userData: DadosRegistro): Promise<any> {
     const response = await firstValueFrom(

@@ -1,4 +1,4 @@
 <div class="item" [ngClass]="{ ativo: ativo }" (click)="clicar()">
-  <img class="icone" [src]="icone" [alt]="texto" [ngClass]="{ ativo: ativo }" />
+  <mat-icon class="icone" [ngClass]="{ ativo: ativo }">{{ icone }}</mat-icon>
   <span>{{ texto }}</span>
 </div>

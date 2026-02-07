@@ -40,6 +40,11 @@ export class VideoService {
     this.videosReelsSubject.next(atualizados);
   }
 
+  addVideo(video: Video): void {
+  const atualizados = [video, ...this.videosReels];
+  this.videosReelsSubject.next(atualizados);
+}
+  
   private converterVideosMockados(): Video[] {
     return (videosIniciais as any[]).map((video) => ({
       id: String(video.id),

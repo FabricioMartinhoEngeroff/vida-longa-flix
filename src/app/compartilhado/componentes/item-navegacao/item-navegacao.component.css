@@ -43,8 +43,8 @@
 }
 
 .icone {
-  width: 28px;
-  height: 28px;
+  font-size: 26px;
+  line-height: 1;
   margin-bottom: 3px;
 
   opacity: 0.6;
@@ -55,17 +55,16 @@
   opacity: 1;
 }
 
+
 @media (max-width: 768px) {
   .item {
     font-size: 12px;
     gap: 2px;
-
-    /* toque melhor no mobile */
     padding: 10px 12px;
   }
 
   .icone {
-    width: 24px;
-    height: 24px;
+    font-size: 22px;
   }
 }
+

@@ -6,10 +6,12 @@ import { FavoritosComponent } from './funcionalidades/favoritos/favoritos.compon
 import { MaisVistosComponent } from './funcionalidades/mais-vistos/mais-vistos.component';
 import { NaoEncontradaComponent } from './funcionalidades/nao-encontrada/nao-encontrada.component';
 
+
 import { AutorizacaoComponent } from '../app/auth/paginas/autorizacao/autorizacao.component';
 import { LoginComponent } from '../app/auth/paginas/login/login.component';
 import { RegistrarComponent } from '../app/auth/paginas/registrar/registrar.component';
 import { RedefinirSenhaComponent } from './auth/paginas/redefinir-senha/redefinir-senha.component';
+import { AdminVideosComponent } from './funcionalidades/administrador-videos/administrador-videos.component';
 
 export const routes: Routes = [
 
@@ -22,12 +24,14 @@ export const routes: Routes = [
 
   {
     path: 'app',
-    component: PaginaBaseComponent,
-    children: [
-      { path: '', component: InicioComponent }, // /app
-      { path: 'favoritos', component: FavoritosComponent }, // /app/favoritos
-      { path: 'mais-vistos', component: MaisVistosComponent }, // /app/mais-vistos
-    ],
+  component: PaginaBaseComponent,
+  children: [
+    { path: '', component: InicioComponent },
+    { path: 'favoritos', component: FavoritosComponent },
+    { path: 'mais-vistos', component: MaisVistosComponent },
+    { path: 'historico', component: InicioComponent },
+    { path: 'admin-videos', component: AdminVideosComponent },
+  ],
   },
 
   { path: '**', component: NaoEncontradaComponent },

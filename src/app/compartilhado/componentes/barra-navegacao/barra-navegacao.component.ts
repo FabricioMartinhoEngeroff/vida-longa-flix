@@ -19,12 +19,15 @@ interface ItemMenu {
 })
 export class BarraNavegacaoComponent {
  itens: ItemMenu[] = [
-  { nome: 'Início', icone: 'assets/icones/home-ativo.png', path: '/app' },
-  { nome: 'Mais vistas', icone: 'assets/icones/mais-vistas-ativo.png', path: '/app/mais-vistos' },
-  { nome: 'Favoritos', icone: 'assets/icones/mais-curtidas-ativo.png', path: '/app/favoritos' },
-  { nome: 'Reels', icone: 'assets/icones/novas-ativo.png', path: '/app' },
-  { nome: 'Surpreenda', icone: 'assets/icones/surpreenda-me-ativo.png', path: '/app' },
+  { nome: 'Início', icone: 'home', path: '/app' },
+  { nome: 'Cardápios', icone: 'menu_book', path: '/app/cardapios' },
+  { nome: 'Favoritos', icone: 'favorite_border', path: '/app/favoritos' },
+  { nome: 'Histórico', icone: 'history', path: '/app/historico' },
+  { nome: 'Mais vistos', icone: 'visibility', path: '/app/mais-vistos' },
+  { nome: 'Reels', icone: 'play_circle', path: '/app/reels' },
+  { nome: 'Adicionar vídeos', icone: 'video_call', path: '/app/admin-videos' },
 ];
+
 
   ativo: string = this.itens[0].nome;
 
