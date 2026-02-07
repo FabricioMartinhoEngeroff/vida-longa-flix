@@ -7,6 +7,7 @@ import { ModalMudarSenhaComponent } from '../modal-mudar-senha/modal-mudar-senha
 import { NotificacaoService } from '../../../../app/compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-autenticacao.service';
 import { ModalPerfilUsuarioComponent } from '../modal-perfil-usuario/modal-perfil-usuario.component';
+import { MENSAGENS_PADRAO } from '../../servicos/mensagem-alerta/mensagens-padrao.constants';
 
 @Component({
   selector: 'app-menu-usuario',
@@ -64,19 +65,19 @@ export class MenuUsuarioComponent {
 
   processarFoto(file: File) {
     if (!file.type.startsWith('image/')) {
-      this.notificacaoService.erro('Por favor, selecione apenas imagens');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.FORMATO_ARQUIVO_INVALIDO);
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      this.notificacaoService.aviso('Imagem muito grande. Máximo 2MB');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ARQUIVO_GRANDE_DEMAIS);
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.usuario.foto = e.target.result;
-      this.notificacaoService.sucesso('Foto atualizada com sucesso!');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.FOTO_ATUALIZADA);
       // TODO: Enviar para backend
     };
     reader.readAsDataURL(file);
@@ -115,7 +116,7 @@ salvarPerfil(dados: any) {
   console.log('💾 Salvar perfil:', dados);
   // TODO: Enviar para backend
   this.modalPerfilAberta = false;
-  this.notificacaoService.sucesso('Perfil atualizado com sucesso!');
+  this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.PERFIL_ATUALIZADO);
 }
 
 abrirMudarSenhaDePerfil() {
@@ -134,7 +135,7 @@ abrirMudarSenhaDePerfil() {
   }
 
 confirmarSaida() {
-  this.usuarioAuth.logout();  // ← DRY, usa o service
+  this.usuarioAuth.logout(); 
 }
 
   cancelarSaida() {
@@ -161,6 +162,6 @@ confirmarSaida() {
     // Por enquanto (simulando sucesso):
     this.modalMudarSenhaAberta = false;
     this.fecharMenu();
-    this.notificacaoService.sucesso('Senha alterada com sucesso!');
+    this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.SENHA_ALTERADA);
   }
 }

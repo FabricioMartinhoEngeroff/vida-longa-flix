@@ -11,8 +11,8 @@ import { Router, RouterModule } from '@angular/router';
 import { BotaoPrimarioComponent } from '../../componentes/botao-primario/botao-primario.component';
 import { CampoFormularioComponent } from '../../componentes/campo-formulario/campo-formulario.component';
 import { RecuperarSenhaComponent } from '../../componentes/recuperar-senha/recuperar-senha.component';
-import { LoginForm } from '../../tipos/login-form.types';
 import { ServicoAutenticacao } from '../../api/servico-autenticacao';
+import { LoginForm } from '../../tipos/formulario.types';
 
 @Component({
   selector: 'app-login',

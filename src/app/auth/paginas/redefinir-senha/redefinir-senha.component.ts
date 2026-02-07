@@ -9,6 +9,7 @@ import { CampoFormularioComponent } from '../../componentes/campo-formulario/cam
 import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { ServicoRecuperacaoSenha } from '../../servicos/servico-recuperacao-senha/servico-recuperacao-senha';
 import { ForcaSenha, validadorSenhaForte } from '../../utils/validador-senha-forte';
+import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
 
 
 
@@ -56,10 +57,10 @@ export class RedefinirSenhaComponent implements OnInit {
     this.token = this.route.snapshot.queryParams['token'];
 
     if (!this.token) {
-      this.notificacaoService.erro('Link inválido ou expirado');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.TOKEN_INVALIDO);
       this.tokenValido = false;
       this.validandoToken = false;
-      setTimeout(() => this.router.navigate(['/login']), 3000);
+      setTimeout(() => this.router.navigate(['/login']), 4000);
       return;
     }
 
@@ -68,11 +69,11 @@ export class RedefinirSenhaComponent implements OnInit {
       this.tokenValido = await this.servicoRecuperacao.validarToken(this.token);
       
       if (!this.tokenValido) {
-        this.notificacaoService.erro('Link inválido ou expirado');
-        setTimeout(() => this.router.navigate(['/login']), 3000);
+        this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.TOKEN_INVALIDO);
+        setTimeout(() => this.router.navigate(['/login']), 4000);
       }
     } catch (e) {
-      this.notificacaoService.erro('Erro ao validar link');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ERRO_VALIDAR_TOKEN);
       this.tokenValido = false;
     } finally {
       this.validandoToken = false;
@@ -106,14 +107,14 @@ export class RedefinirSenhaComponent implements OnInit {
     this.form.markAllAsTouched();
     
     if (this.form.invalid) {
-      this.notificacaoService.aviso('Corrija os erros antes de continuar');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.CORRIJA_ERROS);
       return;
     }
 
     const { novaSenha, confirmacaoSenha } = this.form.getRawValue();
 
     if (novaSenha !== confirmacaoSenha) {
-      this.notificacaoService.erro('As senhas digitadas não são iguais');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.SENHAS_NAO_COINCIDEM);
       return;
     }
 
@@ -122,14 +123,14 @@ export class RedefinirSenhaComponent implements OnInit {
     try {
       await this.servicoRecuperacao.redefinirSenha(this.token, novaSenha);
 
-      this.notificacaoService.sucesso('Senha redefinida com sucesso! Redirecionando...');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.SENHA_REDEFINIDA);
       
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 2000);
 
     } catch (e) {
-      this.notificacaoService.erro('Erro ao redefinir senha. Tente novamente.');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ERRO_REDEFINIR_SENHA);
       console.error(e);
     } finally {
       this.carregando = false;

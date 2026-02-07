@@ -9,8 +9,9 @@ import { IndicadorSenhaComponent } from '../../componentes/indicador-senha/indic
 import { validadorSenhaForte, ForcaSenha } from '../../utils/validador-senha-forte';
 import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { EmailService } from '../../servicos/email/email.service';
-import { UsuarioAutenticacaoService } from '../../api/usuario-autenticacao.service';
+import { UsuarioAutenticacaoService } from '../../servicos/usuario-autenticacao.service';
 import { MensagemAjusteEmailComponent, TipoErroEmail } from '../../../compartilhado/componentes/mensagem-alertas/mensagem-ajuste-email.component';
+import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
 
 @Component({
   selector: 'app-registrar',
@@ -118,7 +119,7 @@ export class RegistrarComponent {
 
     const emailControl = this.form.get('email');
     if (emailControl?.errors?.['emailTemporario'] || emailControl?.errors?.['emailSuspeito']) {
-      this.notificacaoService.erro('Por favor, use um email válido e profissional');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.EMAIL_INVALIDO);
       return;
     }
   
@@ -132,7 +133,7 @@ export class RegistrarComponent {
     }
   
     if (this.form.invalid) {
-      this.notificacaoService.aviso('Corrija os erros antes de cadastrar');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.CORRIJA_ERROS);
       return;
     }
 
@@ -150,8 +151,7 @@ export class RegistrarComponent {
         email: dados.email
       }).catch(erro => console.error('Erro ao enviar email:', erro));
 
-      // 3. Notificar sucesso
-      this.notificacaoService.sucesso('Conta criada! Complete seu perfil para começar 🎉');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.CADASTRO_SUCESSO);
 
       // 4. Redirecionar para app (login automático já feito)
       setTimeout(() => {
@@ -159,7 +159,7 @@ export class RegistrarComponent {
       }, 800);
 
     } catch (e: any) {
-      this.notificacaoService.erro(e.message || 'Erro ao criar conta');
+      this.notificacaoService.erro(e.message || MENSAGENS_PADRAO.ERRO_GENERICO.texto);
       console.error(e);
     } finally {
       this.carregando = false;

@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { IndicadorSenhaComponent } from '../../../auth/componentes/indicador-senha/indicador-senha.component';  
 import { calcularForcaSenha, ForcaSenha } from '../../../auth/utils/validador-senha-forte';  
 import { NotificacaoService } from '../../../../app/compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
+import { MENSAGENS_PADRAO } from '../../servicos/mensagem-alerta/mensagens-padrao.constants';
 
 @Component({
   selector: 'app-modal-mudar-senha',
@@ -45,7 +46,6 @@ export class ModalMudarSenhaComponent {
   onConfirmar() {
     this.erro = '';
 
-    // Validações básicas
     if (!this.senhaAtual || !this.novaSenha || !this.confirmacaoSenha) {
       this.erro = 'Preencha todos os campos';
       return;
@@ -66,24 +66,18 @@ export class ModalMudarSenhaComponent {
       return;
     }
 
-    // ✅ ADICIONE: Validação de força da senha
-    const resultado = calcularForcaSenha(this.novaSenha);
+  const resultado = calcularForcaSenha(this.novaSenha);
 
-if (resultado.forca < ForcaSenha.FORTE) {
-  // Debug: veja o que está vindo
-  console.log('Resultado:', resultado);
-  console.log('Requisitos:', resultado.requisitos);
-  
-  // Usa requisitosFaltando em vez de requisitos
-  if (resultado.requisitosFaltando && resultado.requisitosFaltando.length > 0) {
-    this.erro = resultado.requisitosFaltando[0];  // ← MUDE AQUI
-    this.notificacaoService.aviso(resultado.requisitosFaltando[0]);
-  } else {
-    this.erro = 'Senha precisa ser forte';
-    this.notificacaoService.aviso('Senha precisa ser forte');
-  }
-  return;
-}
+    if (resultado.forca < ForcaSenha.FORTE) {
+      if (resultado.requisitosFaltando && resultado.requisitosFaltando.length > 0) {
+        this.erro = resultado.requisitosFaltando[0]; 
+        this.notificacaoService.aviso(resultado.requisitosFaltando[0]); 
+      } else {
+        this.erro = 'Senha precisa ser forte'; 
+        this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.SENHA_FRACA);
+      }
+      return;
+    }
 
     // Emite dados
     this.confirmar.emit({

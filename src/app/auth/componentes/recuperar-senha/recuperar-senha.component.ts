@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CampoFormularioComponent } from '../campo-formulario/campo-formulario.component';
 import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { EmailService } from '../../servicos/email/email.service';
+import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
 
 @Component({
   selector: 'app-recuperar-senha',
@@ -57,14 +58,14 @@ export class RecuperarSenhaComponent {
       // ✅ MUDE: Usa EmailService
       await this.emailService.enviarRecuperacaoSenha(email);
 
-      this.notificacaoService.sucesso('Email enviado! Verifique sua caixa de entrada.');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.EMAIL_RECUPERACAO_ENVIADO);
       
       setTimeout(() => {
         this.onFechar();
       }, 2000);
 
     } catch (e) {
-      this.notificacaoService.erro('Erro ao enviar email. Tente novamente.');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ERRO_ENVIAR_EMAIL);
       console.error(e);
     } finally {
       this.enviando = false;

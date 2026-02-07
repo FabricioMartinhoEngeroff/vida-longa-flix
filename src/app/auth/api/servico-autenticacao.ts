@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from './api.service';
-import { DadosCadastroUsuario, LoginResponse } from '../tipos/tipos-autenticacao';
+import { DadosRegistro, LoginResponse } from '../tipos/usuario.types';
+
 
 @Injectable({ providedIn: 'root' })
 export class ServicoAutenticacao {
@@ -31,7 +32,7 @@ const p = (password ?? '').trim();
   throw new Error('BYPASS ativo: use o e-mail e senha DEV.');
 }
 
-  async register(userData: DadosCadastroUsuario): Promise<any> {
+  async register(userData: DadosRegistro): Promise<any> {
     const response = await firstValueFrom(
       this.http.post(`${this.api.baseURL}/auth/register`, userData)
     );

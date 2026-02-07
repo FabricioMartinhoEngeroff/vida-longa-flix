@@ -3,7 +3,8 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { NgIf, NgClass } from '@angular/common';
 import { AuthIconComponent, AuthIconName } from '../auth-icon/auth-icon.component';
 import { MascaraService } from '../../servicos/mascara.service';
-import { TipoMascara } from '../../tipos/mascara.types';
+import { TipoMascara } from '../../tipos/formulario.types';
+
 
 @Component({
   selector: 'app-campo-formulario',
