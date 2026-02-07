@@ -11,7 +11,7 @@
   border: none;
   border-radius: 50%;
   
-  color: #6a0dad;
+  color: #2f6b3a;
   cursor: pointer;
   
   transition: all 0.2s ease;
@@ -46,7 +46,7 @@
   align-items: center;
   justify-content: center;
   
-  background: #6a0dad;
+  background: #2f6b3a;
   color: white;
   
   font-size: 11px;

@@ -23,13 +23,13 @@
   background: none;
   border: none;
   font-size: 14px;
-  color: #6a0dad;
+  color: #2f6b3a;
   cursor: pointer;
 }
 
 .ver-tudo:hover {
   text-decoration: underline;
-  color: #8b5cd6;
+  color: #4f8a58;
 }
 
 .icone {
@@ -59,15 +59,15 @@
   margin-top: 10px;
   padding: 5px 10px;
   border: none;
-  background-color: rgba(187, 6, 248, 0.2);
-  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(47, 107, 58, 0.2);
+  color: #1f4f29;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .botao-remover:hover {
-  background-color: #8b5cd6;
-  color: white;
+  background-color: #4f8a58;
+  color: #ffffff;
 }
 
 /* =============================
@@ -140,8 +140,8 @@
   gap: 6px;
   width: fit-content;
 
-  background: rgba(187, 6, 248, 0.15);
-  color: #6a0dad;
+  background: rgba(47, 107, 58, 0.15);
+  color: #2f6b3a;
 
   border: none;
   cursor: pointer;
@@ -150,5 +150,5 @@
 }
 
 .botao-remover-mobile:hover {
-  background: rgba(187, 6, 248, 0.25);
+  background: rgba(47, 107, 58, 0.25);
 }

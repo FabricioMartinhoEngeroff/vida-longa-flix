@@ -49,14 +49,14 @@
 }
 
 .link-login a {
-  color: #6a0dad;
+  color: #2f6b3a;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .link-login a:hover {
-  color: #8b5cd6;
+  color: #4f8a58;
   text-decoration: underline;
 }
 

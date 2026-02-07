@@ -98,7 +98,7 @@
   
   font-size: 14px;
   font-weight: 600;
-  color: #6a0dad;
+  color: #2f6b3a;
   cursor: pointer;
   
   transition: all 0.2s ease;
@@ -106,7 +106,7 @@
 
 .btn-mudar-senha:hover {
   background: #f9fafb;
-  border-color: #6a0dad;
+  border-color: #2f6b3a;
 }
 
 .btn-mudar-senha mat-icon {
@@ -147,12 +147,12 @@
 }
 
 .btn-salvar {
-  background: #6a0dad;
+  background: #2f6b3a;
   color: white;
 }
 
 .btn-salvar:hover {
-  background: #8b5cd6;
+  background: #4f8a58;
 }
 
 @media (max-width: 768px) {

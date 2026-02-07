@@ -76,7 +76,7 @@ export class EmailService {
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: #7da873; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-          .button { display: inline-block; background: #6a0dad; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+          .button { display: inline-block; background: #2f6b3a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
           .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
         </style>
       </head>
@@ -126,9 +126,9 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #6a0dad; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background: #2f6b3a; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-          .button { display: inline-block; background: #6a0dad; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+          .button { display: inline-block; background: #2f6b3a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
           .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
           .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
         </style>
@@ -147,7 +147,7 @@ export class EmailService {
             <a href="${link}" class="button">Redefinir Senha</a>
             
             <p>Ou copie e cole este link no navegador:</p>
-            <p style="word-break: break-all; color: #6a0dad;">${link}</p>
+            <p style="word-break: break-all; color: #2f6b3a;">${link}</p>
 
             <div class="warning">
               <strong>⚠️ Importante:</strong> Este link expira em 1 hora. Se você não solicitou esta alteração, ignore este email.

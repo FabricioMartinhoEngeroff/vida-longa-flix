@@ -41,14 +41,14 @@ import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-autenticac
       border-radius: 50%;
       background: transparent;
       
-      color: #6a0dad;
+      color: #2f6b3a;
       cursor: pointer;
       
       transition: all 0.2s ease;
     }
     
     .btn-sair:hover {
-      background: rgba(106, 13, 173, 0.1);
+      background: rgba(47, 107, 58, 0.1);
       transform: scale(1.05);
     }
     

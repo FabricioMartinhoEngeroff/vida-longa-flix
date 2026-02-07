@@ -118,12 +118,12 @@
 }
 
 .btn-enviar {
-  background: #6a0dad;
+  background: #2f6b3a;
   color: white;
 }
 
 .btn-enviar:hover:not(:disabled) {
-  background: #8b5cd6;
+  background: #4f8a58;
 }
 
 .btn-enviar:disabled {

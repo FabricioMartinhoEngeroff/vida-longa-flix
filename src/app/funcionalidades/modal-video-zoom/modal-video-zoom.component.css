@@ -41,7 +41,7 @@
 }
 
 .close-button:hover {
-  color: #8b5cd6;
+  color: #4f8a58;
 }
 
 :deep(mat-icon) {
@@ -143,7 +143,7 @@
 .comentario-form button {
   align-self: flex-end;
   padding: 6px 10px;
-  background-color: #6a0dad;
+  background-color: #2f6b3a;
   color: white;
   border: none;
   border-radius: 6px;
@@ -152,7 +152,7 @@
 }
 
 .comentario-form button:hover {
-  background-color: #8b5cd6;
+  background-color: #4f8a58;
 }
 
 /* ========================================

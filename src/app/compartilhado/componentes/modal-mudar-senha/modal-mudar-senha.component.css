@@ -115,7 +115,7 @@
 
 .input-wrapper input:focus {
   outline: none;
-  border-color: #6a0dad;
+  border-color: #2f6b3a;
 }
 
 .btn-olho {
@@ -155,7 +155,7 @@
   margin: 12px 0;
   padding: 12px;
 
-  background: rgba(106, 13, 173, 0.18); /* roxo com 18% de opacidade */
+  background: rgba(47, 107, 58, 0.18); /* verde com 18% de opacidade */
   color: #000000;
 
   font-size: 17px;
@@ -163,7 +163,7 @@
   border-radius: 6px;
   text-align: center;
 
-  border: 1px solid rgba(106, 13, 173, 0.35); /* ajuda a “definir” a caixa */
+  border: 1px solid rgba(47, 107, 58, 0.35); /* ajuda a “definir” a caixa */
 }
 
 /* Botões */
@@ -199,12 +199,12 @@
 }
 
 .btn-confirmar {
-  background: #6a0dad;
+  background: #2f6b3a;
   color: white;
 }
 
 .btn-confirmar:hover {
-  background: #8b5cd6;
+  background: #4f8a58;
 }
 
 /* Mobile */

@@ -59,7 +59,7 @@
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: #6a0dad;
+  color: #2f6b3a;
 }
 
 /* Título */
@@ -141,20 +141,20 @@
 }
 
 .btn-confirmar {
-  background: #6a0dad;
+  background: #2f6b3a;
   color: white;
 }
 
 .btn-confirmar:hover {
-  background: #8b5cd6;
+  background: #4f8a58;
 }
 
 .btn-confirmar.perigo {
-  background: #6a0dad;
+  background: #2f6b3a;
 }
 
 .btn-confirmar.perigo:hover {
-  background: #6a0dad;
+  background: #2f6b3a;
 }
 
 /* Mobile */

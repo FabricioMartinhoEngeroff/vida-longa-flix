@@ -106,7 +106,7 @@
   height: 50px;
   margin: 0 auto 20px;
   border: 4px solid #f3f4f6;
-  border-top: 4px solid #6a0dad;
+  border-top: 4px solid #2f6b3a;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -155,7 +155,7 @@
 
 .redirect-info {
   font-weight: 500;
-  color: #6a0dad;
+  color: #2f6b3a;
   margin-top: 16px;
 }
 
@@ -168,7 +168,7 @@
 }
 
 .link-voltar a {
-  color: #6a0dad;
+  color: #2f6b3a;
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -177,7 +177,7 @@
 
 .link-voltar a:hover {
   text-decoration: underline;
-  color: #8b5cd6;
+  color: #4f8a58;
 }
 
 /* =========================
