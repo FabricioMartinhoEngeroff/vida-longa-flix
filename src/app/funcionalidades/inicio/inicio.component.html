@@ -1,98 +1,92 @@
-<!-- ========================================= 
-     TÍTULO / HEADER
-     ========================================= -->
-<div class="titulo-container">
-  <app-titulo [alinhamento]="'left'">Reels</app-titulo>
 
-  <button class="ver-tudo" type="button" (click)="verTudo()">
-    Ver tudo
-    <mat-icon class="icone">arrow_forward</mat-icon>
-  </button>
-</div>
 
-<!-- ========================================= 
-     WEB / DESKTOP
-     ========================================= -->
-<div *ngIf="!isMobile" class="web">
-  <app-carrossel>
-    <div class="video-card" *ngFor="let video of videosReels">
-      
-      <!-- ✅ WRAPPER COM CAPA E PREVIEW -->
-      <div 
-        class="video-wrapper"
-        (mouseenter)="aoPassarMouseVideo(video.id, $event)"
-        (mouseleave)="aoSairMouseVideo(video.id, $event)"
+<!-- Template do item (usado no carrossel por categoria) -->
+<ng-template #videoItem let-video>
+  <div class="video-card">
+    <!-- Wrapper capa + preview -->
+    <div
+      class="video-wrapper"
+      (mouseenter)="aoPassarMouseVideo(video.id, $event)"
+      (mouseleave)="aoSairMouseVideo(video.id, $event)"
+      (click)="abrirModal(video)"
+    >
+      <img
+        [src]="video.capa"
+        [alt]="video.title"
+        class="capa"
+        [class.oculta]="mostrandoPrevia[video.id]"
+      />
+
+      <div class="play-sobreposto" [class.oculto]="mostrandoPrevia[video.id]">
+        <mat-icon>play_circle_filled</mat-icon>
+      </div>
+
+      <video
+        [src]="video.url"
+        muted
+        playsinline
+        loop
+        class="video-previa"
+        [class.visivel]="mostrandoPrevia[video.id]"
+      ></video>
+    </div>
+
+    <!-- Info -->
+    <div class="info-area">
+      <h3>{{ video.title }}</h3>
+      <p class="descricao">{{ video.description }}</p>
+    </div>
+
+    <!-- Comentários -->
+    <div class="comentarios">
+      <div class="cabecalho-comentario">
+        <div class="titulo">Comentários</div>
+
+        <app-botao-favoritar
+          [favorito]="video.favorita ?? false"
+          (aoClicar)="toggleFavorite(video.id)"
+        ></app-botao-favoritar>
+      </div>
+
+      <span
+        *ngIf="(comentariosState[video.id]?.length || 0) > 2"
+        class="verTodos"
         (click)="abrirModal(video)"
       >
-        <!-- Capa (thumbnail) -->
-        <img 
-          [src]="video.capa" 
-          [alt]="video.title"
-          class="capa"
-          [class.oculta]="mostrandoPrevia[video.id]"
-        />
-        
-        <!-- Ícone play -->
-        <div class="play-sobreposto" [class.oculto]="mostrandoPrevia[video.id]">
-          <mat-icon>play_circle_filled</mat-icon>
-        </div>
-        
-        <!-- Vídeo preview -->
-        <video
-          [src]="video.url"
-          muted
-          playsinline
-          loop
-          class="video-previa"
-          [class.visivel]="mostrandoPrevia[video.id]"
-        ></video>
-      </div>
+        Ver todos os {{ comentariosState[video.id].length }} comentários
+      </span>
 
-      <!-- Informações -->
-      <div class="info-area">
-        <h3>{{ video.title }}</h3>
-        <p class="descricao">{{ video.description }}</p>
-      </div>
-
-      <!-- Comentários -->
-      <div class="comentarios">
-        <div class="cabecalho-comentario">
-          <div class="titulo">Comentários</div>
-
-          <app-botao-favoritar
-            [favorito]="video.favorita ?? false"
-            (aoClicar)="toggleFavorite(video.id)"
-          ></app-botao-favoritar>
-        </div>
-
-        <span
-          *ngIf="(comentariosState[video.id]?.length || 0) > 2"
-          class="verTodos"
-          (click)="abrirModal(video)"
-        >
-          Ver todos os {{ comentariosState[video.id].length }} comentários
-        </span>
-
-        <span *ngFor="let c of comentariosState[video.id]?.slice(-2)">
-          {{ c }}
-        </span>
-      </div>
-
-      <!-- Form comentário -->
-      <div class="comentario-form">
-        <input
-          type="text"
-          placeholder="Adicione um comentário..."
-          [value]="novoComentario[video.id] || ''"
-          (input)="novoComentario[video.id] = ($any($event.target).value)"
-        />
-
-        <button type="button" (click)="adicionarComentario(video.id)">
-          Publicar
-        </button>
-      </div>
+      <span *ngFor="let c of comentariosState[video.id]?.slice(-2)">
+        {{ c }}
+      </span>
     </div>
-  </app-carrossel>
+
+    <!-- Form comentário -->
+    <div class="comentario-form">
+      <input
+        type="text"
+        placeholder="Adicione um comentário..."
+        [value]="novoComentario[video.id] || ''"
+        (input)="novoComentario[video.id] = ($any($event.target).value)"
+      />
+
+      <button type="button" (click)="adicionarComentario(video.id)">
+        Publicar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ========================================= 
+     WEB / DESKTOP (por categoria)
+     ========================================= -->
+<div *ngIf="!isMobile" class="web">
+  <app-categoria-carrossel
+    *ngFor="let grupo of videosPorCategoria"
+    [titulo]="grupo.nome"
+    [itens]="grupo.itens"
+    [itemTemplate]="videoItem"
+  ></app-categoria-carrossel>
 </div>
 
 <!-- ========================================= 
@@ -101,15 +95,8 @@
 <div *ngIf="isMobile" class="mobile">
   <div class="lista-mobile">
     <div class="card-mobile" *ngFor="let video of videosReels">
-      
-      <!-- Vídeo mobile (só capa + clique) -->
       <div class="video-mobile-wrapper" (click)="abrirModal(video)">
-        <img 
-          [src]="video.capa" 
-          [alt]="video.title"
-          class="capa-mobile"
-        />
-        
+        <img [src]="video.capa" [alt]="video.title" class="capa-mobile" />
         <div class="play-mobile">
           <mat-icon>play_circle_filled</mat-icon>
         </div>
@@ -148,7 +135,6 @@
             [value]="novoComentario[video.id] || ''"
             (input)="novoComentario[video.id] = ($any($event.target).value)"
           />
-
           <button type="button" (click)="adicionarComentario(video.id)">
             Publicar
           </button>

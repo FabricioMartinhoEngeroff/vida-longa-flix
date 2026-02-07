@@ -46,14 +46,17 @@ export class VideoService {
 }
   
   private converterVideosMockados(): Video[] {
-    return (videosIniciais as any[]).map((video) => ({
+  return (videosIniciais as any[]).map((video) => {
+    const categoria = this.classificarCategoria(video.title, video.description);
+
+    return {
       id: String(video.id),
       title: video.title,
       description: video.description,
       url: video.url,
-      capa: video.capa || video.url, // ← ADICIONAR (fallback para url se não tiver capa)
+      capa: video.capa || video.url,
 
-      category: { id: '0', name: 'Sem categoria' },
+      category: categoria,
       comments: [],
       views: 0,
       watchTime: 0,
@@ -66,6 +69,25 @@ export class VideoService {
       calorias: video.calorias ?? 0,
 
       favorita: video.favorita ?? false,
-    })) as Video[];
+    };
+  }) as Video[];
+}
+
+private classificarCategoria(title = '', description = ''): { id: string; name: string } {
+  const t = (title + ' ' + description).toLowerCase();
+
+  if (t.includes('bolo') || t.includes('cuca') || t.includes('brownie') || t.includes('cupcake')) {
+    return { id: '1', name: 'Bolos' };
   }
+  if (t.includes('pão') || t.includes('omelete') || t.includes('snack')) {
+    return { id: '2', name: 'Salgados' };
+  }
+  if (t.includes('mousse') || t.includes('sobremesa')) {
+    return { id: '3', name: 'Sobremesas' };
+  }
+  if (t.includes('dica') || t.includes('informações') || t.includes('omega')) {
+    return { id: '4', name: 'Dicas da Nutri' };
+  }
+  return { id: '5', name: 'Receitas Práticas' };
+}
 }

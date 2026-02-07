@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ModalConfirmacaoComponent } from '../modal-confirmacao/modal-confirmacao.component';
-import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-autenticacao.service';  
+import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-auth-service';  
 
 @Component({
   selector: 'app-botao-sair',

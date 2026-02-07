@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ModalConfirmacaoComponent } from '../modal-confirmacao/modal-confirmacao.component';
 import { ModalMudarSenhaComponent } from '../modal-mudar-senha/modal-mudar-senha.component';
 import { NotificacaoService } from '../../../../app/compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
-import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-autenticacao.service';
+import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-auth-service';
 import { ModalPerfilUsuarioComponent } from '../modal-perfil-usuario/modal-perfil-usuario.component';
 import { MENSAGENS_PADRAO } from '../../servicos/mensagem-alerta/mensagens-padrao.constants';
 

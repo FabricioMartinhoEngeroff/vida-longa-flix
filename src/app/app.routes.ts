@@ -12,6 +12,8 @@ import { LoginComponent } from '../app/auth/paginas/login/login.component';
 import { RegistrarComponent } from '../app/auth/paginas/registrar/registrar.component';
 import { RedefinirSenhaComponent } from './auth/paginas/redefinir-senha/redefinir-senha.component';
 import { AdminVideosComponent } from './funcionalidades/administrador-videos/administrador-videos.component';
+import { CardapiosComponent } from './funcionalidades/cardapios/cardapios.component';
+import { AdministradorCardapiosComponent } from './funcionalidades/administrador-cardapios/administrador-cardapios.component';
 
 export const routes: Routes = [
 
@@ -31,6 +33,9 @@ export const routes: Routes = [
     { path: 'mais-vistos', component: MaisVistosComponent },
     { path: 'historico', component: InicioComponent },
     { path: 'admin-videos', component: AdminVideosComponent },
+    { path: 'cardapios', component: CardapiosComponent },
+    { path: 'admin-cardapios', component: AdministradorCardapiosComponent },
+
   ],
   },
 

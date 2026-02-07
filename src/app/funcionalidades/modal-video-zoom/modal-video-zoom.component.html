@@ -4,7 +4,7 @@
     <button class="close-button" type="button" (click)="fecharModal()" aria-label="Fechar">
       <mat-icon>close</mat-icon>
     </button>
-
+    
     <div class="video-player">
       <video controls autoplay>
         <source [src]="videoAtualizado.url" type="video/mp4" />
@@ -21,58 +21,21 @@
       </div>
 
       <ul class="nutrientes">
-        <li>
-          <span><strong>Proteínas:</strong></span>
-          <span>{{ videoAtualizado.proteinas }}g</span>
-        </li>
-
-        <li>
-          <span><strong>Carboidratos:</strong></span>
-          <span>{{ videoAtualizado.carboidratos }}g</span>
-        </li>
-
-        <li>
-          <span><strong>Gorduras:</strong></span>
-          <span>{{ videoAtualizado.gorduras }}g</span>
-        </li>
-
-        <li>
-          <span><strong>Fibras:</strong></span>
-          <span>{{ videoAtualizado.fibras }}g</span>
-        </li>
-
-        <li>
-          <span><strong>Calorias:</strong></span>
-          <span>{{ videoAtualizado.calorias ?? 0 }} kcal</span>
-        </li>
+        <li><span><strong>Proteínas:</strong></span><span>{{ videoAtualizado.proteinas }}g</span></li>
+        <li><span><strong>Carboidratos:</strong></span><span>{{ videoAtualizado.carboidratos }}g</span></li>
+        <li><span><strong>Gorduras:</strong></span><span>{{ videoAtualizado.gorduras }}g</span></li>
+        <li><span><strong>Fibras:</strong></span><span>{{ videoAtualizado.fibras }}g</span></li>
+        <li><span><strong>Calorias:</strong></span><span>{{ videoAtualizado.calorias ?? 0 }} kcal</span></li>
       </ul>
 
-      <div class="comentarios">
-        <div class="comentario-titulo-linha">
-          <div class="titulo">Comentários</div>
+      <!-- Comentários compartilhados -->
+     <app-comentarios-box
+  [comentarios]="comentarios"
+  [favorito]="videoAtualizado.favorita ?? false"
+  (favoritar)="toggleFavorite()"
+  (comentar)="adicionarComentario($event)"
+></app-comentarios-box>
 
-          <app-botao-favoritar
-            [favorito]="videoAtualizado.favorita ?? false"
-            (aoClicar)="toggleFavorite()"
-          ></app-botao-favoritar>
-        </div>
-
-        <div class="comentario-item" *ngFor="let c of comentarios">
-          {{ c }}
-        </div>
-
-        <div class="comentario-form">
-          <input
-            type="text"
-            placeholder="Faça um comentário..."
-            [(ngModel)]="novoComentario"
-          />
-
-          <button type="button" (click)="adicionarComentario()">
-            Publicar
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </div>

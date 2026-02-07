@@ -1,13 +1,10 @@
-<p *ngIf="favoritos.length === 0" class="mensagem-vazia">
-  Nenhum vídeo foi adicionado aos favoritos.
+<p *ngIf="favoritos.length === 0 && favoritosCardapios.length === 0" class="mensagem-vazia">
+  Nenhum favorito foi adicionado.
 </p>
 
-<!-- ✅ quando tem favoritos -->
+<!-- Favoritos de vídeos -->
 <div *ngIf="favoritos.length > 0">
 
-  <!-- =====================================================
-       ✅ WEB / DESKTOP
-       ===================================================== -->
   <div *ngIf="!isMobile" class="web">
     <div class="titulo-container">
       <app-titulo [alinhamento]="'left'">Favoritos</app-titulo>
@@ -38,9 +35,6 @@
     </app-carrossel>
   </div>
 
-  <!-- =====================================================
-       ✅ MOBILE / CELULAR
-       ===================================================== -->
   <div *ngIf="isMobile" class="mobile">
     <div class="topo-mobile">
       <h2 class="titulo-mobile">Favoritos</h2>
@@ -68,4 +62,54 @@
     </div>
   </div>
 
+</div>
+
+<!-- Favoritos de cardápios -->
+<div *ngIf="favoritosCardapios.length > 0" class="cardapios-favoritos">
+  <div class="titulo-container">
+    <app-titulo [alinhamento]="'left'">Cardápios Favoritos</app-titulo>
+  </div>
+
+  <div class="grid-cardapios">
+    <div class="card-cardapio" *ngFor="let c of favoritosCardapios" (click)="abrirModalCardapio(c)">
+      <img [src]="c.capa || 'assets/images/Logo.png'" [alt]="c.title" />
+      <h3>{{ c.title }}</h3>
+
+      <button type="button" (click)="removerCardapio(c); $event.stopPropagation()">
+        Remover
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de cardápio -->
+<div class="modal-backdrop" *ngIf="cardapioSelecionado as s">
+  <div class="modal modal-receita">
+    <button class="fechar" (click)="fecharModalCardapio()">×</button>
+
+    <img [src]="s.capa || 'assets/images/Logo.png'" [alt]="s.title" class="capa-grande" />
+
+    <div class="conteudo">
+      <h3>{{ s.title }}</h3>
+      <p class="desc">{{ s.description }}</p>
+
+      <div class="bloco">
+        <h4>Receita</h4>
+        <p>{{ s.receita || 'Sem receita cadastrada.' }}</p>
+      </div>
+
+      <div class="bloco">
+        <h4>Dicas da Nutri</h4>
+        <p>{{ s.dicasNutri || 'Sem dicas cadastradas.' }}</p>
+      </div>
+
+      <div class="macros">
+        <div>Proteínas: {{ s.proteinas || 0 }}g</div>
+        <div>Carboidratos: {{ s.carboidratos || 0 }}g</div>
+        <div>Gorduras: {{ s.gorduras || 0 }}g</div>
+        <div>Fibras: {{ s.fibras || 0 }}g</div>
+        <div>Calorias: {{ s.calorias || 0 }} kcal</div>
+      </div>
+    </div>
+  </div>
 </div>

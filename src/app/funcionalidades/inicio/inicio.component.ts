@@ -3,51 +3,55 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 import { BotaoFavoritarComponent } from '../../compartilhado/componentes/botao-favoritar/botao-favoritar.component';
-import { CarrosselComponent } from '../../compartilhado/componentes/carrossel/carrossel.component';
-import { TituloComponent } from '../../compartilhado/componentes/titulo/titulo.component';
+import { CategoriaCarrosselComponent } from '../../compartilhado/componentes/categoria-carrossel/categoria-carrossel.component';
 import { Video } from '../../compartilhado/tipos/videos';
 import { ModalService } from '../../compartilhado/servicos/modal/modal';
 import { VideoService } from '../../compartilhado/servicos/video/video';
+import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
+import { agruparPor, Grupo } from '../../compartilhado/utils/agrupar-por';
+
+type GrupoVideo = Grupo<Video>;
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [
-    NgFor,
-    NgIf,
-    MatIconModule,
-    TituloComponent,
-    CarrosselComponent,
-    BotaoFavoritarComponent,
-  ],
-  templateUrl: './inicio.component.html',
+imports: [NgFor, NgIf, MatIconModule, CategoriaCarrosselComponent, BotaoFavoritarComponent],
+  templateUrl:'./inicio.component.html',
   styleUrls: ['./inicio.component.css'],
 })
-
 export class InicioComponent implements OnInit {
   videosReels: Video[] = [];
+  videosPorCategoria: GrupoVideo[] = [];
   isMobile = false;
 
-  // Estado de comentários
-  comentariosState: { [videoId: string]: string[] } = {};  
-  novoComentario: { [videoId: string]: string } = {};      
+  comentariosState: Record<string, string[]> = {};
+  novoComentario: Record<string, string> = {};
 
-  // Preview ao hover
-  mostrandoPrevia: { [id: string]: boolean } = {};         
-  private timeoutsHover: { [id: string]: any } = {};       
+  mostrandoPrevia: Record<string, boolean> = {};
+  private timeoutsHover: Record<string, any> = {};
   private readonly DELAY_HOVER = 2000;
 
   constructor(
     private videoService: VideoService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private comentariosService: ComentariosService
   ) {}
 
   ngOnInit(): void {
-  this.videoService.videosReels$.subscribe(videos => {
-    this.videosReels = videos;
-  });
-  this.verificarMobile();
-}
+    this.videoService.videosReels$.subscribe(videos => {
+      this.videosReels = videos;
+      this.videosPorCategoria = agruparPor(
+        videos,
+        v => v.category?.name || 'Sem categoria'
+      );
+    });
+
+    this.comentariosService.comentarios$.subscribe(map => {
+      this.comentariosState = map;
+    });
+
+    this.verificarMobile();
+  }
 
   @HostListener('window:resize')
   onResize() {
@@ -58,7 +62,7 @@ export class InicioComponent implements OnInit {
     this.isMobile = window.innerWidth <= 768;
   }
 
-  aoPassarMouseVideo(videoId: string, event: Event) {  
+  aoPassarMouseVideo(videoId: string, event: Event) {
     const wrapper = event.currentTarget as HTMLElement;
     const videoEl = wrapper.querySelector('video') as HTMLVideoElement;
 
@@ -70,13 +74,11 @@ export class InicioComponent implements OnInit {
       this.mostrandoPrevia[videoId] = true;
       videoEl.currentTime = 0;
       videoEl.muted = true;
-      videoEl.play().catch(() => {
-        console.log('Autoplay bloqueado');
-      });
+      videoEl.play().catch(() => {});
     }, this.DELAY_HOVER);
   }
 
-  aoSairMouseVideo(videoId: string, event: Event) {  
+  aoSairMouseVideo(videoId: string, event: Event) {
     const wrapper = event.currentTarget as HTMLElement;
     const videoEl = wrapper.querySelector('video') as HTMLVideoElement;
 
@@ -94,23 +96,15 @@ export class InicioComponent implements OnInit {
     this.modalService.abrir(video);
   }
 
-  toggleFavorite(videoId: string) {  
+  toggleFavorite(videoId: string) {
     this.videoService.toggleFavorite(videoId);
   }
 
-  adicionarComentario(videoId: string) {  
+  adicionarComentario(videoId: string) {
     const texto = this.novoComentario[videoId]?.trim();
     if (!texto) return;
 
-    if (!this.comentariosState[videoId]) {
-      this.comentariosState[videoId] = [];
-    }
-
-    this.comentariosState[videoId] = [
-      ...this.comentariosState[videoId],
-      `Você: ${texto}`,
-    ];
-
+    this.comentariosService.add(videoId, texto);
     this.novoComentario[videoId] = '';
   }
 

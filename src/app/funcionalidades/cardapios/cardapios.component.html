@@ -1,0 +1,45 @@
+<section class="cardapios">
+  <div class="header">
+    <h2>Cardápios</h2>
+    <p>Dicas e pratos do dia com informação nutricional.</p>
+  </div>
+
+  <ng-template #cardapioItem let-item>
+    <div
+      class="card"
+      (click)="abrir(item)"
+      role="button"
+      tabindex="0"
+    >
+      <img [src]="item.capa || 'assets/images/Logo.png'" [alt]="item.title" />
+      <div class="info">
+        <h3>{{ item.title }}</h3>
+        <span class="categoria">{{ item.category.name }}</span>
+        <p>{{ item.description }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div *ngIf="(cardapiosPorCategoria$ | async) as grupos">
+    <app-categoria-carrossel
+      *ngFor="let grupo of grupos"
+      [titulo]="grupo.nome"
+      [itens]="grupo.itens"
+      [itemTemplate]="cardapioItem"
+    ></app-categoria-carrossel>
+
+    <p class="vazio" *ngIf="grupos.length === 0">
+      Nenhum cardápio cadastrado ainda.
+    </p>
+  </div>
+</section>
+
+<app-modal-cardapio
+  *ngIf="selecionado as s"
+  [cardapio]="s"
+  [comentarios]="comentariosState[s.id] || []"
+  [favorito]="!!s.favorita"
+  (fechar)="fechar()"
+  (favoritar)="toggleFavorite(s.id)"
+  (comentar)="adicionarComentario(s.id, $event)"
+></app-modal-cardapio>

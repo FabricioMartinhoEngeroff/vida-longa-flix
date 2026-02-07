@@ -1,0 +1,48 @@
+<div class="modal-backdrop" *ngIf="cardapio as s">
+  <div class="modal modal-receita">
+    <button class="fechar" type="button" (click)="fechar.emit()" aria-label="Fechar">
+      ×
+    </button>
+
+    <div class="capa-wrap">
+      <img
+        [src]="s.capa || 'assets/images/Logo.png'"
+        [alt]="s.title"
+        class="capa-grande"
+      />
+    </div>
+
+    <div class="conteudo">
+      <h3 class="titulo">{{ s.title }}</h3>
+      <p class="descricao">{{ s.description }}</p>
+
+      <div class="bloco">
+        <h4>Receita</h4>
+        <p>{{ s.receita || 'Sem receita cadastrada.' }}</p>
+      </div>
+
+      <div class="bloco">
+        <h4>Dicas da Nutri</h4>
+        <p>{{ s.dicasNutri || 'Sem dicas cadastradas.' }}</p>
+      </div>
+
+      <div class="bloco">
+        <h4>Informações Nutricionais</h4>
+        <div class="macros">
+          <div>Proteínas: {{ s.proteinas || 0 }}g</div>
+          <div>Carboidratos: {{ s.carboidratos || 0 }}g</div>
+          <div>Gorduras: {{ s.gorduras || 0 }}g</div>
+          <div>Fibras: {{ s.fibras || 0 }}g</div>
+          <div>Calorias: {{ s.calorias || 0 }} kcal</div>
+        </div>
+      </div>
+
+      <app-comentarios-box
+        [comentarios]="comentarios"
+        [favorito]="favorito"
+        (favoritar)="favoritar.emit()"
+        (comentar)="comentar.emit($event)"
+      ></app-comentarios-box>
+    </div>
+  </div>
+</div>
