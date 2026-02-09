@@ -4,10 +4,8 @@
   width: 100%;
   margin: 0;
   padding: 1px 1px;
-
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
   border-radius: 0;
-
   overflow: hidden;
 }
 
@@ -16,9 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 20px;
-
   width: 100%;
   max-width: none;
   margin: 0;
@@ -29,33 +25,30 @@
   display: flex;
   align-items: center;
   gap: 14px;
-
-  min-width:0px; /* evita quebrar o título */
+  min-width: 0;
 }
 
 .logo {
   height: 70px;
-  width: auto;          
-  max-width: 200px;     
+  width: auto;
+  max-width: 200px;
   object-fit: contain;
   display: block;
-  border-radius: 20px;  
+  border-radius: 20px;
   background: transparent;
-  padding: 10px;  
-} 
+  padding: 10px;
+}
 
 /* ========= AÇÕES À DIREITA (pesquisa + logout) ========= */
 .acoes-direita {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-
-  gap: 12px;          
-  width: auto;        
-  max-width: none;   
-  min-width: 0;       
+  gap: 12px;
+  width: auto;
+  max-width: none;
+  min-width: 0;
 }
-
 
 .acoes-direita app-campo-texto {
   flex: 1;
@@ -65,19 +58,14 @@
 .btn-logout {
   height: 44px;
   padding: 0 20px;
-
-  border-radius: 999px; 
-   border: 1px solid #2f6b3a;
-
-  background: #7ea46f; 
+  border-radius: 999px;
+  border: 1px solid #2f6b3a;
+  background: #7ea46f;
   color: #0b2b0b;
-
   font-family: "verdana-bold";
   cursor: pointer;
   white-space: nowrap;
-
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
-
   transition: transform 0.12s ease, background 0.2s ease;
 }
 
@@ -89,19 +77,17 @@
   transform: scale(0.97);
 }
 
-
 /* =================== MOBILE =================== */
 @media (max-width: 768px) {
   .header-estilizado {
     padding: 10px 12px;
-
     position: sticky;
     top: 0;
     z-index: 1000;
   }
 
   .header-conteudo {
-    flex-direction: row; 
+    flex-direction: row;
     align-items: center;
     gap: 10px;
   }
@@ -112,15 +98,15 @@
   }
 
   .logo {
-  height: 54px;
-  width: auto;          
-  max-width: 120px;     
-  object-fit: contain;
-  display: block;
-  border-radius: 10px;  
-  background: transparent;
-  padding: 2px;       
-}
+    height: 54px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+    background: transparent;
+    padding: 2px;
+  }
 
   /* no mobile a pesquisa diminui e não quebra */
   .acoes-direita {
@@ -130,6 +116,10 @@
     gap: 10px;
   }
 
+  .acoes-direita app-campo-texto {
+    flex: 0 0 auto;
+  }
+
   /* botão logout menor no mobile */
   .btn-logout {
     height: 40px;
@@ -137,4 +127,32 @@
     border-radius: 12px;
     font-size: 13px;
   }
+
+  @media (max-width: 768px) {
+  .titulo-desktop {
+    display: none;
+  }
+
+  .header-estilizado {
+    padding: 8px 10px;
+    box-sizing: border-box;
+width: 100%;
+
+  }
+
+  .logo {
+    height: 44px;
+    max-width: 90px;
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .logo-titulo-container {
+    gap: 6px;
+  }
+
+  .acoes-direita {
+    gap: 8px;
+  }
+}
 }

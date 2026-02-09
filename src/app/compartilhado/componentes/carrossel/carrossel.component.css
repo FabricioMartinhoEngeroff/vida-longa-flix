@@ -70,7 +70,6 @@
    Lista (Web + Mobile)
 ========================= */
 .video-list {
-  overflow-x: hidden !important;
   display: flex;
   flex-wrap: nowrap;
 
@@ -85,16 +84,13 @@
 
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-
   scroll-snap-type: x mandatory;
-
   overscroll-behavior-x: contain;
 
   user-select: none;
 
-
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .video-list::-webkit-scrollbar {
@@ -122,18 +118,17 @@
     display: none;
   }
 
-  .carrossel-container {
-    padding: 0 8px;
-  }
+ .carrossel-container {
+  padding: 0;
+}
 
-  .video-list {
-     overflow-x: hidden !important;
-    gap: 12px;
-    padding: 8px 0;
-  }
+.video-list {
+  gap: 12px;
+  padding: 8px 12px;
+}
 
-  .video-list > * {
-    width: 85vw;
-    max-width: 85vw;
-  }
+.video-list > * {
+  width: 84vw;
+  max-width: 84vw;
+}
 }

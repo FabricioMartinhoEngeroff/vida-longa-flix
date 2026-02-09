@@ -2,17 +2,8 @@
 .wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  .wrapper {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
 }
 
 /* Container do input */
@@ -20,14 +11,15 @@
   position: relative;
   flex: 1;
   width: 100%;
+  max-width: 320px;
+  transition: max-width 0.2s ease, opacity 0.2s ease;
 }
 
 /* Input */
 .campo-texto-estilizado {
   height: 40px;
   width: 100%;
-
-  padding: 0 40px 0 16px; /* espaço pra lupa */
+  padding: 0 12px;
   border-radius: 20px;
 
   border: 1px solid #147a03;
@@ -35,7 +27,7 @@
 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-  font-size: 16px; /* importante: evita zoom no iOS */
+  font-size: 16px;
   color: #000;
 
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -43,7 +35,7 @@
 
 /* Placeholder */
 .campo-texto-estilizado::placeholder {
-  color: black;
+  color: #000;
 }
 
 /* Focus */
@@ -58,63 +50,45 @@
   cursor: not-allowed;
 }
 
-/* Lupa */
-.icone-lupa {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-
-  width: 20px;
-  height: 20px;
-
-  /* importante: não atrapalha clique no input */
-  pointer-events: none;
-}
-
-@media (max-width: 768px) {
-  .icone-lupa {
-    right: 16px;
-  }
-}
-
-/* botão engrenagem */
-.configuracao-container {
-  background: transparent;
-  border: none;
-  cursor: pointer;
+/* Botão lupa */
+.botao-lupa {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #2f6b3a;
+  background: #7ea76c;
+  color: #0b2b0b;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 6px;
-  border-radius: 12px;
-
-  transition: transform 0.12s ease;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.configuracao-container:active {
-  transform: scale(0.95);
+.botao-lupa mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
 }
 
-/* estado disabled */
-.configuracao-container:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
 
-/* Ícone engrenagem */
-.icone-config {
-  font-size: 24px;
-  color: black;
-  line-height: 1;
-}
-
+/* MOBILE: input colapsado até clicar */
 @media (max-width: 768px) {
+  .container-estilizado {
+    max-width: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .wrapper.aberto .container-estilizado {
+    max-width: 60vw;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .configuracao-container {
-    align-self: flex-end;
-    padding-right: 12px;
+    display: none;
   }
 }

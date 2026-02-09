@@ -321,9 +321,14 @@
    RESPONSIVO
    ========================================= */
 @media (max-width: 768px) {
-  /* Desktop preview não funciona no mobile */
   .video-previa {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .video-card {
+    width: 72vw;
   }
 }
 

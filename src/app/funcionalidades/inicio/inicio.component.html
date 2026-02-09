@@ -1,9 +1,6 @@
-
-
 <!-- Template do item (usado no carrossel por categoria) -->
 <ng-template #videoItem let-video>
   <div class="video-card">
-    <!-- Wrapper capa + preview -->
     <div
       class="video-wrapper"
       (mouseenter)="aoPassarMouseVideo(video.id, $event)"
@@ -31,17 +28,14 @@
       ></video>
     </div>
 
-    <!-- Info -->
     <div class="info-area">
       <h3>{{ video.title }}</h3>
       <p class="descricao">{{ video.description }}</p>
     </div>
 
-    <!-- Comentários -->
     <div class="comentarios">
       <div class="cabecalho-comentario">
         <div class="titulo">Comentários</div>
-
         <app-botao-favoritar
           [favorito]="video.favorita ?? false"
           (aoClicar)="toggleFavorite(video.id)"
@@ -61,7 +55,6 @@
       </span>
     </div>
 
-    <!-- Form comentário -->
     <div class="comentario-form">
       <input
         type="text"
@@ -69,7 +62,6 @@
         [value]="novoComentario[video.id] || ''"
         (input)="novoComentario[video.id] = ($any($event.target).value)"
       />
-
       <button type="button" (click)="adicionarComentario(video.id)">
         Publicar
       </button>
@@ -77,69 +69,12 @@
   </div>
 </ng-template>
 
-<!-- ========================================= 
-     WEB / DESKTOP (por categoria)
-     ========================================= -->
-<div *ngIf="!isMobile" class="web">
+<!-- Carrossel por categoria (web + mobile) -->
+<div class="web">
   <app-categoria-carrossel
     *ngFor="let grupo of videosPorCategoria"
     [titulo]="grupo.nome"
     [itens]="grupo.itens"
     [itemTemplate]="videoItem"
   ></app-categoria-carrossel>
-</div>
-
-<!-- ========================================= 
-     MOBILE / CELULAR
-     ========================================= -->
-<div *ngIf="isMobile" class="mobile">
-  <div class="lista-mobile">
-    <div class="card-mobile" *ngFor="let video of videosReels">
-      <div class="video-mobile-wrapper" (click)="abrirModal(video)">
-        <img [src]="video.capa" [alt]="video.title" class="capa-mobile" />
-        <div class="play-mobile">
-          <mat-icon>play_circle_filled</mat-icon>
-        </div>
-      </div>
-
-      <div class="info-mobile">
-        <div class="linha-titulo">
-          <h3 class="titulo-video">{{ video.title }}</h3>
-
-          <app-botao-favoritar
-            [favorito]="video.favorita ?? false"
-            (aoClicar)="toggleFavorite(video.id)"
-          ></app-botao-favoritar>
-        </div>
-
-        <p class="descricao-mobile">{{ video.description }}</p>
-
-        <div class="comentarios-mobile">
-          <span
-            *ngIf="(comentariosState[video.id]?.length || 0) > 2"
-            class="verTodos"
-            (click)="abrirModal(video)"
-          >
-            Ver todos os {{ comentariosState[video.id].length }} comentários
-          </span>
-
-          <span *ngFor="let c of comentariosState[video.id]?.slice(-2)">
-            {{ c }}
-          </span>
-        </div>
-
-        <div class="comentario-form mobile-form">
-          <input
-            type="text"
-            placeholder="Adicione um comentário..."
-            [value]="novoComentario[video.id] || ''"
-            (input)="novoComentario[video.id] = ($any($event.target).value)"
-          />
-          <button type="button" (click)="adicionarComentario(video.id)">
-            Publicar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
