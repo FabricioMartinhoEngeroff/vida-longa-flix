@@ -1,4 +1,5 @@
 /* HEADER FULL WIDTH */
+
 .header-estilizado {
   background-color: #7da873;
   width: 100%;
@@ -44,13 +45,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 4px;
   width: auto;
   max-width: none;
   min-width: 0;
 }
 
-.acoes-direita app-campo-texto {
+.acoes-direita app-campo-pesquisar {
   flex: 1;
   min-width: 0;
 }
@@ -79,80 +80,63 @@
 
 /* =================== MOBILE =================== */
 @media (max-width: 768px) {
+  .titulo-desktop {
+    display: none;
+  }
+
   .header-estilizado {
-    padding: 10px 12px;
+    padding: 1px 2px;
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-sizing: border-box;
+    width: 100%;
   }
 
   .header-conteudo {
     flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 2px;
   }
 
   .logo-titulo-container {
     min-width: auto;
-    gap: 8px;
+    gap: 2px;
   }
 
   .logo {
-    height: 54px;
+    height: 44px;
     width: auto;
-    max-width: 120px;
+    max-width: 90px;
     object-fit: contain;
     display: block;
-    border-radius: 10px;
+    border-radius: 2px;
     background: transparent;
-    padding: 2px;
+    padding: 0;
   }
 
-  /* no mobile a pesquisa diminui e não quebra */
   .acoes-direita {
     max-width: none;
     width: auto;
     flex: 1;
-    gap: 10px;
+    gap: 2px;
   }
 
-  .acoes-direita app-campo-texto {
+    .acoes-direita > * {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+
+  .acoes-direita app-campo-pesquisar {
     flex: 0 0 auto;
   }
 
-  /* botão logout menor no mobile */
   .btn-logout {
     height: 40px;
     padding: 0 12px;
     border-radius: 12px;
     font-size: 13px;
   }
-
-  @media (max-width: 768px) {
-  .titulo-desktop {
-    display: none;
-  }
-
-  .header-estilizado {
-    padding: 8px 10px;
-    box-sizing: border-box;
-width: 100%;
-
-  }
-
-  .logo {
-    height: 44px;
-    max-width: 90px;
-    padding: 0;
-    border-radius: 8px;
-  }
-
-  .logo-titulo-container {
-    gap: 6px;
-  }
-
-  .acoes-direita {
-    gap: 8px;
-  }
-}
 }

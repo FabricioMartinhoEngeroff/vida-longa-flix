@@ -29,48 +29,44 @@ import { UsuarioAutenticacaoService } from '../../../auth/api/usuario-auth-servi
     ></app-modal-confirmacao>
   `,
   styles: [`
-    .btn-sair {
-      width: 40px;
-      height: 40px;
-      
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      
-      border: none;
-      border-radius: 50%;
-      background: transparent;
-      
-      color: #2f6b3a;
-      cursor: pointer;
-      
-      transition: all 0.2s ease;
-    }
-    
-    .btn-sair:hover {
-      background: rgba(47, 107, 58, 0.1);
-      transform: scale(1.05);
-    }
-    
-    .btn-sair mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-    }
+  .btn-sair {
+    width: 36px;
+    height: 36px;
 
-    @media (max-width: 768px) {
-    .btn-sair {
-      width: 36px;
-      height: 36px;
-    }
-    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+
+    color: #2f6b3a;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+  }
+
+  .btn-sair:hover {
+    background: rgba(47, 107, 58, 0.1);
+    transform: scale(1.05);
+  }
+
+  .btn-sair mat-icon {
+    font-size: 25px;
+    width: 25px;
+    height: 25px;
+  }
+
+  @media (max-width: 768px) {
     .btn-sair mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+      font-size: 25px;
+      width: 25px;
+      height: 25px;
     }
   }
-  `]
+`]
+
 })
 export class BotaoSairComponent {
   modalAberta = false;

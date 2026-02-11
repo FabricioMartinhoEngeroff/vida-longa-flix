@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: center;
   
-  width: 44px;
-  height: 44px;
+ width: 40px;
+  height: 40px;
   
   background: transparent;
   border: none;
@@ -66,9 +66,10 @@
 /* Mobile */
 @media (max-width: 768px) {
   .btn-notificacoes {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
+
   
   .btn-notificacoes mat-icon {
     font-size: 22px;

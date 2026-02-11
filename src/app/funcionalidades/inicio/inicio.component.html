@@ -1,6 +1,6 @@
 <!-- Template do item (usado no carrossel por categoria) -->
 <ng-template #videoItem let-video>
-  <div class="video-card">
+  <div class="video-card" [attr.id]="'video-' + video.id">
     <div
       class="video-wrapper"
       (mouseenter)="aoPassarMouseVideo(video.id, $event)"
@@ -71,10 +71,11 @@
 
 <!-- Carrossel por categoria (web + mobile) -->
 <div class="web">
-  <app-categoria-carrossel
-    *ngFor="let grupo of videosPorCategoria"
-    [titulo]="grupo.nome"
-    [itens]="grupo.itens"
-    [itemTemplate]="videoItem"
-  ></app-categoria-carrossel>
+ <app-categoria-carrossel
+  *ngFor="let grupo of videosPorCategoria"
+  [titulo]="grupo.nome"
+  [itens]="grupo.itens"
+  [itemTemplate]="videoItem"
+  [attr.id]="'cat-' + grupo.nome.toLowerCase().replace(/\s+/g,'-')"
+></app-categoria-carrossel>
 </div>

@@ -24,7 +24,7 @@ export class RecuperarSenhaComponent {
   constructor(
     private fb: FormBuilder,
     private notificacaoService: NotificacaoService,
-    private emailService: EmailService  // ← ADICIONE
+    private emailService: EmailService 
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
@@ -55,7 +55,6 @@ export class RecuperarSenhaComponent {
     try {
       const { email } = this.form.getRawValue();
       
-      // ✅ MUDE: Usa EmailService
       await this.emailService.enviarRecuperacaoSenha(email);
 
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.EMAIL_RECUPERACAO_ENVIADO);

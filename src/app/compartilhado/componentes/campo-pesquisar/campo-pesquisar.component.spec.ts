@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { CampoTextoComponent } from './campo-texto.component';
+import { CampoPesquisarComponent } from './campo-pesquisar.component';
 
-describe('CampoTextoComponent', () => {
-  let component: CampoTextoComponent;
-  let fixture: ComponentFixture<CampoTextoComponent>;
+describe('CampoPesquisarComponent', () => {
+  let component: CampoPesquisarComponent;
+  let fixture: ComponentFixture<CampoPesquisarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CampoTextoComponent], 
+      imports: [CampoPesquisarComponent], 
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CampoTextoComponent);
+    fixture = TestBed.createComponent(CampoPesquisarComponent);
     component = fixture.componentInstance;
 
     component.placeholder = 'Pesquisar...';

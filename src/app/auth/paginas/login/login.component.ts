@@ -13,6 +13,8 @@ import { CampoFormularioComponent } from '../../componentes/campo-formulario/cam
 import { RecuperarSenhaComponent } from '../../componentes/recuperar-senha/recuperar-senha.component';
 import { ServicoAutenticacao } from '../../api/servico-autenticacao';
 import { LoginForm } from '../../tipos/formulario.types';
+import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
+import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
 
 @Component({
   selector: 'app-login',
@@ -36,7 +38,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private servicoAutenticacao: ServicoAutenticacao
+    private servicoAutenticacao: ServicoAutenticacao,
+    private notificacaoService: NotificacaoService,
   ) {
     this.form = this.fb.group<LoginForm>({
       email: new FormControl('', { 
@@ -65,7 +68,10 @@ export class LoginComponent {
 
   async entrar() {
     this.form.markAllAsTouched();
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+           this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.CAMPOS_OBRIGATORIOS);
+           return;
+         }
 
     this.carregando = true;
 
@@ -73,7 +79,8 @@ export class LoginComponent {
       const { email, password } = this.form.getRawValue();
       await this.servicoAutenticacao.login(email, password);
 
-      this.router.navigateByUrl('/app');
+      this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.LOGIN_SUCESSO);
+         this.router.navigateByUrl('/app');
     } catch (e) {
       console.error(e);
     } finally {

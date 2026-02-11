@@ -5,16 +5,11 @@
   </div>
 
   <ng-template #cardapioItem let-item>
-    <div
-      class="card"
-      (click)="abrir(item)"
-      role="button"
-      tabindex="0"
-    >
+   <div class="card" [attr.id]="'cardapio-' + item.id" (click)="abrir(item)" role="button" tabindex="0">
       <img [src]="item.capa || 'assets/images/Logo.png'" [alt]="item.title" />
       <div class="info">
         <h3>{{ item.title }}</h3>
-        <span class="categoria">{{ item.category.name }}</span>
+        <span class="categoria">{{ item.category?.name }}</span>
         <p>{{ item.description }}</p>
       </div>
     </div>
@@ -22,7 +17,9 @@
 
   <div *ngIf="(cardapiosPorCategoria$ | async) as grupos">
     <app-categoria-carrossel
+      class="categoria-bloco"
       *ngFor="let grupo of grupos"
+      [attr.id]="'cat-' + grupo.nome.toLowerCase().replace(/\s+/g,'-')"
       [titulo]="grupo.nome"
       [itens]="grupo.itens"
       [itemTemplate]="cardapioItem"

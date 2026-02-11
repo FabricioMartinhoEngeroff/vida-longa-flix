@@ -9,10 +9,14 @@
 </div>
 
     <div class="acoes-direita">
-      <app-campo-texto
-        placeholder="Pesquisar..."
-        (valueChange)="onPesquisar($event)"
-      ></app-campo-texto>
+     <app-campo-pesquisar
+  (valueChange)="onPesquisar($event)"
+  (buscar)="irParaBusca($event)"
+  [categorias]="categoriasBusca"
+  [sugestoes]="sugestoesBusca"
+></app-campo-pesquisar>
+
+
 
       <app-notificacoes></app-notificacoes>
       <app-botao-sair></app-botao-sair>

@@ -1,0 +1,47 @@
+<div class="wrapper">
+  <button
+    type="button"
+    class="botao-lupa"
+    (click)="abrir()"
+    [disabled]="disabled"
+    aria-label="Pesquisar"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
+</div>
+
+<div class="busca-overlay" *ngIf="aberto" (click)="fechar()">
+  <div class="busca-modal" (click)="$event.stopPropagation()">
+    <div class="busca-header">
+      <mat-icon>search</mat-icon>
+      <input
+  #inputEl
+  class="busca-input"
+  [placeholder]="placeholder"
+  [value]="value"
+  (input)="onInput($event)"
+  (keyup.enter)="confirmarBusca()"
+/>
+
+      <button class="fechar" type="button" (click)="fechar()">×</button>
+    </div>
+
+    <div class="busca-secao" *ngIf="categorias.length > 0">
+      <div class="busca-titulo">Categorias</div>
+      <div class="busca-lista">
+        <button class="busca-item" *ngFor="let c of categorias" (click)="escolher(c)">
+          {{ c }}
+        </button>
+      </div>
+    </div>
+
+    <div class="busca-secao" *ngIf="sugestoes.length > 0">
+      <div class="busca-titulo">Sugestões</div>
+      <div class="busca-lista">
+        <button class="busca-item" *ngFor="let s of sugestoes" (click)="escolher(s)">
+          {{ s }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

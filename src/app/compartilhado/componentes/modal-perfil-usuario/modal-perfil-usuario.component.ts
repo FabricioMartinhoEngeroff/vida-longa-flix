@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CampoFormularioComponent } from '../../../auth/componentes/campo-formulario/campo-formulario.component';
+import { NotificacaoService } from '../../servicos/mensagem-alerta/mensagem-alerta.service';
+import { MENSAGENS_PADRAO } from '../../servicos/mensagem-alerta/mensagens-padrao.constants';
 
 @Component({
   selector: 'app-modal-perfil-usuario',
@@ -20,7 +22,11 @@ export class ModalPerfilUsuarioComponent implements OnInit {
 
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+  private fb: FormBuilder,
+  private notificacaoService: NotificacaoService 
+) {}
+
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -60,12 +66,17 @@ export class ModalPerfilUsuarioComponent implements OnInit {
   }
 
   onSalvar() {
-    this.form.markAllAsTouched();
-    if (this.form.invalid) return;
+  this.form.markAllAsTouched();
 
-    const dados = this.form.getRawValue();
-    this.salvar.emit(dados);
+  if (this.form.invalid) {
+    this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.CAMPOS_OBRIGATORIOS);
+    return;
   }
+
+  const dados = this.form.getRawValue();
+  this.salvar.emit(dados);
+  this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.PERFIL_ATUALIZADO);
+}
 
   onAbrirMudarSenha() {
     this.abrirMudarSenha.emit();

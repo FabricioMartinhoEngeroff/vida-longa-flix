@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { map, Observable } from 'rxjs';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
 import { Cardapio } from '../../compartilhado/tipos/ cardapios';
@@ -18,22 +19,47 @@ type GrupoCardapio = Grupo<Cardapio>;
   templateUrl: './cardapios.component.html',
   styleUrls: ['./cardapios.component.css'],
 })
-export class CardapiosComponent {
+export class CardapiosComponent implements OnInit {
+
   cardapiosPorCategoria$: Observable<GrupoCardapio[]>;
   selecionado: Cardapio | null = null;
 
   comentariosState: Record<string, string[]> = {};
 
+    private cardapiosLista: Cardapio[] = [];
+  private tipoBusca = '';
+  private idBusca = '';
+  private categoriaBusca = '';
+  private termoBusca = '';
+
   constructor(
     private cardapioService: CardapioService,
-    private comentariosService: ComentariosService
+    private comentariosService: ComentariosService,
+    private route: ActivatedRoute
   ) {
     this.cardapiosPorCategoria$ = this.cardapioService.cardapios$.pipe(
-      map(list => agruparPor(list, c => c.category?.name || 'Sem categoria'))
+      map((list) =>
+        agruparPor(list, (c) => c.category?.name || 'Sem categoria')
+      )
     );
 
-    this.comentariosService.comentarios$.subscribe(map => {
-      this.comentariosState = map;
+    this.comentariosService.comentarios$.subscribe((mapa) => {
+      this.comentariosState = mapa;
+    });
+  }
+
+    ngOnInit(): void {
+    this.cardapioService.cardapios$.subscribe((list) => {
+      this.cardapiosLista = list;
+      this.tentarScrollBusca();
+    });
+
+    this.route.queryParams.subscribe((params: Params) => {
+      this.tipoBusca = (params['tipo'] || '').toLowerCase();
+      this.idBusca = (params['id'] || '').toString();
+      this.categoriaBusca = (params['cat'] || '').toString();
+      this.termoBusca = (params['q'] || '').toString();
+      this.tentarScrollBusca();
     });
   }
 
@@ -49,11 +75,55 @@ export class CardapiosComponent {
     this.selecionado = null;
   }
 
- toggleFavorite(id: string) {
-  this.cardapioService.toggleFavorite(id);
+  toggleFavorite(id: string) {
+    this.cardapioService.toggleFavorite(id);
+  }
 
-  const atualizado = this.cardapioService.cardapios.find(c => c.id === id);
-  if (atualizado) this.selecionado = atualizado;
-}
+    private tentarScrollBusca() {
+    if (!this.cardapiosLista.length) return;
+
+    if (this.tipoBusca === 'cardapio' && this.idBusca) {
+      this.scrollParaElemento(`cardapio-${this.idBusca}`);
+      return;
+    }
+
+    if (this.tipoBusca === 'categoria-cardapio' && this.categoriaBusca) {
+      this.scrollParaElemento(this.criarIdCategoria(this.categoriaBusca));
+      return;
+    }
+
+    if (!this.termoBusca) return;
+
+    const termoN = this.normalizar(this.termoBusca);
+    const alvo = [...this.cardapiosLista]
+      .sort((a, b) => a.title.localeCompare(b.title, 'pt-BR', { sensitivity: 'base' }))
+      .find((c) =>
+        this.normalizar(c.title).includes(termoN) ||
+        this.normalizar(c.description).includes(termoN) ||
+        this.normalizar(c.category?.name || '').includes(termoN)
+      );
+
+    if (alvo) {
+      this.scrollParaElemento(`cardapio-${alvo.id}`);
+    }
+  }
+
+  private scrollParaElemento(id: string) {
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
+  }
+
+  private criarIdCategoria(nome: string): string {
+    return 'cat-' + nome.toLowerCase().trim().replace(/\s+/g, '-');
+  }
+
+  private normalizar(texto: string): string {
+    return (texto || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
 
 }

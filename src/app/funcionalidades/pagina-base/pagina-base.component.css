@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .fundo-gradiente {
   background: linear-gradient(
     174.61deg,

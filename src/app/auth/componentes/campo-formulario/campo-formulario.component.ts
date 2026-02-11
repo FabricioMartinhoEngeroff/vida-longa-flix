@@ -40,17 +40,11 @@ export class CampoFormularioComponent implements ControlValueAccessor {
   private onChange: (v: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  /**
-   * Placeholder dinâmico:
-   * - Campo vazio: mostra o nome (label)
-   * - Campo preenchido: mostra a máscara (placeholder)
-   */
+  
   get placeholderDinamico(): string {
-    // Se tem valor, mostra placeholder com máscara
     if (this.value) {
       return this.placeholder;
     }
-    // Se não tem valor, mostra o nome do campo
     return this.label || this.placeholder;
   }
 
@@ -74,27 +68,22 @@ export class CampoFormularioComponent implements ControlValueAccessor {
     const input = ev.target as HTMLInputElement;
     let valorDigitado = input.value;
 
-    // 🎭 Aplica máscara se configurada
     if (this.mascara) {
       valorDigitado = this.servicoMascara.aplicar(valorDigitado, this.mascara);
     }
 
-    // 🔒 Limita caracteres se necessário
     if (this.maxlength && valorDigitado.length > this.maxlength) {
       valorDigitado = valorDigitado.substring(0, this.maxlength);
     }
 
-    // Atualiza valor visual
     this.value = valorDigitado;
     
-    // Envia valor SEM máscara para o formulário
     const valorLimpo = this.mascara 
       ? this.servicoMascara.remover(valorDigitado)
       : valorDigitado;
     
     this.onChange(valorLimpo);
     
-    // Atualiza o input visualmente
     input.value = valorDigitado;
   }
 

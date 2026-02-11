@@ -6,9 +6,7 @@
 .btn-perfil {
   display: flex;
   align-items: center;
-  gap: 8px;
   
-  padding: 4px 8px 4px 4px;
   border: none;
   border-radius: 999px;
   
@@ -155,7 +153,7 @@
 .divider {
   height: 1px;
   background: #147a03;
-  margin: 8px 0;
+  margin: 10px 0;
 }
 
 /* Opções do menu */
@@ -163,7 +161,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 5px;
   
   padding: 12px 16px;
   border: none;
@@ -268,7 +266,7 @@
 /* Mobile */
 @media (max-width: 768px) {
   .btn-perfil {
-    padding: 2px 6px 2px 2px;
+    padding: 1px 2px ;
   }
   
   .avatar {
