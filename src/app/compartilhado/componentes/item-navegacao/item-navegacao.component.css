@@ -5,28 +5,22 @@
   justify-content: center;
 
   cursor: pointer;
-
   color: #ffffff;
   font-family: "verdana-regular";
   font-size: 14px;
   text-align: center;
 
   gap: 3px;
-
-  /* mobile friendly (área clicável) */
   padding: 8px 10px;
 
   background: none;
   border: none;
-
   border-radius: 12px;
 
   transition: color 0.2s ease, transform 0.12s ease;
-
   -webkit-tap-highlight-color: transparent;
 }
 
-/* hover só em dispositivos com mouse */
 @media (hover: hover) and (pointer: fine) {
   .item:hover {
     color: #d0ffd0;
@@ -46,7 +40,6 @@
   font-size: 26px;
   line-height: 1;
   margin-bottom: 3px;
-
   opacity: 0.6;
   transition: opacity 0.3s ease;
 }
@@ -55,16 +48,15 @@
   opacity: 1;
 }
 
-
 @media (max-width: 768px) {
   .item {
-    font-size: 12px;
-    gap: 2px;
-    padding: 10px 12px;
+    font-size: 11px;
+    gap: 1px;
+    padding: 4px 2px;
   }
 
   .icone {
-    font-size: 22px;
+    font-size: 18px;
+    margin-bottom: 0;
   }
 }
-

@@ -27,7 +27,7 @@ export class BarraNavegacaoComponent {
   { nome: 'Favoritos', icone: 'favorite_border', path: '/app/favoritos' },
   { nome: 'Histórico', icone: 'history', path: '/app/historico' },
   { nome: 'Mais vistos', icone: 'visibility', path: '/app/mais-vistos' },
-  { nome: 'Reels', icone: 'play_circle', path: '/app/reels' },
+  { nome: 'Reels', icone: 'play_circle', path: '/app' },
   { nome: 'Adicionar vídeos', icone: 'video_call', path: '/app/admin-videos', adminOnly: true },
   { nome: 'Admin Cardápios', icone: 'menu_book', path: '/app/admin-cardapios', adminOnly: true },
 

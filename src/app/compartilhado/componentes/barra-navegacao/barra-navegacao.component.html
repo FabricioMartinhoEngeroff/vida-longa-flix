@@ -1,6 +1,6 @@
 <nav class="barra-navegacao" aria-label="Menu principal">
   <app-item-navegacao
-    *ngFor="let item of itens"
+    *ngFor="let item of itensVisiveis"
     [texto]="item.nome"
     [icone]="item.icone"
     [ativo]="ativo === item.nome"
