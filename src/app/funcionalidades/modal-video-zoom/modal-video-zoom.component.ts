@@ -41,19 +41,19 @@ export class ModalVideoZoomComponent implements OnInit {
         this.videoService.videosReels.find((v) => v.id === this.videoSelecionado?.id) ??
         this.videoSelecionado;
 
-      this.comentarios = this.comentariosService.get(this.videoAtualizado.id);
+      this.comentarios = this.comentariosService.get('video', this.videoAtualizado.id);
     });
 
     this.comentariosService.comentarios$.subscribe(map => {
       if (this.videoAtualizado) {
-        this.comentarios = map[this.videoAtualizado.id] ?? [];
+        this.comentarios = map[`video:${this.videoAtualizado.id}`] ?? [];
       }
     });
   }
 
   adicionarComentario(texto: string): void {
     if (!this.videoAtualizado) return;
-    this.comentariosService.add(this.videoAtualizado.id, texto);
+    this.comentariosService.add('video', this.videoAtualizado.id, texto);
   }
 
   fecharModal(): void {

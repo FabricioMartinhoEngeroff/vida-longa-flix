@@ -8,6 +8,7 @@ import { Cardapio } from '../../compartilhado/tipos/ cardapios';
 import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
 import { ModalCardapioComponent } from '../../compartilhado/componentes/modal-cardapio/modal-cardapio.component';
 import { CategoriaCarrosselComponent } from '../../compartilhado/componentes/categoria-carrossel/categoria-carrossel.component';
+import { EngajamentoResumoComponent } from '../../compartilhado/componentes/engajamento-resumo/engajamento-resumo.component';
 import { agruparPor, Grupo } from '../../compartilhado/utils/agrupar-por';
 
 type GrupoCardapio = Grupo<Cardapio>;
@@ -15,7 +16,12 @@ type GrupoCardapio = Grupo<Cardapio>;
 @Component({
   selector: 'app-cardapios',
   standalone: true,
-  imports: [CommonModule, CategoriaCarrosselComponent, ModalCardapioComponent],
+  imports: [
+    CommonModule,
+    CategoriaCarrosselComponent,
+    ModalCardapioComponent,
+    EngajamentoResumoComponent,
+  ],
   templateUrl: './cardapios.component.html',
   styleUrls: ['./cardapios.component.css'],
 })
@@ -51,6 +57,7 @@ export class CardapiosComponent implements OnInit {
     ngOnInit(): void {
     this.cardapioService.cardapios$.subscribe((list) => {
       this.cardapiosLista = list;
+      this.sincronizarSelecionado();
       this.tentarScrollBusca();
     });
 
@@ -64,7 +71,15 @@ export class CardapiosComponent implements OnInit {
   }
 
   adicionarComentario(id: string, texto: string) {
-    this.comentariosService.add(id, texto);
+    this.comentariosService.add('cardapio', id, texto);
+  }
+
+  totalComentarios(id: string): number {
+    return this.comentariosState[`cardapio:${id}`]?.length ?? 0;
+  }
+
+  comentariosDoCardapio(id: string): string[] {
+    return this.comentariosState[`cardapio:${id}`] ?? [];
   }
 
   abrir(cardapio: Cardapio) {
@@ -77,6 +92,13 @@ export class CardapiosComponent implements OnInit {
 
   toggleFavorite(id: string) {
     this.cardapioService.toggleFavorite(id);
+    this.sincronizarSelecionado();
+  }
+
+  private sincronizarSelecionado(): void {
+    if (!this.selecionado) return;
+    this.selecionado =
+      this.cardapiosLista.find((c) => c.id === this.selecionado?.id) ?? null;
   }
 
     private tentarScrollBusca() {

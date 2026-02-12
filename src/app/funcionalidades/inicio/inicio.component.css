@@ -162,77 +162,6 @@
 }
 
 /* =========================================
-   COMENTÁRIOS
-   ========================================= */
-.comentarios {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #333;
-}
-
-.cabecalho-comentario {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.comentarios .titulo {
-  font-weight: bold;
-  color: #444;
-}
-
-.comentarios span {
-  display: block;
-  margin-bottom: 2px;
-}
-
-.verTodos {
-  color: #888;
-  cursor: pointer;
-  margin-bottom: 6px;
-}
-
-.verTodos:hover {
-  color: #2f6b3a;
-  text-decoration: underline;
-}
-
-/* =========================================
-   FORM COMENTÁRIO
-   ========================================= */
-.comentario-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.comentario-form input {
-  flex: 1;
-  min-width: 0;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 12px;
-}
-
-.comentario-form button {
-  padding: 6px 10px;
-  background-color: #2f6b3a;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.comentario-form button:hover {
-  background-color: #4f8a58;
-}
-
-/* =========================================
    MOBILE
    ========================================= */
 .mobile {
@@ -242,7 +171,7 @@
 .lista-mobile {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px; 
 }
 
 .card-mobile {
@@ -324,21 +253,30 @@
   .video-previa {
     display: none;
   }
-}
 
-@media (max-width: 768px) {
   .video-card {
-    width: 72vw;
-  }
-}
-
-@media (max-width: 500px) {
-  .comentario-form {
-    flex-direction: column;
-    align-items: stretch;
+    width: 58vw;
+    padding: 8px;
+    border-radius: 10px;
   }
 
-  .comentario-form button {
-    width: 100%;
+  .info-area {
+    margin-top: 6px;
+  }
+
+  .info-area h3 {
+    font-size: 13px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .info-area .descricao {
+    font-size: 11px;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }

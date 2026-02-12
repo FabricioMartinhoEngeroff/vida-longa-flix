@@ -39,7 +39,7 @@
 
       <app-comentarios-box
         [comentarios]="comentarios"
-        [favorito]="favorito"
+        [favorito]="!!s.favorita"
         (favoritar)="favoritar.emit()"
         (comentar)="comentar.emit($event)"
       ></app-comentarios-box>

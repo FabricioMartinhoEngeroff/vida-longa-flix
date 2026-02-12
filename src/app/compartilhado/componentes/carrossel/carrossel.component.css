@@ -123,12 +123,13 @@
 }
 
 .video-list {
-  gap: 12px;
-  padding: 8px 12px;
+  gap: 8px;
+  padding: 6px 10px;
 }
 
 .video-list > * {
-  width: 84vw;
-  max-width: 84vw;
+  width: 58vw;
+  min-width: 58vw;
+  max-width: 58vw;
 }
 }

@@ -11,6 +11,13 @@
         <h3>{{ item.title }}</h3>
         <span class="categoria">{{ item.category?.name }}</span>
         <p>{{ item.description }}</p>
+        <app-engajamento-resumo
+          [likesCount]="item.likesCount ?? 0"
+          [commentsCount]="totalComentarios(item.id)"
+          [liked]="item.favorita ?? false"
+          (likeClick)="toggleFavorite(item.id)"
+          (commentsClick)="abrir(item)"
+        ></app-engajamento-resumo>
       </div>
     </div>
   </ng-template>
@@ -34,8 +41,7 @@
 <app-modal-cardapio
   *ngIf="selecionado as s"
   [cardapio]="s"
-  [comentarios]="comentariosState[s.id] || []"
-  [favorito]="!!s.favorita"
+  [comentarios]="comentariosDoCardapio(s.id)"
   (fechar)="fechar()"
   (favoritar)="toggleFavorite(s.id)"
   (comentar)="adicionarComentario(s.id, $event)"

@@ -45,4 +45,18 @@ describe('VideoService', () => {
       expect(favoritos.removerFavorito).toHaveBeenCalled();
     }
   });
+
+  it('deve incrementar e decrementar likesCount ao alternar favorito', () => {
+    const primeiro = service.videosReels[0];
+    const id = primeiro.id;
+    const likesIniciais = primeiro.likesCount ?? 0;
+
+    service.toggleFavorite(id);
+    const aposCurtir = service.videosReels.find((v) => v.id === id)!;
+    expect(aposCurtir.likesCount).toBe(likesIniciais + 1);
+
+    service.toggleFavorite(id);
+    const aposDescurtir = service.videosReels.find((v) => v.id === id)!;
+    expect(aposDescurtir.likesCount).toBe(Math.max(0, likesIniciais));
+  });
 });

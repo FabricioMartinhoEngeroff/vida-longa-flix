@@ -36,5 +36,6 @@ export interface Video {
   calorias?: number;
 
   favorita?: boolean;
+  likesCount?: number;
   viewsCount?: number;
 }

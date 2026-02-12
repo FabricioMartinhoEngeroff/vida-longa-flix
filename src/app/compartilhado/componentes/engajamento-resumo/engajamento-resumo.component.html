@@ -1,0 +1,11 @@
+<div class="engajamento">
+  <button type="button" class="acao" (click)="onLike($event)" aria-label="Curtir">
+    <mat-icon>{{ liked ? 'favorite' : 'favorite_border' }}</mat-icon>
+    <span>{{ likesCount }}</span>
+  </button>
+
+  <button type="button" class="acao" (click)="onComments($event)" aria-label="Ver comentários">
+    <mat-icon>chat_bubble_outline</mat-icon>
+    <span>{{ commentsCount }}</span>
+  </button>
+</div>

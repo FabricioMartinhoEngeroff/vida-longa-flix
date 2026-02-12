@@ -1,10 +1,10 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { BotaoFavoritarComponent } from '../../compartilhado/componentes/botao-favoritar/botao-favoritar.component';
 import { CategoriaCarrosselComponent } from '../../compartilhado/componentes/categoria-carrossel/categoria-carrossel.component';
+import { EngajamentoResumoComponent } from '../../compartilhado/componentes/engajamento-resumo/engajamento-resumo.component';
 import { Video } from '../../compartilhado/tipos/videos';
 import { ModalService } from '../../compartilhado/servicos/modal/modal';
 import { VideoService } from '../../compartilhado/servicos/video/video';
@@ -18,10 +18,9 @@ type GrupoVideo = Grupo<Video>;
   standalone: true,
   imports: [
     NgFor,
-    NgIf,
     MatIconModule,
     CategoriaCarrosselComponent,
-    BotaoFavoritarComponent,
+    EngajamentoResumoComponent,
   ],
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css'],
@@ -32,7 +31,6 @@ export class InicioComponent implements OnInit {
   isMobile = false;
 
   comentariosState: Record<string, string[]> = {};
-  novoComentario: Record<string, string> = {};
 
   mostrandoPrevia: Record<string, boolean> = {};
   private timeoutsHover: Record<string, any> = {};
@@ -123,12 +121,8 @@ export class InicioComponent implements OnInit {
     this.videoService.toggleFavorite(videoId);
   }
 
-  adicionarComentario(videoId: string) {
-    const texto = this.novoComentario[videoId]?.trim();
-    if (!texto) return;
-
-    this.comentariosService.add(videoId, texto);
-    this.novoComentario[videoId] = '';
+  totalComentarios(videoId: string): number {
+    return this.comentariosState[`video:${videoId}`]?.length ?? 0;
   }
 
   verTudo() {

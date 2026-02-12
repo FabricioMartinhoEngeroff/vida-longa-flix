@@ -1,22 +1,29 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+type TipoComentario = 'video' | 'cardapio';
+
 @Injectable({ providedIn: 'root' })
 export class ComentariosService {
   private state = new BehaviorSubject<Record<string, string[]>>({});
   readonly comentarios$ = this.state.asObservable();
 
-  get(id: string): string[] {
-    return this.state.value[id] ?? [];
+  private key(tipo: TipoComentario, id: string): string {
+    return `${tipo}:${id}`;
   }
 
-  add(id: string, texto: string): void {
+  get(tipo: TipoComentario, id: string): string[] {
+    return this.state.value[this.key(tipo, id)] ?? [];
+  }
+
+  add(tipo: TipoComentario, id: string, texto: string): void {
     const txt = (texto ?? '').trim();
     if (!txt) return;
 
+    const chave = this.key(tipo, id);
     const atual = this.state.value;
-    const lista = [...(atual[id] ?? []), `Você: ${txt}`];
+    const lista = [...(atual[chave] ?? []), `Você: ${txt}`];
 
-    this.state.next({ ...atual, [id]: lista });
+    this.state.next({ ...atual, [chave]: lista });
   }
 }

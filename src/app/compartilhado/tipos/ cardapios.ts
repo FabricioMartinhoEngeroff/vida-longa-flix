@@ -17,5 +17,6 @@ export interface Cardapio {
   fibras?: number;
   calorias?: number;
   favorita?: boolean;
+  likesCount?: number;
 
 }

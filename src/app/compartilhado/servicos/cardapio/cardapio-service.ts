@@ -40,7 +40,17 @@ constructor(private favoritos: FavoritosCardapiosService) {
   const atualizados = this.cardapios.map((c) => {
     if (c.id !== id) return c;
 
-    const atualizado = { ...c, favorita: !c.favorita };
+    const likesBase = c.likesCount ?? (c.favorita ? 1 : 0);
+    const novoFavorito = !c.favorita;
+    const novoLikes = novoFavorito
+      ? likesBase + 1
+      : Math.max(0, likesBase - 1);
+
+    const atualizado = {
+      ...c,
+      favorita: novoFavorito,
+      likesCount: novoLikes,
+    };
     if (atualizado.favorita) {
       this.favoritos.adicionar(atualizado);
     } else {
@@ -69,6 +79,7 @@ constructor(private favoritos: FavoritosCardapiosService) {
     fibras: c.fibras ?? 0,
     calorias: c.calorias ?? 0,
     favorita: c.favorita ?? false,
+    likesCount: c.likesCount ?? (c.favorita ? 1 : 0),
   })) as Cardapio[];
 }
 

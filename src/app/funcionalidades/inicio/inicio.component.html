@@ -33,39 +33,13 @@
       <p class="descricao">{{ video.description }}</p>
     </div>
 
-    <div class="comentarios">
-      <div class="cabecalho-comentario">
-        <div class="titulo">Comentários</div>
-        <app-botao-favoritar
-          [favorito]="video.favorita ?? false"
-          (aoClicar)="toggleFavorite(video.id)"
-        ></app-botao-favoritar>
-      </div>
-
-      <span
-        *ngIf="(comentariosState[video.id]?.length || 0) > 2"
-        class="verTodos"
-        (click)="abrirModal(video)"
-      >
-        Ver todos os {{ comentariosState[video.id].length }} comentários
-      </span>
-
-      <span *ngFor="let c of comentariosState[video.id]?.slice(-2)">
-        {{ c }}
-      </span>
-    </div>
-
-    <div class="comentario-form">
-      <input
-        type="text"
-        placeholder="Adicione um comentário..."
-        [value]="novoComentario[video.id] || ''"
-        (input)="novoComentario[video.id] = ($any($event.target).value)"
-      />
-      <button type="button" (click)="adicionarComentario(video.id)">
-        Publicar
-      </button>
-    </div>
+    <app-engajamento-resumo
+      [likesCount]="video.likesCount ?? 0"
+      [commentsCount]="totalComentarios(video.id)"
+      [liked]="video.favorita ?? false"
+      (likeClick)="toggleFavorite(video.id)"
+      (commentsClick)="abrirModal(video)"
+    ></app-engajamento-resumo>
   </div>
 </ng-template>
 

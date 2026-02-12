@@ -43,6 +43,7 @@
 /* Mobile */
 @media (max-width: 768px) {
   .main-container {
-    padding-bottom: 90px;
+    gap: 12px;         
+    padding-bottom: 74px; 
   }
 }

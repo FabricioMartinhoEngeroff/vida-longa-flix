@@ -14,7 +14,6 @@ import { ComentariosBoxComponent } from '../comentarios-box/comentarios-box.comp
 export class ModalCardapioComponent {
   @Input() cardapio: Cardapio | null = null;
   @Input() comentarios: string[] = [];
-  @Input() favorito = false;
 
   @Output() fechar = new EventEmitter<void>();
   @Output() favoritar = new EventEmitter<void>();

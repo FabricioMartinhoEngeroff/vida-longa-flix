@@ -26,7 +26,17 @@ export class VideoService {
     const atualizados = this.videosReels.map((video) => {
       if (video.id !== id) return video;
 
-      const atualizado = { ...video, favorita: !video.favorita };
+      const likesBase = video.likesCount ?? (video.favorita ? 1 : 0);
+      const novoFavorito = !video.favorita;
+      const novoLikes = novoFavorito
+        ? likesBase + 1
+        : Math.max(0, likesBase - 1);
+
+      const atualizado = {
+        ...video,
+        favorita: novoFavorito,
+        likesCount: novoLikes,
+      };
 
       if (atualizado.favorita) {
         this.favoritosService.adicionarFavorito(atualizado);
@@ -69,6 +79,7 @@ export class VideoService {
       calorias: video.calorias ?? 0,
 
       favorita: video.favorita ?? false,
+      likesCount: video.likesCount ?? (video.favorita ? 1 : 0),
     };
   }) as Video[];
 }
