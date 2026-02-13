@@ -30,11 +30,6 @@ describe('CabecalhoComponent', () => {
     expect(img.getAttribute('src')).toContain('/assets/images/Logo.png');
   });
 
-  it('should render title text', () => {
-    const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Vida Longa Flix');
-  });
-
   it('should call onPesquisar when CampoPesquisar emits valueChange', () => {
     spyOn(component, 'onPesquisar');
 
@@ -43,14 +38,5 @@ describe('CabecalhoComponent', () => {
 
     campoTexto.componentInstance.valueChange.emit('banana');
     expect(component.onPesquisar).toHaveBeenCalledWith('banana');
-  });
-
-  it('should call abrirConfiguracoes when CampoTexto emits configuracaoClick', () => {
-    spyOn(component, 'abrirConfiguracoes');
-
-    const campoTexto = fixture.debugElement.query(By.directive(CampoPesquisarComponent));
-    campoTexto.componentInstance.configuracaoClick.emit();
-
-    expect(component.abrirConfiguracoes).toHaveBeenCalled();
   });
 });

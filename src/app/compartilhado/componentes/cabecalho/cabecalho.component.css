@@ -21,23 +21,16 @@
   margin: 0;
 }
 
-/* LOGO + NOME (sempre à esquerda) */
-.logo-titulo-container {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
 
 .logo {
-  height: 70px;
+  height: 0px;
   width: auto;
   max-width: 200px;
   object-fit: contain;
   display: block;
   border-radius: 20px;
   background: transparent;
-  padding: 10px;
+  padding: 05px;
 }
 
 /* ========= AÇÕES À DIREITA (pesquisa + logout) ========= */
@@ -57,32 +50,13 @@
 }
 
 .btn-logout {
-  height: 44px;
-  padding: 0 20px;
-  border-radius: 999px;
-  border: 1px solid #2f6b3a;
-  background: #7ea46f;
-  color: #0b2b0b;
-  font-family: "verdana-bold";
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
-  transition: transform 0.12s ease, background 0.2s ease;
-}
-
-.btn-logout:hover {
-  background: #6f9962;
-}
-
-.btn-logout:active {
-  transform: scale(0.97);
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 13px;
 }
 
 /* =================== MOBILE =================== */
-@media (max-width: 768px) {
-  .titulo-desktop {
-    display: none;
-  }
 
   .header-estilizado {
     padding: 1px 2px;
@@ -105,15 +79,11 @@
   }
 
   .logo {
-    height: 44px;
+    height: 49px;            /* mantém altura no mobile */
     width: auto;
-    max-width: 90px;
+    max-width: 52vw;         /* aumenta no celular sem crescer header */
     object-fit: contain;
-    display: block;
-    border-radius: 2px;
-    background: transparent;
-    padding: 0;
-  }
+}
 
   .acoes-direita {
     max-width: none;
@@ -139,4 +109,4 @@
     border-radius: 12px;
     font-size: 13px;
   }
-}
+

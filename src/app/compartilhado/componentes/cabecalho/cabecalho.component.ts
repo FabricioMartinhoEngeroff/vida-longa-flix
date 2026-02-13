@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CampoPesquisarComponent } from '../campo-pesquisar/campo-pesquisar.component';
-import { TituloComponent } from '../titulo/titulo.component';
 import { NotificacoesComponent } from '../notificações/notificacoes.component';
 import { MenuUsuarioComponent } from '../menu-usuario/menu-usuario.component';
 import { BotaoSairComponent } from '../botao-sair/botao-sair.component';
@@ -15,7 +14,7 @@ import { VideoService } from '../../servicos/video/video';
   templateUrl: './cabecalho.component.html',
   styleUrls: ['./cabecalho.component.css'],
   standalone: true,
-  imports: [CampoPesquisarComponent, TituloComponent, NotificacoesComponent, MenuUsuarioComponent, BotaoSairComponent ],
+  imports: [CampoPesquisarComponent, NotificacoesComponent, MenuUsuarioComponent, BotaoSairComponent ],
 })
 
 export class CabecalhoComponent implements OnInit {
