@@ -12,7 +12,6 @@ export interface Video {
 })
 export class ModalService {
   private readonly videoSelecionadoSubject = new BehaviorSubject<Video | null>(null);
-
   readonly videoSelecionado$ = this.videoSelecionadoSubject.asObservable();
 
   constructor(private historicoViews: HistoricoViewsService) {}
@@ -27,9 +26,7 @@ export class ModalService {
 
   abrir(video: Video): void {
     const email = localStorage.getItem('userEmail') || 'guest@local';
-
     this.historicoViews.registrarView(email, video.id);
-
     this.videoSelecionadoSubject.next(video);
   }
 

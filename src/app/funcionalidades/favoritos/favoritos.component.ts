@@ -29,6 +29,8 @@ export class FavoritosComponent implements OnInit {
 
   isMobile: boolean = window.innerWidth <= 768;
 
+  private modalCardapioNoHistorico = false;
+
   constructor(
     private router: Router,
     private favoritosService: FavoritosService,
@@ -36,6 +38,7 @@ export class FavoritosComponent implements OnInit {
     private videoService: VideoService,
     private cardapioService: CardapioService,
     private favoritosCardapiosService: FavoritosCardapiosService
+
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +57,7 @@ export class FavoritosComponent implements OnInit {
   }
 
   verTudo(): void {
-    this.router.navigate(['/favoritos']);
+    this.router.navigate(['/app/favoritos']);
   }
 
   abrirModal(video: Video): void {
@@ -65,13 +68,31 @@ export class FavoritosComponent implements OnInit {
     this.videoService.toggleFavorite(video.id);
   }
 
-  abrirModalCardapio(cardapio: Cardapio): void {
-    this.cardapioSelecionado = cardapio;
+ abrirModalCardapio(cardapio: Cardapio): void {
+  if (!this.cardapioSelecionado && typeof window !== 'undefined') {
+    window.history.pushState({ modal: 'cardapio-favoritos' }, '');
+    this.modalCardapioNoHistorico = true;
   }
+  this.cardapioSelecionado = cardapio;
+}
 
-  fecharModalCardapio(): void {
-    this.cardapioSelecionado = null;
+fecharModalCardapio(): void {
+  if (!this.cardapioSelecionado) return;
+
+  this.cardapioSelecionado = null;
+
+  if (this.modalCardapioNoHistorico && typeof window !== 'undefined') {
+    this.modalCardapioNoHistorico = false;
+    window.history.back();
   }
+}
+
+@HostListener('window:popstate')
+onPopState(): void {
+  if (!this.cardapioSelecionado) return;
+  this.cardapioSelecionado = null;
+  this.modalCardapioNoHistorico = false;
+}
 
   removerCardapio(cardapio: Cardapio): void {
     this.cardapioService.toggleFavorite(cardapio.id);

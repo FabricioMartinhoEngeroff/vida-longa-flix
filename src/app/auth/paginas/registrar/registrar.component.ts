@@ -155,7 +155,7 @@ export class RegistrarComponent {
 
       // 4. Redirecionar para app (login automático já feito)
       setTimeout(() => {
-        this.router.navigateByUrl('/app');
+        this.router.navigateByUrl('/app', { replaceUrl: true });
       }, 800);
 
     } catch (e: any) {

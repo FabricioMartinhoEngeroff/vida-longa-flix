@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-
+import { NgIf } from '@angular/common';
 
 import { Video } from '../../compartilhado/tipos/videos';
 import { ModalService } from '../../compartilhado/servicos/modal/modal';
 import { VideoService } from '../../compartilhado/servicos/video/video';
 import { ComentariosBoxComponent } from '../../compartilhado/componentes/comentarios-box/comentarios-box.component';
 import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-modal-video-zoom',
@@ -19,8 +18,9 @@ import { NgIf } from '@angular/common';
 export class ModalVideoZoomComponent implements OnInit {
   videoSelecionado: Video | null = null;
   videoAtualizado: Video | null = null;
-
   comentarios: string[] = [];
+
+  private modalVideoNoHistorico = false;
 
   constructor(
     private modalService: ModalService,
@@ -29,12 +29,19 @@ export class ModalVideoZoomComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.modalService.videoSelecionado$.subscribe(video => {
+    this.modalService.videoSelecionado$.subscribe((video) => {
       this.videoSelecionado = video as unknown as Video | null;
 
       if (!this.videoSelecionado) {
         this.videoAtualizado = null;
+        this.comentarios = [];
+        this.modalVideoNoHistorico = false;
         return;
+      }
+
+      if (!this.modalVideoNoHistorico && typeof window !== 'undefined') {
+        window.history.pushState({ modal: 'video' }, '');
+        this.modalVideoNoHistorico = true;
       }
 
       this.videoAtualizado =
@@ -44,11 +51,18 @@ export class ModalVideoZoomComponent implements OnInit {
       this.comentarios = this.comentariosService.get('video', this.videoAtualizado.id);
     });
 
-    this.comentariosService.comentarios$.subscribe(map => {
+    this.comentariosService.comentarios$.subscribe((map) => {
       if (this.videoAtualizado) {
         this.comentarios = map[`video:${this.videoAtualizado.id}`] ?? [];
       }
     });
+  }
+
+  @HostListener('window:popstate')
+  onPopState(): void {
+    if (!this.videoSelecionado) return;
+    this.modalVideoNoHistorico = false;
+    this.modalService.fechar();
   }
 
   adicionarComentario(texto: string): void {
@@ -57,10 +71,15 @@ export class ModalVideoZoomComponent implements OnInit {
   }
 
   fecharModal(): void {
+    if (!this.videoSelecionado) return;
+
+    const tinhaEntradaModal = this.modalVideoNoHistorico;
+    this.modalVideoNoHistorico = false;
     this.modalService.fechar();
-    this.videoSelecionado = null;
-    this.videoAtualizado = null;
-    this.comentarios = [];
+
+    if (tinhaEntradaModal && typeof window !== 'undefined') {
+      window.history.back();
+    }
   }
 
   impedirFechar(event: MouseEvent): void {

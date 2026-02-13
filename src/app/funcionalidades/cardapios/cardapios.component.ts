@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { map, Observable } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -32,11 +32,13 @@ export class CardapiosComponent implements OnInit {
 
   comentariosState: Record<string, string[]> = {};
 
-    private cardapiosLista: Cardapio[] = [];
+  private cardapiosLista: Cardapio[] = [];
   private tipoBusca = '';
   private idBusca = '';
   private categoriaBusca = '';
   private termoBusca = '';
+
+  private modalCardapioNoHistorico = false;
 
   constructor(
     private cardapioService: CardapioService,
@@ -83,12 +85,30 @@ export class CardapiosComponent implements OnInit {
   }
 
   abrir(cardapio: Cardapio) {
-    this.selecionado = cardapio;
+  if (!this.selecionado && typeof window !== 'undefined') {
+    window.history.pushState({ modal: 'cardapio' }, '');
+    this.modalCardapioNoHistorico = true;
   }
+  this.selecionado = cardapio;
+}
 
-  fechar() {
-    this.selecionado = null;
+fechar() {
+  if (!this.selecionado) return;
+
+  this.selecionado = null;
+
+  if (this.modalCardapioNoHistorico && typeof window !== 'undefined') {
+    this.modalCardapioNoHistorico = false;
+    window.history.back();
   }
+}
+
+@HostListener('window:popstate')
+onPopState(): void {
+  if (!this.selecionado) return;
+  this.selecionado = null;
+  this.modalCardapioNoHistorico = false;
+}
 
   toggleFavorite(id: string) {
     this.cardapioService.toggleFavorite(id);

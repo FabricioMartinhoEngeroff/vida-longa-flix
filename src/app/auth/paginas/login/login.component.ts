@@ -80,7 +80,7 @@ export class LoginComponent {
       await this.servicoAutenticacao.login(email, password);
 
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.LOGIN_SUCESSO);
-         this.router.navigateByUrl('/app');
+         this.router.navigateByUrl('/app', { replaceUrl: true });
     } catch (e) {
       console.error(e);
     } finally {
