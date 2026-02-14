@@ -7,7 +7,7 @@ import { CampoFormularioComponent } from '../../componentes/campo-formulario/cam
 import { BotaoPrimarioComponent } from '../../componentes/botao-primario/botao-primario.component';
 import { IndicadorSenhaComponent } from '../../componentes/indicador-senha/indicador-senha.component';
 import { validadorSenhaForte, ForcaSenha } from '../../utils/validador-senha-forte';
-import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
+import { NotificacaoService, obterDuracaoPadraoNotificacao } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { EmailService } from '../../servicos/email/email.service';
 import { UsuarioAutenticacaoService } from '../../servicos/usuario-autenticacao.service';
 import { MensagemAjusteEmailComponent, TipoErroEmail } from '../../../compartilhado/componentes/mensagem-alertas/mensagem-ajuste-email.component';
@@ -156,7 +156,7 @@ export class RegistrarComponent {
       // 4. Redirecionar para app (login automático já feito)
       setTimeout(() => {
         this.router.navigateByUrl('/app', { replaceUrl: true });
-      }, 800);
+      }, obterDuracaoPadraoNotificacao('sucesso'));
 
     } catch (e: any) {
       this.notificacaoService.erro(e.message || MENSAGENS_PADRAO.ERRO_GENERICO.texto);

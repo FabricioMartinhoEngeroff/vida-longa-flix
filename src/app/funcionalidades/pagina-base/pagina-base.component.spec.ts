@@ -1,15 +1,21 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PaginaBaseComponent } from './pagina-base.component';
 
-import { CabecalhoComponent } from '../../compartilhado/componentes/cabecalho/cabecalho.component';
-import { RodapeComponent } from '../../compartilhado/componentes/rodape/rodape.component';
-import { BarraNavegacaoComponent } from '../../compartilhado/componentes/barra-navegacao/barra-navegacao.component';
+describe('PaginaBaseComponent', () => {
+  let component: PaginaBaseComponent;
+  let fixture: ComponentFixture<PaginaBaseComponent>;
 
-@Component({
-  selector: 'app-pagina-base',
-  standalone: true,
-  imports: [RouterOutlet, CabecalhoComponent, RodapeComponent, BarraNavegacaoComponent],
-  templateUrl: './pagina-base.component.html',
-  styleUrls: ['./pagina-base.component.css'],
-})
-export class PaginaBaseComponent {}
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PaginaBaseComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PaginaBaseComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
@@ -145,9 +145,12 @@ export class MensagemInfoComponent implements OnInit, OnDestroy {
   titulo = '';
   texto = '';
   private subscription?: Subscription;
-  private timeoutId?: any;
+  private timeoutId?: ReturnType<typeof setTimeout>;
 
-  constructor(private notificacaoService: NotificacaoService) {}
+  constructor(
+    private notificacaoService: NotificacaoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.subscription = this.notificacaoService.notificacao$.subscribe(notif => {
@@ -155,22 +158,25 @@ export class MensagemInfoComponent implements OnInit, OnDestroy {
         this.titulo = notif.titulo;
         this.texto = notif.texto;
         this.visivel = true;
+        this.cdr.detectChanges();
         
         // Limpa timeout anterior se existir
         if (this.timeoutId) {
           clearTimeout(this.timeoutId);
         }
         
-        // 4 segundos conforme padrão da empresa
+        // Fecha automaticamente apos a duracao da notificacao
         this.timeoutId = setTimeout(() => {
           this.visivel = false;
-        }, 4000);
+          this.cdr.detectChanges();
+        }, notif.duracaoMs);
       }
     });
   }
 
   fechar() {
     this.visivel = false;
+    this.cdr.detectChanges();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

@@ -75,7 +75,6 @@ export class ModalPerfilUsuarioComponent implements OnInit {
 
   const dados = this.form.getRawValue();
   this.salvar.emit(dados);
-  this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.PERFIL_ATUALIZADO);
 }
 
   onAbrirMudarSenha() {

@@ -1,18 +1,19 @@
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
+
 import { AdministradorCardapiosComponent } from './administrador-cardapios.component';
 import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
 
 
 
 describe('AdministradorCardapiosComponent', () => {
-  let addSpy: jasmine.Spy;
+  let addSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
-    addSpy = jasmine.createSpy('add');
+    addSpy = vi.fn();
 
     await TestBed.configureTestingModule({
-      imports: [ ],
-      declarations: [AdministradorCardapiosComponent],
+      imports: [AdministradorCardapiosComponent],
       providers: [{ provide: CardapioService, useValue: { add: addSpy } }],
     }).compileComponents();
   });

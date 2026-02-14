@@ -22,15 +22,16 @@ describe('LoginComponent', () => {
   });
 
   it('deve iniciar com form inválido', () => {
-    expect(component.form.invalid).toBeTrue();
+    expect(component.form.invalid).toBe(true);
   });
 
   it('deve validar formulário quando preencher corretamente', () => {
     component.form.setValue({
       email: 'teste@email.com',
       password: '123456',
+      manterConectado: false,
     });
 
-    expect(component.form.valid).toBeTrue();
+    expect(component.form.valid).toBe(true);
   });
 });

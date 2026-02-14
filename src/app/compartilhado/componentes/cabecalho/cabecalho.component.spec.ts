@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 
 import { CabecalhoComponent } from './cabecalho.component';
 import { CampoPesquisarComponent } from '../campo-pesquisar/campo-pesquisar.component';
@@ -31,12 +32,12 @@ describe('CabecalhoComponent', () => {
   });
 
   it('should call onPesquisar when CampoPesquisar emits valueChange', () => {
-    spyOn(component, 'onPesquisar');
+    const onPesquisarSpy = vi.spyOn(component, 'onPesquisar');
 
     const campoTexto = fixture.debugElement.query(By.directive(CampoPesquisarComponent));
     expect(campoTexto).toBeTruthy();
 
     campoTexto.componentInstance.valueChange.emit('banana');
-    expect(component.onPesquisar).toHaveBeenCalledWith('banana');
+    expect(onPesquisarSpy).toHaveBeenCalledWith('banana');
   });
 });

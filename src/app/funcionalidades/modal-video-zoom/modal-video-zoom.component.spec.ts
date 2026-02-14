@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
+import { vi } from 'vitest';
 
 import { ModalVideoZoomComponent } from './modal-video-zoom.component';
 import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
@@ -15,18 +16,18 @@ describe('ModalVideoZoomComponent', () => {
 
   const modalServiceMock = {
     videoSelecionado$: videoSelecionado$.asObservable(),
-    fechar: jasmine.createSpy('fechar'),
+    fechar: vi.fn(),
   };
 
   const videoServiceMock = {
     videosReels: [] as any[],
-    toggleFavorite: jasmine.createSpy('toggleFavorite'),
+    toggleFavorite: vi.fn(),
   };
 
   const comentariosServiceMock = {
     comentarios$: comentarios$.asObservable(),
-    get: jasmine.createSpy('get').and.returnValue([]),
-    add: jasmine.createSpy('add'),
+    get: vi.fn().mockReturnValue([]),
+    add: vi.fn(),
   };
 
   beforeEach(async () => {

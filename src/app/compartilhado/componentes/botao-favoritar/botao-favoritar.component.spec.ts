@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
+
 import { BotaoFavoritarComponent } from './botao-favoritar.component';
 
 describe('BotaoFavoritarComponent', () => {
@@ -13,9 +15,6 @@ describe('BotaoFavoritarComponent', () => {
 
     fixture = TestBed.createComponent(BotaoFavoritarComponent);
     component = fixture.componentInstance;
-
-    fixture.detectChanges();
-    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -23,12 +22,13 @@ describe('BotaoFavoritarComponent', () => {
   });
 
   it('should emit aoClicar on click', () => {
-    spyOn(component.aoClicar, 'emit');
+    fixture.detectChanges();
+    const emitSpy = vi.spyOn(component.aoClicar, 'emit');
 
     const button = fixture.debugElement.query(By.css('button.botao'));
     button.triggerEventHandler('click', null);
 
-    expect(component.aoClicar.emit).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
   });
 
   it('should not have favorito class when favorito=false', () => {
@@ -36,7 +36,7 @@ describe('BotaoFavoritarComponent', () => {
     fixture.detectChanges();
 
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('button.botao');
-    expect(button.classList.contains('favorito')).toBeFalse();
+    expect(button.classList.contains('favorito')).toBe(false);
   });
 
   it('should have favorito class when favorito=true', () => {
@@ -44,7 +44,7 @@ describe('BotaoFavoritarComponent', () => {
     fixture.detectChanges();
 
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('button.botao');
-    expect(button.classList.contains('favorito')).toBeTrue();
+    expect(button.classList.contains('favorito')).toBe(true);
   });
 
   it('should render correct icon depending on favorito value', () => {
@@ -53,11 +53,13 @@ describe('BotaoFavoritarComponent', () => {
 
     let icon = fixture.nativeElement.querySelector('mat-icon') as HTMLElement;
     expect(icon.textContent?.trim()).toBe('favorite_border');
+  });
 
+  it('should render filled icon when favorito=true', () => {
     component.favorito = true;
     fixture.detectChanges();
 
-    icon = fixture.nativeElement.querySelector('mat-icon') as HTMLElement;
+    const icon = fixture.nativeElement.querySelector('mat-icon') as HTMLElement;
     expect(icon.textContent?.trim()).toBe('favorite');
   });
 });

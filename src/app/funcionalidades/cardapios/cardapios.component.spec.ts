@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { CardapiosComponent } from './cardapios.component';
 import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
@@ -11,12 +12,12 @@ describe('CardapiosComponent', () => {
 
   const cardapioServiceMock = {
     cardapios$: of([]),
-    toggleFavorite: jasmine.createSpy('toggleFavorite'),
+    toggleFavorite: vi.fn(),
   };
 
   const comentariosServiceMock = {
     comentarios$: comentariosState$.asObservable(),
-    add: jasmine.createSpy('add'),
+    add: vi.fn(),
   };
 
   beforeEach(async () => {

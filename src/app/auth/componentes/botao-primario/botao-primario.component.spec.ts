@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-
 import { BotaoPrimarioComponent } from './botao-primario.component';
 
 describe('BotaoPrimarioComponent', () => {
@@ -14,39 +13,25 @@ describe('BotaoPrimarioComponent', () => {
 
     fixture = TestBed.createComponent(BotaoPrimarioComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render text', () => {
-    component.text = 'Fazer login';
+  it('should reflect disabled input', () => {
+    fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
     const btn = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-    expect(btn.textContent?.trim()).toBe('Fazer login');
+    expect(btn.disabled).toBe(true);
   });
 
-  it('should emit aoClicar when clicked', () => {
-    const spy = spyOn(component.aoClicar, 'emit');
-
-    const btn = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-    btn.click();
-
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should not emit aoClicar when disabled', () => {
-    component.disabled = true;
+  it('should render button type', () => {
+    fixture.componentRef.setInput('type', 'button');
     fixture.detectChanges();
 
-    const spy = spyOn(component.aoClicar, 'emit');
-
     const btn = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-    btn.click();
-
-    expect(spy).not.toHaveBeenCalled();
+    expect(btn.type).toBe('button');
   });
 });

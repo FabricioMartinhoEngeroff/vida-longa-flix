@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { MensagemSucessoComponent } from './compartilhado/componentes/mensagem-alertas/mensagem-sucesso.component';
 import { MensagemErroComponent } from './compartilhado/componentes/mensagem-alertas/mensagem-erro.component';
 import { MensagemAvisoComponent } from './compartilhado/componentes/mensagem-alertas/mensagem-aviso.component';
+import { MensagemInfoComponent } from './compartilhado/componentes/mensagem-alertas/mensagem-info.component';
 import { NotificacaoService } from './compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 
 
@@ -14,7 +15,8 @@ import { NotificacaoService } from './compartilhado/servicos/mensagem-alerta/men
     RouterOutlet,
     MensagemSucessoComponent,
     MensagemErroComponent,
-    MensagemAvisoComponent
+    MensagemAvisoComponent,
+    MensagemInfoComponent
   ],
   templateUrl: './app.html',  // ← MUDE de template inline para templateUrl
   styleUrls: ['./app.css']

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CampoFormularioComponent } from '../campo-formulario/campo-formulario.component';
-import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
+import { NotificacaoService, obterDuracaoPadraoNotificacao } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { EmailService } from '../../servicos/email/email.service';
 import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
 
@@ -61,7 +61,7 @@ export class RecuperarSenhaComponent {
       
       setTimeout(() => {
         this.onFechar();
-      }, 2000);
+      }, obterDuracaoPadraoNotificacao('info'));
 
     } catch (e) {
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ERRO_ENVIAR_EMAIL);

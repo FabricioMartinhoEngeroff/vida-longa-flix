@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { AdminVideosComponent } from './administrador-videos.component';
 import { VideoService } from '../../compartilhado/servicos/video/video';
 
 describe('AdminVideosComponent', () => {
-  let addVideoSpy: jasmine.Spy;
+  let addVideoSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
-    addVideoSpy = jasmine.createSpy('addVideo');
+    addVideoSpy = vi.fn();
 
     await TestBed.configureTestingModule({
       imports: [AdminVideosComponent],

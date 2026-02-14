@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
+
 import { CampoPesquisarComponent } from './campo-pesquisar.component';
 
 describe('CampoPesquisarComponent', () => {
@@ -8,70 +10,68 @@ describe('CampoPesquisarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CampoPesquisarComponent], 
+      imports: [CampoPesquisarComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CampoPesquisarComponent);
     component = fixture.componentInstance;
-
     component.placeholder = 'Pesquisar...';
     component.value = '';
     component.disabled = false;
-
-    fixture.detectChanges();
-    await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render input with placeholder', () => {
-    const input = fixture.debugElement.query(By.css('input.campo-texto-estilizado'))
-      .nativeElement as HTMLInputElement;
+  it('should open when abrir is called', () => {
+    component.abrir();
+    expect(component.aberto).toBe(true);
+  });
 
-    expect(input).toBeTruthy();
+  it('should render search overlay when aberto=true', () => {
+    component.aberto = true;
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.query(By.css('.busca-overlay'))).toBeTruthy();
+  });
+
+  it('should render input with placeholder when opened', () => {
+    component.aberto = true;
+    fixture.detectChanges();
+
+    const input = fixture.debugElement.query(By.css('input.busca-input')).nativeElement as HTMLInputElement;
     expect(input.placeholder).toBe('Pesquisar...');
   });
 
   it('should emit valueChange when typing', () => {
-    spyOn(component.valueChange, 'emit');
+    component.aberto = true;
+    fixture.detectChanges();
 
-    const input = fixture.debugElement.query(By.css('input.campo-texto-estilizado'))
-      .nativeElement as HTMLInputElement;
+    const emitSpy = vi.spyOn(component.valueChange, 'emit');
 
+    const input = fixture.debugElement.query(By.css('input.busca-input')).nativeElement as HTMLInputElement;
     input.value = 'banana';
     input.dispatchEvent(new Event('input'));
 
-    expect(component.valueChange.emit).toHaveBeenCalledWith('banana');
+    expect(emitSpy).toHaveBeenCalledWith('banana');
   });
 
-  it('should emit configuracaoClick when clicking config button', () => {
-    spyOn(component.configuracaoClick, 'emit');
+  it('should emit buscar when confirmarBusca has non-empty term', () => {
+    const emitSpy = vi.spyOn(component.buscar, 'emit');
 
-    const btn = fixture.debugElement.query(By.css('button.configuracao-container'));
-    btn.triggerEventHandler('click', null);
+    component.value = '  banana  ';
+    component.confirmarBusca();
 
-    expect(component.configuracaoClick.emit).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalledWith('banana');
+    expect(component.aberto).toBe(false);
   });
 
-  it('should not emit events when disabled', () => {
+  it('should not open when disabled', () => {
     component.disabled = true;
-    fixture.detectChanges();
 
-    spyOn(component.valueChange, 'emit');
-    spyOn(component.configuracaoClick, 'emit');
+    component.abrir();
 
-    const input = fixture.debugElement.query(By.css('input.campo-texto-estilizado'))
-      .nativeElement as HTMLInputElement;
-
-    input.value = 'teste';
-    input.dispatchEvent(new Event('input'));
-
-    const btn = fixture.debugElement.query(By.css('button.configuracao-container'));
-    btn.triggerEventHandler('click', null);
-
-    expect(component.valueChange.emit).not.toHaveBeenCalled();
-    expect(component.configuracaoClick.emit).not.toHaveBeenCalled();
+    expect(component.aberto).toBe(false);
   });
 });

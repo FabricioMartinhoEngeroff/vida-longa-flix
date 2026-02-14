@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { NotificacaoService } from '../../servicos/mensagem-alerta/mensagem-aler
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="mensagem" [class.visivel]="visivel">
+    <div class="mensagem visivel" *ngIf="visivel">
   <mat-icon>check_circle</mat-icon>
   <span>{{ texto }}</span>
   <button class="btn-fechar" (click)="fechar()">
@@ -119,15 +119,19 @@ export class MensagemAvisoComponent implements OnInit, OnDestroy {
   visivel = false;
   texto = '';
   private subscription?: Subscription;
-   private timeoutId?: any;
+   private timeoutId?: ReturnType<typeof setTimeout>;
 
-  constructor(private notificacaoService: NotificacaoService) {}
+  constructor(
+    private notificacaoService: NotificacaoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
 ngOnInit() {
   this.subscription = this.notificacaoService.notificacao$.subscribe(notif => {
     if (notif.tipo === 'aviso') {
       this.texto = notif.texto;
       this.visivel = true;
+      this.cdr.detectChanges();
       
       if (this.timeoutId) {
         clearTimeout(this.timeoutId);
@@ -135,13 +139,15 @@ ngOnInit() {
       
       this.timeoutId = setTimeout(() => {
         this.visivel = false;
-      }, 4000);
+        this.cdr.detectChanges();
+      }, notif.duracaoMs);
     }
   });
 }
 
 fechar() {
   this.visivel = false;
+  this.cdr.detectChanges();
   if (this.timeoutId) {
     clearTimeout(this.timeoutId);
   }

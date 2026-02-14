@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { vi } from 'vitest';
 
 import { InputPadraoComponent } from './input-padrao.component';
 
@@ -14,7 +15,6 @@ describe('InputPadraoComponent', () => {
 
     fixture = TestBed.createComponent(InputPadraoComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('deve criar o componente', () => {
@@ -30,7 +30,8 @@ describe('InputPadraoComponent', () => {
   });
 
   it('deve emitir valueChange ao digitar', () => {
-    const spy = spyOn(component.valueChange, 'emit');
+    fixture.detectChanges();
+    const spy = vi.spyOn(component.valueChange, 'emit');
 
     const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
     input.value = 'abc';

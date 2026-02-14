@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { VideoService } from './video';
 import { FavoritosService } from '../favoritos/favoritos';
 
 class FavoritosServiceMock {
-  adicionarFavorito = jasmine.createSpy('adicionarFavorito');
-  removerFavorito = jasmine.createSpy('removerFavorito');
+  adicionarFavorito = vi.fn();
+  removerFavorito = vi.fn();
 }
 
 describe('VideoService', () => {

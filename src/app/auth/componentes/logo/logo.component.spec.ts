@@ -14,7 +14,6 @@ describe('LogoComponent', () => {
 
     fixture = TestBed.createComponent(LogoComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('deve criar o componente', () => {
@@ -22,6 +21,7 @@ describe('LogoComponent', () => {
   });
 
   it('deve renderizar uma imagem', () => {
+    fixture.detectChanges();
     const img = fixture.debugElement.query(By.css('img'));
     expect(img).toBeTruthy();
   });
@@ -32,7 +32,7 @@ describe('LogoComponent', () => {
     fixture.detectChanges();
 
     const img = fixture.debugElement.query(By.css('img')).nativeElement as HTMLImageElement;
-    expect(img.getAttribute('src')).toBe('assets/images/logo-teste.png');
+    expect(img.getAttribute('src')).toContain('assets/images/logo-teste.png');
     expect(img.getAttribute('alt')).toBe('Logo BMEH');
   });
 

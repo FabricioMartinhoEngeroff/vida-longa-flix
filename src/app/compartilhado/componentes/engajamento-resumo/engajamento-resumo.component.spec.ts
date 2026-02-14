@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { EngajamentoResumoComponent } from './engajamento-resumo.component';
 
@@ -37,15 +38,15 @@ describe('EngajamentoResumoComponent', () => {
   });
 
   it('deve emitir eventos de like e comentários ao clicar', () => {
-    spyOn(component.likeClick, 'emit');
-    spyOn(component.commentsClick, 'emit');
+    const likeSpy = vi.spyOn(component.likeClick, 'emit');
+    const commentsSpy = vi.spyOn(component.commentsClick, 'emit');
     fixture.detectChanges();
 
     const buttons = fixture.nativeElement.querySelectorAll('button');
     buttons[0].click();
     buttons[1].click();
 
-    expect(component.likeClick.emit).toHaveBeenCalled();
-    expect(component.commentsClick.emit).toHaveBeenCalled();
+    expect(likeSpy).toHaveBeenCalled();
+    expect(commentsSpy).toHaveBeenCalled();
   });
 });

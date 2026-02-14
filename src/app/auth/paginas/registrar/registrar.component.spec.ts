@@ -22,25 +22,16 @@ describe('RegistrarComponent', () => {
   });
 
   it('deve invalidar quando formulario vazio', () => {
-    expect(component.form.invalid).toBeTrue();
+    expect(component.form.invalid).toBe(true);
   });
 
   it('deve validar quando preencher campos obrigatorios', () => {
     component.form.setValue({
       nome: 'Fabricio Teta',
       email: 'fabricio@email.com',
-      cpf: '12345678901',
-      telefone: '51999999999',
-      endereco: {
-        rua: 'Rua A',
-        bairro: 'Centro',
-        cidade: 'Bom Princípio',
-        estado: 'RS',
-        cep: '95765000',
-      },
-      senha: '123456',
+      senha: 'SenhaForte1!',
     });
 
-    expect(component.form.valid).toBeTrue();
+    expect(component.form.valid).toBe(true);
   });
 });

@@ -20,14 +20,14 @@ describe('AutorizacaoComponent', () => {
   });
 
   it('deve iniciar com isRegistering false', () => {
-    expect(component.isRegistering).toBeFalse();
+    expect(component.isRegistering).toBe(false);
   });
 
   it('deve alternar o modo', () => {
     component.alternarModo();
-    expect(component.isRegistering).toBeTrue();
+    expect(component.isRegistering).toBe(true);
 
     component.alternarModo();
-    expect(component.isRegistering).toBeFalse();
+    expect(component.isRegistering).toBe(false);
   });
 });

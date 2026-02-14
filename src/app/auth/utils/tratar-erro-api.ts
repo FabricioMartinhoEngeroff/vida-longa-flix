@@ -27,8 +27,5 @@ export function tratarErroApi(error: unknown, mensagemPadrao: string): never {
     mensagem = error.message || mensagemPadrao;
   }
 
-  alert(mensagem);
-
-  // mantém o comportamento do teu React: alerta e re-lança
-  throw error;
+  throw new Error(mensagem);
 }

@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { IndicadorSenhaComponent } from '../../componentes/indicador-senha/indicador-senha.component';
 import { BotaoPrimarioComponent } from '../../componentes/botao-primario/botao-primario.component';
 import { CampoFormularioComponent } from '../../componentes/campo-formulario/campo-formulario.component';
-import { NotificacaoService } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
+import { NotificacaoService, obterDuracaoPadraoNotificacao } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
 import { ServicoRecuperacaoSenha } from '../../servicos/servico-recuperacao-senha/servico-recuperacao-senha';
 import { ForcaSenha, validadorSenhaForte } from '../../utils/validador-senha-forte';
 import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
@@ -60,7 +60,7 @@ export class RedefinirSenhaComponent implements OnInit {
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.TOKEN_INVALIDO);
       this.tokenValido = false;
       this.validandoToken = false;
-      setTimeout(() => this.router.navigate(['/login']), 4000);
+      setTimeout(() => this.router.navigate(['/login']), obterDuracaoPadraoNotificacao('erro'));
       return;
     }
 
@@ -70,7 +70,7 @@ export class RedefinirSenhaComponent implements OnInit {
       
       if (!this.tokenValido) {
         this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.TOKEN_INVALIDO);
-        setTimeout(() => this.router.navigate(['/login']), 4000);
+        setTimeout(() => this.router.navigate(['/login']), obterDuracaoPadraoNotificacao('erro'));
       }
     } catch (e) {
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ERRO_VALIDAR_TOKEN);
@@ -127,7 +127,7 @@ export class RedefinirSenhaComponent implements OnInit {
       
       setTimeout(() => {
         this.router.navigate(['/login']);
-      }, 2000);
+      }, obterDuracaoPadraoNotificacao('sucesso'));
 
     } catch (e) {
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.ERRO_REDEFINIR_SENHA);

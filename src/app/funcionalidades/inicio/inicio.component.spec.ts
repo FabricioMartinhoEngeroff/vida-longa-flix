@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { InicioComponent } from './inicio.component';
 import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
@@ -15,11 +16,11 @@ describe('InicioComponent', () => {
 
   const videoServiceMock = {
     videosReels$: of([]),
-    toggleFavorite: jasmine.createSpy('toggleFavorite'),
+    toggleFavorite: vi.fn(),
   };
 
   const modalServiceMock = {
-    abrir: jasmine.createSpy('abrir'),
+    abrir: vi.fn(),
   };
 
   const comentariosServiceMock = {
