@@ -73,6 +73,7 @@ export type RegistroForm = {
   nome: FormControl<string>;
   email: FormControl<string>;
   senha: FormControl<string>;
+  telefone: FormControl<string>;
 };
 
 export type PerfilForm = {
@@ -118,4 +119,3 @@ export function validarFormatoCEP(cep: string): boolean {
   const somenteNumeros = cep.replace(/\D/g, '');
   return somenteNumeros.length === 8;
 }
-

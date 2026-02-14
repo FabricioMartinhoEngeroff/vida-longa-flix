@@ -40,10 +40,22 @@
         [error]="erroCampo('nome')"
       ></app-campo-formulario>
 
-      <!-- ✅ Senha com indicador de força -->
+      <app-campo-formulario
+  label="Telefone"
+  placeholder="(00) 00000-0000"
+  formControlName="telefone"
+  type="tel"
+  icon="phone"
+  autocomplete="tel"
+  mascara="telefone"
+  [maxlength]="15"
+  [showCounter]="false"
+  [error]="erroCampo('telefone')"
+></app-campo-formulario>
+
       <app-campo-formulario
         label="Senha"
-        placeholder="Digite sua senha"
+        placeholder="Crie uma senha forte"
         formControlName="senha"
         type="password"
         icon="lock"
@@ -52,6 +64,7 @@
         [showCounter]="true"
         [error]="erroCampo('senha')"
       ></app-campo-formulario>
+
 
       <app-indicador-senha
         [senha]="senhaAtual"

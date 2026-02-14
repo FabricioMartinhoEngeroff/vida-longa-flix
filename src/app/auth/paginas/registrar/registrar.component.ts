@@ -8,8 +8,7 @@ import { BotaoPrimarioComponent } from '../../componentes/botao-primario/botao-p
 import { IndicadorSenhaComponent } from '../../componentes/indicador-senha/indicador-senha.component';
 import { validadorSenhaForte, ForcaSenha } from '../../utils/validador-senha-forte';
 import { NotificacaoService, obterDuracaoPadraoNotificacao } from '../../../compartilhado/servicos/mensagem-alerta/mensagem-alerta.service';
-import { EmailService } from '../../servicos/email/email.service';
-import { UsuarioAutenticacaoService } from '../../servicos/usuario-autenticacao.service';
+import { ServicoAutenticacao } from '../../api/servico-autenticacao';
 import { MensagemAjusteEmailComponent, TipoErroEmail } from '../../../compartilhado/componentes/mensagem-alertas/mensagem-ajuste-email.component';
 import { MENSAGENS_PADRAO } from '../../../compartilhado/servicos/mensagem-alerta/mensagens-padrao.constants';
 
@@ -39,18 +38,19 @@ export class RegistrarComponent {
   constructor(
     private fb: FormBuilder, 
     private router: Router, 
-    private notificacaoService: NotificacaoService,
-    private emailService: EmailService,
-    private authService: UsuarioAutenticacaoService
+  private notificacaoService: NotificacaoService,
+private authService: ServicoAutenticacao
   ) {
-    // ✅ APENAS 3 CAMPOS - Registro simplificado
+   
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
+      telefone: ['', [Validators.required, Validators.pattern(/^\d{10,11}$/)]],
       senha: ['', [
         Validators.required, 
         Validators.minLength(8),
         validadorSenhaForte(ForcaSenha.FORTE)
+        
       ]],
     });
 
@@ -100,8 +100,9 @@ export class RegistrarComponent {
     if (control.errors['required']) return 'Campo obrigatório';
     if (control.errors['email']) return 'E-mail inválido';
     if (control.errors['minlength'])
-      return `Mínimo de ${control.errors['minlength'].requiredLength} caracteres`;
-    
+  return 'Mínimo de ' + control.errors['minlength'].requiredLength + ' caracteres';
+    if (control.errors['pattern']) return 'Telefone inválido';
+
     if (control.errors['senhaFraca']) {
       const requisitos = control.errors['senhaFraca'].requisitosFaltando;
       if (requisitos && requisitos.length > 0) {
@@ -141,15 +142,7 @@ export class RegistrarComponent {
 
     try {
       const dados = this.form.getRawValue();
-
-      // 1. Registrar usuário (faz login automático)
-      await this.authService.registrar(dados);
-
-      // 2. Enviar email de boas-vindas (em background)
-      this.emailService.enviarBoasVindas({
-        nome: dados.nome,
-        email: dados.email
-      }).catch(erro => console.error('Erro ao enviar email:', erro));
+   await this.authService.register(dados);
 
       this.notificacaoService.exibirPadrao(MENSAGENS_PADRAO.CADASTRO_SUCESSO);
 

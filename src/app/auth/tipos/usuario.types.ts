@@ -18,13 +18,15 @@ export interface Endereco {
 }
 
 // ============================================================
-// 2. REGISTRO (Cadastro simplificado - 3 campos)
+// 2. REGISTRO (Cadastro simplificado - 4 campos)
 // ============================================================
 export interface DadosRegistro {
   nome: string;
   email: string;
   senha: string;
+  telefone: string;
 }
+
 
 // ============================================================
 // 3. LOGIN

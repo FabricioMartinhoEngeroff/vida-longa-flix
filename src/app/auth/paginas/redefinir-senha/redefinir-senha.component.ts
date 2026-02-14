@@ -90,7 +90,8 @@ export class RedefinirSenhaComponent implements OnInit {
 
     if (control.errors['required']) return 'Campo obrigatório';
     if (control.errors['minlength'])
-      return `Mínimo de ${control.errors['minlength'].requiredLength} caracteres`;
+  return 'Mínimo de ' + control.errors['minlength'].requiredLength + ' caracteres';
+
     
     if (control.errors['senhaFraca']) {
       const requisitos = control.errors['senhaFraca'].requisitosFaltando;

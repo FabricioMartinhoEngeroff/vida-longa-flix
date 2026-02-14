@@ -61,7 +61,7 @@ export class LoginComponent {
     if (control.errors['required']) return 'Campo obrigatório';
     if (control.errors['email']) return 'E-mail inválido';
     if (control.errors['minlength'])
-      return `Mínimo de ${control.errors['minlength'].requiredLength} caracteres`;
+      return 'Mínimo de ' + control.errors['minlength'].requiredLength + ' caracteres';
 
     return 'Valor inválido';
   }
