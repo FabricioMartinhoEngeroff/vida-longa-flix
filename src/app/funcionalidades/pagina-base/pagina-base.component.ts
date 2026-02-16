@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { CabecalhoComponent } from '../../compartilhado/componentes/cabecalho/cabecalho.component';
-import { BarraNavegacaoComponent } from '../../compartilhado/componentes/barra-navegacao/barra-navegacao.component';
-import { RodapeComponent } from '../../compartilhado/componentes/rodape/rodape.component';
+import { CabecalhoComponent } from '../../shared/components/header/header.component';
+import { BarraNavegacaoComponent } from '../../shared/components/navbar/navbar.component';
+import { RodapeComponent } from '../../shared/components/footer/footer.component';
 import { ModalVideoZoomComponent } from '../modal-video-zoom/modal-video-zoom.component';
 
 @Component({

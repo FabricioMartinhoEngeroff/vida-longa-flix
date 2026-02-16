@@ -3,13 +3,13 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { CategoriaCarrosselComponent } from '../../compartilhado/componentes/categoria-carrossel/categoria-carrossel.component';
-import { EngajamentoResumoComponent } from '../../compartilhado/componentes/engajamento-resumo/engajamento-resumo.component';
-import { Video } from '../../compartilhado/tipos/videos';
-import { ModalService } from '../../compartilhado/servicos/modal/modal';
-import { VideoService } from '../../compartilhado/servicos/video/video';
-import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
-import { agruparPor, Grupo } from '../../compartilhado/utils/agrupar-por';
+import { CategoriaCarrosselComponent } from '../../shared/components/category-carousel/category-carousel.component';
+import { EngajamentoResumoComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
+import { Video } from '../../shared/types/videos';
+import { ModalService } from '../../shared/services/modal/modal';
+import { VideoService } from '../../shared/services/video/video';
+import { ComentariosService } from '../../shared/services/comentarios/comentarios.service';
+import { agruparPor, Grupo } from '../../shared/utils/agrupar-por';
 
 type GrupoVideo = Grupo<Video>;
 

@@ -1,0 +1,29 @@
+<section class="auth-scope auth-container">
+  <aside class="auth-left-panel">
+    <div class="auth-brand">
+      <div class="auth-brand-title">Vida Longa Flix<br />Saúde</div>
+      <div class="auth-brand-welcome">Seja bem-vindo!</div>
+      <div class="auth-brand-link">Política de Privacidade</div>
+    </div>
+  </aside>
+
+  <main class="auth-right-panel">
+    <div class="auth-card">
+      
+      @if (isRegistering) {
+        <app-register (switchToLogin)="toggleMode()"></app-register>
+
+        <div class="auth-footer">
+          <span class="auth-toggle-text" (click)="toggleMode()">
+            Já possui uma conta? Faça login...
+          </span>
+        </div>
+      }
+
+      @if (!isRegistering) {
+        <app-login (goToRegister)="toggleMode()"></app-login>
+      }
+
+    </div>
+  </main>
+</section>

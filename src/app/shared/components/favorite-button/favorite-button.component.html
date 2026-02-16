@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="button"
+  [class.favorited]="favorited"
+  (click)="onClick()"
+  aria-label="Favoritar"
+>
+  <mat-icon>
+    {{ favorited ? 'favorite' : 'favorite_border' }}
+  </mat-icon>
+</button>

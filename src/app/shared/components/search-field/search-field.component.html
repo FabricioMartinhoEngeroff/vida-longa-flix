@@ -1,0 +1,58 @@
+<div class="wrapper">
+  <button
+    type="button"
+    class="search-button"
+    (click)="open()"
+    [disabled]="disabled"
+    aria-label="Pesquisar"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
+</div>
+
+@if (isOpen) {
+  <div class="search-overlay" (click)="close()">
+    <div class="search-modal" (click)="$event.stopPropagation()">
+      <div class="search-header">
+        <mat-icon>search</mat-icon>
+
+        <input
+          #inputEl
+          class="search-input"
+          [placeholder]="placeholder"
+          [value]="value"
+          (input)="onInput($event)"
+          (keyup.enter)="confirmSearch()"
+        />
+
+        <button class="close" type="button" (click)="close()">×</button>
+      </div>
+
+      @if (categories.length > 0) {
+        <div class="search-section">
+          <div class="search-title">Categorias</div>
+          <div class="search-list">
+            @for (c of categories; track $index) {
+              <button class="search-item" (click)="choose(c)">
+                {{ c }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (suggestions.length > 0) {
+        <div class="search-section">
+          <div class="search-title">Sugestões</div>
+          <div class="search-list">
+            @for (s of suggestions; track $index) {
+              <button class="search-item" (click)="choose(s)">
+                {{ s }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

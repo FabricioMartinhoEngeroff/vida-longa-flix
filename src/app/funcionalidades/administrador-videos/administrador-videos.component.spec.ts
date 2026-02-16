@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 
 import { AdminVideosComponent } from './administrador-videos.component';
-import { VideoService } from '../../compartilhado/servicos/video/video';
+import { VideoService } from '../../shared/services/video/video';
 
 describe('AdminVideosComponent', () => {
   let addVideoSpy: ReturnType<typeof vi.fn>;

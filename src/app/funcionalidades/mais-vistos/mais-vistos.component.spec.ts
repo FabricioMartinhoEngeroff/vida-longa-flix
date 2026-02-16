@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MaisVistosComponent } from './mais-vistos.component';
-import { VideoService } from '../../compartilhado/servicos/video/video';
-import { ModalService } from '../../compartilhado/servicos/modal/modal';
-import { HistoricoViewsService } from '../../compartilhado/servicos/historico-views/historico-views';
+import { VideoService } from '../../shared/services/video/video';
+import { ModalService } from '../../shared/services/modal/modal';
+import { HistoricoViewsService } from '../../shared/services/historico-views/historico-views';
 import { vi } from 'vitest';
 
 describe('MaisVistosComponent', () => {

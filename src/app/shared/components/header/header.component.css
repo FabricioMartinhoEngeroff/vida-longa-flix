@@ -1,0 +1,109 @@
+/* HEADER FULL WIDTH */
+
+.styled-header {
+  background-color: #7da873;
+  width: 100%;
+  margin: 0;
+  padding: 1px 1px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* Header content */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.logo {
+  height: 0px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  display: block;
+  border-radius: 20px;
+  background: transparent;
+  padding: 05px;
+}
+
+/* ========= RIGHT ACTIONS (search + logout) ========= */
+.right-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+}
+
+.right-actions app-search-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-logout {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+/* =================== MOBILE =================== */
+
+.styled-header {
+  padding: 1px 2px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.header-content {
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+}
+
+.logo-title-container {
+  min-width: auto;
+  gap: 2px;
+}
+
+.logo {
+  height: 49px; /* keeps height on mobile */
+  width: auto;
+  max-width: 52vw; /* grows on mobile without increasing header height */
+  object-fit: contain;
+}
+
+.right-actions {
+  max-width: none;
+  width: auto;
+  flex: 1;
+  gap: 2px;
+}
+
+.right-actions > * {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.right-actions app-search-field {
+  flex: 0 0 auto;
+}
+
+.btn-logout {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}

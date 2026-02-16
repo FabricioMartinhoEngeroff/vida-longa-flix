@@ -1,0 +1,23 @@
+<div class="comments">
+  <div class="comment-title-row">
+    <div class="title">Comentários</div>
+
+    <app-favorite-button
+      [favorito]="isFavorite"
+      (aoClicar)="favoriteClick.emit()"
+    ></app-favorite-button>
+  </div>
+
+  <div class="comment-item" *ngFor="let c of comments">
+    {{ c }}
+  </div>
+
+  <div class="comment-form">
+    <input
+      type="text"
+      placeholder="Faça um comentário..."
+      [(ngModel)]="newComment"
+    />
+    <button type="button" (click)="submit()">Publicar</button>
+  </div>
+</div>

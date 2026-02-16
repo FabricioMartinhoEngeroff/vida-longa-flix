@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { VideoService } from '../../compartilhado/servicos/video/video';
-import { Video } from '../../compartilhado/tipos/videos';
+import { VideoService } from '../../shared/services/video/video';
+import { Video } from '../../shared/types/videos';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({

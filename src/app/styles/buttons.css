@@ -1,0 +1,84 @@
+.favorite-button {
+  background: none;
+  border: none;
+  color: gray;
+  font-size: 24px;
+  cursor: pointer;
+  margin-top: 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 10px;
+
+  transition: color 0.2s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.favorite-button.favorited {
+  color: red;
+}
+
+.favorite-button:hover {
+  color: lightgray;
+}
+
+.favorite-button.favorited:hover {
+  color: #ff6666;
+}
+
+.favorite-button:active {
+  transform: scale(0.92);
+}
+
+.favorite-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .favorite-button {
+    font-size: 28px;
+    margin-top: 12px;
+    align-self: center;
+    padding: 10px; 
+  }
+}
+
+.arrow-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: gray;
+  padding: 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+
+  transition: color 0.2s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.arrow-button:hover {
+  color: black;
+}
+
+.arrow-button:active {
+  transform: scale(0.92);
+}
+
+.arrow-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .arrow-button {
+    font-size: 28px;
+    padding: 12px;
+  }
+}

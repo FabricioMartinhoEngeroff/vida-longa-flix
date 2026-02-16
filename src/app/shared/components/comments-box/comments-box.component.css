@@ -1,0 +1,50 @@
+.comments {
+  margin-top: 16px;
+}
+
+.comment-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.comment-title-row .title {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.comment-item {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #bbb;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+}
+
+.comment-form button {
+  align-self: flex-end;
+  padding: 6px 10px;
+  background-color: #2f6b3a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.comment-form button:hover {
+  background-color: #4f8a58;
+}

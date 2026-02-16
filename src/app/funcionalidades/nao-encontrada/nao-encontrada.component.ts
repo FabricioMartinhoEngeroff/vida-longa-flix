@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { TituloComponent } from '../../compartilhado/componentes/titulo/titulo.component';
+import { TituloComponent } from '../../shared/components/title/title.component';
 
 @Component({
   selector: 'app-nao-encontrada',

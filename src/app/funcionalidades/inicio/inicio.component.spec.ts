@@ -4,9 +4,9 @@ import { BehaviorSubject, of } from 'rxjs';
 import { vi } from 'vitest';
 
 import { InicioComponent } from './inicio.component';
-import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
-import { ModalService } from '../../compartilhado/servicos/modal/modal';
-import { VideoService } from '../../compartilhado/servicos/video/video';
+import { ComentariosService } from '../../shared/services/comentarios/comentarios.service';
+import { ModalService } from '../../shared/services/modal/modal';
+import { VideoService } from '../../shared/services/video/video';
 
 describe('InicioComponent', () => {
   let component: InicioComponent;

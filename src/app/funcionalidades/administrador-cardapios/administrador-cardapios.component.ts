@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
-import { Cardapio } from '../../compartilhado/tipos/ cardapios';
+import { CardapioService } from '../../shared/services/menus/menus-service';
+import { Cardapio } from '../../shared/types/menu';
 
 
 

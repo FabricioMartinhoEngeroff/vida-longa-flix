@@ -1,0 +1,12 @@
+<div 
+  class="item" 
+  [class.active]="active" 
+  (click)="onClick()"
+  (keydown)="onKeyDown($event)"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="text"
+>
+  <mat-icon class="icon" [class.active]="active">{{ icon }}</mat-icon>
+  <span>{{ text }}</span>
+</div>

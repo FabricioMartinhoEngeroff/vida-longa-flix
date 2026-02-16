@@ -1,0 +1,171 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  opacity: 0;
+  visibility: hidden;
+  
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  transform: scale(0.9);
+  opacity: 0;
+  
+  transition: all 0.3s ease;
+}
+
+.modal.visible {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  
+  width: 32px;
+  height: 32px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  
+  color: #6b7280;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 20px 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.change-password-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  padding: 12px;
+  margin: 16px 0;
+  
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: transparent;
+  
+  font-size: 14px;
+  font-weight: 600;
+  color: #2f6b3a;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.change-password-btn:hover {
+  background: #f9fafb;
+  border-color: #2f6b3a;
+}
+
+.change-password-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.save-btn {
+  flex: 1;
+  padding: 10px 24px;
+  
+  border: none;
+  border-radius: 8px;
+  
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.cancel-btn:hover {
+  background: #f9fafb;
+}
+
+.save-btn {
+  background: #2f6b3a;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #4f8a58;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    max-width: 95%;
+    padding: 20px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons {
+    flex-direction: column-reverse;
+  }
+}

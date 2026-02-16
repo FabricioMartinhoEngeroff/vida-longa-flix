@@ -3,10 +3,10 @@ import { NgFor, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 
-import { Video } from '../../compartilhado/tipos/videos';
-import { ModalService } from '../../compartilhado/servicos/modal/modal';
-import { HistoricoViewsService } from '../../compartilhado/servicos/historico-views/historico-views';
-import { VideoService } from '../../compartilhado/servicos/video/video';
+import { Video } from '../../shared/types/videos';
+import { ModalService } from '../../shared/services/modal/modal';
+import { HistoricoViewsService } from '../../shared/services/historico-views/historico-views';
+import { VideoService } from '../../shared/services/video/video';
 
 @Component({
   selector: 'app-mais-vistos',

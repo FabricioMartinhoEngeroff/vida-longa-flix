@@ -1,0 +1,20 @@
+<header class="styled-header">
+  <div class="header-content">
+    <div class="logo-title-container">
+      <img class="logo" src="/assets/images/Logo.png" alt="Logo" />
+    </div>
+
+    <div class="right-actions">
+      <app-search-field
+        (valueChange)="onSearchChange($event)"
+        (search)="goToSearch($event)"
+        [categories]="searchCategories"
+        [suggestions]="searchSuggestions"
+      ></app-search-field>
+
+      <app-notifications></app-notifications>
+      <app-logout-button></app-logout-button>
+      <app-user-menu></app-user-menu>
+    </div>
+  </div>
+</header>

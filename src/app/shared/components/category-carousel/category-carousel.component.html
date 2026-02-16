@@ -1,0 +1,13 @@
+<section class="category-block">
+  <div class="title-container">
+    <app-title [alignment]="'left'">{{ title }}</app-title>
+  </div>
+
+  <app-carousel>
+    @for (item of items; track $index) {
+      <ng-container
+        *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+      ></ng-container>
+    }
+  </app-carousel>
+</section>

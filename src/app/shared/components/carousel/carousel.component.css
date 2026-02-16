@@ -1,0 +1,129 @@
+.carousel-container {
+  position: relative;
+
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+.scroll-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Buttons (desktop only)
+========================= */
+.scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  padding: 6px;
+  border-radius: 12px;
+
+  color: #050505;
+  transition: transform 0.12s ease, opacity 0.2s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scroll-button.left {
+  left: 8px;
+}
+
+.scroll-button.right {
+  right: 8px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scroll-button:hover {
+    opacity: 0.85;
+  }
+}
+
+.scroll-button:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+:deep(mat-icon) {
+  width: 36px;
+  height: 36px;
+  font-size: 36px;
+}
+
+/* =========================
+   List (Web + Mobile)
+========================= */
+.item-list {
+  display: flex;
+  flex-wrap: nowrap;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 12px;
+  padding: 10px 0;
+
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+
+  user-select: none;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.item-list::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.item-list:active {
+  cursor: grabbing;
+}
+
+.item-list > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* =========================
+   Mobile
+========================= */
+@media (max-width: 768px) {
+  .scroll-button {
+    display: none;
+  }
+
+  .carousel-container {
+    padding: 0;
+  }
+
+  .item-list {
+    gap: 8px;
+    padding: 6px 10px;
+  }
+
+  .item-list > * {
+    width: 58vw;
+    min-width: 58vw;
+    max-width: 58vw;
+  }
+}

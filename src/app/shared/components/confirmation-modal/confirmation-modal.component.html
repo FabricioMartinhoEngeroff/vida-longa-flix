@@ -1,0 +1,37 @@
+@if (open) {
+  <div class="backdrop visible" (click)="onCancel()">
+    <div class="modal visible" (click)="$event.stopPropagation()">
+      
+      <button class="close-btn" (click)="onCancel()" type="button">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <div class="warning-icon">
+        <mat-icon>warning</mat-icon>
+      </div>
+
+      <h2 class="title">{{ title }}</h2>
+
+      <p class="message">{{ message }}</p>
+
+      <div class="buttons">
+        <button 
+          class="cancel-btn" 
+          (click)="onCancel()"
+          type="button"
+        >
+          {{ cancelText }}
+        </button>
+
+        <button 
+          class="confirm-btn" 
+          [class.danger]="isDanger"
+          (click)="onConfirm()"
+          type="button"
+        >
+          {{ confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

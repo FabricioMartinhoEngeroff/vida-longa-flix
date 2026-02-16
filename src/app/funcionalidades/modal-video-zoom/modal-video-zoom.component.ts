@@ -2,11 +2,11 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NgIf } from '@angular/common';
 
-import { Video } from '../../compartilhado/tipos/videos';
-import { ModalService } from '../../compartilhado/servicos/modal/modal';
-import { VideoService } from '../../compartilhado/servicos/video/video';
-import { ComentariosBoxComponent } from '../../compartilhado/componentes/comentarios-box/comentarios-box.component';
-import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
+import { Video } from '../../shared/types/videos';
+import { ModalService } from '../../shared/services/modal/modal';
+import { VideoService } from '../../shared/services/video/video';
+import { ComentariosBoxComponent } from '../../shared/components/comments-box/comments-box.component';
+import { ComentariosService } from '../../shared/services/comentarios/comentarios.service';
 
 @Component({
   selector: 'app-modal-video-zoom',

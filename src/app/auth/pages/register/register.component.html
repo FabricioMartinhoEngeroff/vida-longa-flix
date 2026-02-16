@@ -1,0 +1,85 @@
+<div class="auth-login-box">
+  <h2>Crie sua conta</h2>
+  <p class="subtitle">Complete seu perfil depois dentro do app 😊</p>
+
+  <form [formGroup]="form" (ngSubmit)="register()">
+    <div class="auth-form-container">
+      
+      <div class="field-with-message">
+        <app-form-field
+          label="E-mail"
+          placeholder="seu@email.com"
+          formControlName="email"
+          type="email"
+          icon="mail"
+          autocomplete="email"
+          [maxlength]="254"
+          [showCounter]="true"
+          [error]="fieldError('email')"
+        ></app-form-field>
+
+        @if (emailErrorType) {
+          <app-email-adjustment-message
+            [errorType]="emailErrorType"
+            [customMessage]="emailErrorMessage"
+            [problematicDomain]="problematicDomain"
+          ></app-email-adjustment-message>
+        }
+      </div>
+
+      <app-form-field
+        label="Nome completo"
+        placeholder="Digite seu nome"
+        formControlName="name"
+        type="text"
+        icon="user"
+        autocomplete="name"
+        [maxlength]="100"
+        [showCounter]="true"
+        [error]="fieldError('name')"
+      ></app-form-field>
+
+      <app-form-field
+        label="Telefone"
+        placeholder="(00) 00000-0000"
+        formControlName="phone"
+        type="tel"
+        icon="phone"
+        autocomplete="tel"
+        mask="phone"
+        [maxlength]="15"
+        [showCounter]="false"
+        [error]="fieldError('phone')"
+      ></app-form-field>
+
+      <app-form-field
+        label="Senha"
+        placeholder="Crie uma senha forte"
+        formControlName="password"
+        type="password"
+        icon="lock"
+        autocomplete="new-password"
+        [maxlength]="128"
+        [showCounter]="true"
+        [error]="fieldError('password')"
+      ></app-form-field>
+
+      <app-password-strength-indicator
+        [password]="currentPassword"
+        [showRequirements]="true"
+      ></app-password-strength-indicator>
+
+    </div>
+
+    <app-primary-button
+      text="Criar Conta"
+      [disabled]="loading"
+      type="submit"
+    ></app-primary-button>
+
+    <p class="login-link">
+      Já tem uma conta? 
+      <a routerLink="/authorization">Faça login</a>
+    </p>
+  </form>
+</div>

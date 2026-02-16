@@ -1,9 +1,0 @@
-<nav class="barra-navegacao" aria-label="Menu principal">
-  <app-item-navegacao
-    *ngFor="let item of itensVisiveis"
-    [texto]="item.nome"
-    [icone]="item.icone"
-    [ativo]="ativo === item.nome"
-    (aoClicar)="clicarItem(item)"
-  ></app-item-navegacao>
-</nav>

@@ -3,17 +3,17 @@ import { NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
-import { CarrosselComponent } from '../../compartilhado/componentes/carrossel/carrossel.component';
-import { TituloComponent } from '../../compartilhado/componentes/titulo/titulo.component';
+import { CarrosselComponent } from '../../shared/components/carousel/carousel.component';
+import { TituloComponent } from '../../shared/components/title/title.component';
 
-import { Video } from '../../compartilhado/tipos/videos';
-import { FavoritosService } from '../../compartilhado/servicos/favoritos/favoritos';
-import { ModalService } from '../../compartilhado/servicos/modal/modal';
-import { VideoService } from '../../compartilhado/servicos/video/video';
+import { Video } from '../../shared/types/videos';
+import { FavoritosService } from '../../shared/services/favoritos/favoritos';
+import { ModalService } from '../../shared/services/modal/modal';
+import { VideoService } from '../../shared/services/video/video';
 
-import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
-import { Cardapio } from '../../compartilhado/tipos/ cardapios';
-import { FavoritosCardapiosService } from '../../compartilhado/servicos/cardapio/ favoritos-cardapios';
+import { CardapioService } from '../../shared/services/menus/menus-service';
+import { Cardapio } from '../../shared/types/menu';
+import { FavoritosCardapiosService } from '../../shared/services/menus/ favoritos-cardapios';
 
 @Component({
   selector: 'app-favoritos',

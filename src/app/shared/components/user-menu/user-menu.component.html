@@ -1,0 +1,108 @@
+<div class="user-menu-container">
+  <button 
+    class="profile-btn" 
+    (click)="toggleMenu()"
+    [attr.aria-label]="'Menu de ' + user.name"
+    [attr.aria-expanded]="isMenuOpen"
+  >
+    <div class="avatar">
+      @if (user.photo) {
+        <img [src]="user.photo" [alt]="user.name" />
+      } @else {
+        <mat-icon>account_circle</mat-icon>
+      }
+    </div>
+    
+    <mat-icon class="arrow" [class.open]="isMenuOpen">
+      expand_more
+    </mat-icon>
+  </button>
+
+  <div 
+    class="dropdown" 
+    [class.open]="isMenuOpen"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="dropdown-header">
+      <div 
+        class="avatar-large clickable"
+        [class.dragging]="isDraggingPhoto"
+        (click)="selectPhoto()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        title="Clique ou arraste uma foto"
+      >
+        @if (user.photo) {
+          <img [src]="user.photo" [alt]="user.name" />
+        } @else {
+          <mat-icon>account_circle</mat-icon>
+        }
+        
+        <div class="camera-overlay">
+          <mat-icon>photo_camera</mat-icon>
+        </div>
+      </div>
+      
+      <div class="user-info">
+        <strong class="name">{{ user.name }}</strong>
+        <span class="email">{{ user.email }}</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="menu-option" (click)="goToProfile()">
+      <mat-icon>person</mat-icon>
+      <span>Meu Perfil</span>
+    </button>
+
+    <button class="menu-option" (click)="goToSettings()">
+      <mat-icon>settings</mat-icon>
+      <span>Configurações</span>
+    </button>
+
+    <button class="menu-option" (click)="isChangePasswordModalOpen = true">
+      <mat-icon>lock</mat-icon>
+      <span>Mudar Senha</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="menu-option logout" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
+  </div>
+
+  <app-confirmation-modal
+    [open]="isLogoutModalOpen"
+    title="Atenção"
+    message="Deseja realmente sair do sistema?"
+    confirmText="Sair"
+    cancelText="Cancelar"
+    [isDanger]="true"
+    (confirm)="confirmLogout()"
+    (cancel)="cancelLogout()"
+  ></app-confirmation-modal>
+
+  <app-change-password-modal
+    [open]="isChangePasswordModalOpen"
+    (close)="closePasswordModal()"
+    (confirm)="confirmPasswordChange($event)"
+  ></app-change-password-modal>
+
+  <app-user-profile-modal
+    [open]="isProfileModalOpen"
+    [user]="user"
+    (close)="closeProfileModal()"
+    (save)="saveProfile($event)"
+    (openChangePassword)="openChangePasswordFromProfile()"
+  ></app-user-profile-modal>
+ 
+  <div 
+    class="backdrop" 
+    [class.visible]="isMenuOpen"
+    (click)="closeMenu()"
+  ></div>
+</div>

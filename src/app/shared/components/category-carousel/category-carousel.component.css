@@ -1,0 +1,9 @@
+@media (max-width: 768px) {
+  .category-block {
+    margin-bottom: 12px;
+  }
+
+  .title-container {
+    margin-bottom: 2px;
+  }
+}

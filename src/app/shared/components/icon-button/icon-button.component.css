@@ -1,0 +1,50 @@
+.icon-button {
+  margin-left: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+
+  padding: 10px; 
+  border-radius: 50%;
+
+  transition: background-color 0.2s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.icon-button:active {
+  transform: scale(0.94);
+}
+
+.icon-button:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.35);
+  outline-offset: 2px;
+}
+
+:deep(svg) {
+  width: 24px;
+  height: 24px;
+  color: #222;
+}
+
+@media (max-width: 768px) {
+  .icon-button {
+    margin-left: 8px;
+    padding: 12px; 
+  }
+
+  :deep(svg) {
+    width: 20px;
+    height: 20px;
+  }
+}

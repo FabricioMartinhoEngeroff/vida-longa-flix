@@ -1,0 +1,50 @@
+@if (menu; as m) {
+  <div class="modal-backdrop">
+    <div class="modal modal-recipe">
+      <button class="close-btn" type="button" (click)="close.emit()" aria-label="Fechar">
+        ×
+      </button>
+
+      <div class="cover-wrap">
+        <img
+          [src]="m.cover || 'assets/images/Logo.png'"
+          [alt]="m.title"
+          class="cover-large"
+        />
+      </div>
+
+      <div class="content">
+        <h3 class="title">{{ m.title }}</h3>
+        <p class="description">{{ m.description }}</p>
+
+        <div class="block">
+          <h4>Receita</h4>
+          <p>{{ m.recipe || 'Sem receita cadastrada.' }}</p>
+        </div>
+
+        <div class="block">
+          <h4>Dicas da Nutri</h4>
+          <p>{{ m.nutritionistTips || 'Sem dicas cadastradas.' }}</p>
+        </div>
+
+        <div class="block">
+          <h4>Informações Nutricionais</h4>
+          <div class="macros">
+            <div>Proteínas: {{ m.proteins || 0 }}g</div>
+            <div>Carboidratos: {{ m.carbs || 0 }}g</div>
+            <div>Gorduras: {{ m.fats || 0 }}g</div>
+            <div>Fibras: {{ m.fiber || 0 }}g</div>
+            <div>Calorias: {{ m.calories || 0 }} kcal</div>
+          </div>
+        </div>
+
+        <app-comments-box
+          [comments]="comments"
+          [favorited]="!!m.favorited"
+          (favorite)="favorite.emit()"
+          (comment)="comment.emit($event)"
+        ></app-comments-box>
+      </div>
+    </div>
+  </div>
+}

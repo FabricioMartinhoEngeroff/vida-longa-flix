@@ -1,0 +1,152 @@
+<div class="backdrop" [class.visible]="open" (click)="onClose()">
+  <div class="modal" [class.visible]="open" (click)="$event.stopPropagation()">
+    
+    <button class="close-btn" (click)="onClose()" type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <h2 class="title">Meu Perfil</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      
+      <div class="field-row">
+        <app-form-field
+          label="E-mail"
+          placeholder="seu@email.com"
+          formControlName="email"
+          type="email"
+          icon="mail"
+          [maxlength]="254"
+          [showCounter]="true"
+          [error]="fieldError('email')"
+        ></app-form-field>
+
+        <app-form-field
+          label="Nome completo"
+          placeholder="Digite seu nome"
+          formControlName="name"
+          type="text"
+          icon="user"
+          [maxlength]="100"
+          [showCounter]="true"
+          [error]="fieldError('name')"
+        ></app-form-field>
+      </div>
+
+      <div class="field-row">
+        <app-form-field
+          label="CPF"
+          placeholder="000.000.000-00"
+          formControlName="taxId"
+          icon="id"
+          mask="cpf"
+          [maxlength]="14"
+          [showCounter]="true"
+          [error]="fieldError('taxId')"
+        ></app-form-field>
+
+        <app-form-field
+          label="Telefone"
+          placeholder="(00) 00000-0000"
+          formControlName="phone"
+          type="tel"
+          icon="phone"
+          mask="phone"
+          [maxlength]="15"
+          [showCounter]="false"
+          [error]="fieldError('phone')"
+        ></app-form-field>
+      </div>
+
+      <div formGroupName="address">
+        
+        <div class="field-row">
+          <app-form-field
+            label="Rua"
+            placeholder="Digite o nome da rua"
+            formControlName="street"
+            type="text"
+            icon="pin"
+            [maxlength]="200"
+            [showCounter]="true"
+            [error]="fieldError('address.street')"
+          ></app-form-field>
+
+          <app-form-field
+            label="Número"
+            placeholder="Digite o número"
+            formControlName="number"
+            type="text"
+            icon="hash"
+            [maxlength]="10"
+            [showCounter]="false"
+            [error]="fieldError('address.number')"
+          ></app-form-field>
+        </div>
+
+        <div class="field-row">
+          <app-form-field
+            label="Bairro"
+            placeholder="Digite o bairro"
+            formControlName="neighborhood"
+            type="text"
+            icon="home"
+            [maxlength]="100"
+            [showCounter]="true"
+            [error]="fieldError('address.neighborhood')"
+          ></app-form-field>
+
+          <app-form-field
+            label="Cidade"
+            placeholder="Digite a cidade"
+            formControlName="city"
+            type="text"
+            icon="city"
+            [maxlength]="100"
+            [showCounter]="true"
+            [error]="fieldError('address.city')"
+          ></app-form-field>
+        </div>
+
+        <div class="field-row">
+          <app-form-field
+            label="Estado"
+            placeholder="UF"
+            formControlName="state"
+            type="text"
+            icon="globe"
+            [maxlength]="2"
+            [showCounter]="false"
+            [error]="fieldError('address.state')"
+          ></app-form-field>
+
+          <app-form-field
+            label="CEP"
+            placeholder="00000-000"
+            formControlName="zipCode"
+            icon="hash"
+            mask="zipcode"
+            [maxlength]="9"
+            [showCounter]="true"
+            [error]="fieldError('address.zipCode')"
+          ></app-form-field>
+        </div>
+      </div>
+
+      <button type="button" class="change-password-btn" (click)="onOpenChangePassword()">
+        <mat-icon>lock</mat-icon>
+        <span>Mudar Senha</span>
+      </button>
+
+      <div class="buttons">
+        <button class="cancel-btn" type="button" (click)="onClose()">
+          Cancelar
+        </button>
+
+        <button class="save-btn" type="submit">
+          Salvar Alterações
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

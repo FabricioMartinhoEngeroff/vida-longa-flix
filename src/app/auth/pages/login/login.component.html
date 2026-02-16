@@ -1,0 +1,65 @@
+<div class="auth-login-box">
+  <h2>Acesso ao Vida Longa Flix</h2>
+
+  <form [formGroup]="form" (ngSubmit)="signIn()">
+    <div class="auth-form-container">
+      
+      <app-form-field
+        label="E-mail"
+        placeholder="seu@email.com"
+        formControlName="email"
+        type="email"
+        icon="mail"
+        autocomplete="email"
+        [maxlength]="254"
+        [showCounter]="true"
+        [error]="errorMessage('email')"
+      ></app-form-field>
+
+      <app-form-field
+        label="Senha"
+        placeholder="Digite sua senha"
+        formControlName="password"
+        type="password"
+        icon="lock"
+        autocomplete="current-password"
+        [maxlength]="128"
+        [showCounter]="true"
+        [error]="errorMessage('password')"
+      ></app-form-field>
+
+      <div class="login-options">
+        <label class="keep-logged-checkbox">
+          <input 
+            type="checkbox" 
+            formControlName="keepLoggedIn"
+          />
+          <span>Manter conectado</span>
+        </label>
+
+        <a class="forgot-password-link" (click)="openPasswordRecovery()">
+          Esqueci minha senha
+        </a>
+      </div>
+    </div>
+
+    <app-primary-button
+      text="Entrar"
+      [disabled]="loading"
+      type="submit"
+    ></app-primary-button>
+
+    <div class="divider">
+      <span>Não tem uma conta?</span>
+    </div>
+
+    <button type="button" class="btn-create-account" (click)="register()">
+      Criar conta
+    </button>
+  </form>
+</div>
+
+<app-password-recovery
+  [open]="recoveryOpen"
+  (close)="closePasswordRecovery()"
+></app-password-recovery>

@@ -4,8 +4,8 @@ import { BehaviorSubject, of } from 'rxjs';
 import { vi } from 'vitest';
 
 import { CardapiosComponent } from './cardapios.component';
-import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
-import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
+import { CardapioService } from '../../shared/services/menus/menus-service';
+import { ComentariosService } from '../../shared/services/comentarios/comentarios.service';
 
 describe('CardapiosComponent', () => {
   const comentariosState$ = new BehaviorSubject<Record<string, string[]>>({});

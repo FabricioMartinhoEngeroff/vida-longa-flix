@@ -1,0 +1,170 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  opacity: 0;
+  visibility: hidden;
+  
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: relative; 
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  
+  max-width: 400px;
+  width: 90%;
+  
+  text-align: center;
+  
+  transform: scale(0.9);
+  opacity: 0;
+  
+  transition: all 0.3s ease;
+}
+
+.modal.visible {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.warning-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background: #fef2f2;
+  border-radius: 50%;
+}
+
+.warning-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #2f6b3a;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 12px 0;
+}
+
+.message {
+  font-size: 20px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  
+  width: 32px;
+  height: 32px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  
+  color: #6b7280;
+  cursor: pointer;
+  
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.close-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.cancel-btn:hover {
+  background: #f9fafb;
+}
+
+.confirm-btn {
+  background: #2f6b3a;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #4f8a58;
+}
+
+.confirm-btn.danger {
+  background: #2f6b3a;
+}
+
+.confirm-btn.danger:hover {
+  background: #2f6b3a;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    max-width: 340px;
+    padding: 20px;
+  }
+
+  .buttons {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-btn,
+  .confirm-btn {
+    width: 100%;
+  }
+}

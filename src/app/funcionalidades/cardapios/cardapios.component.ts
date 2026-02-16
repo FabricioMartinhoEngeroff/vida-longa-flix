@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { map, Observable } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
-import { Cardapio } from '../../compartilhado/tipos/ cardapios';
-import { ComentariosService } from '../../compartilhado/servicos/comentarios/comentarios.service';
-import { ModalCardapioComponent } from '../../compartilhado/componentes/modal-cardapio/modal-cardapio.component';
-import { CategoriaCarrosselComponent } from '../../compartilhado/componentes/categoria-carrossel/categoria-carrossel.component';
-import { EngajamentoResumoComponent } from '../../compartilhado/componentes/engajamento-resumo/engajamento-resumo.component';
-import { agruparPor, Grupo } from '../../compartilhado/utils/agrupar-por';
+import { CardapioService } from '../../shared/services/menus/menus-service';
+import { Cardapio } from '../../shared/types/menu';
+import { ComentariosService } from '../../shared/services/comentarios/comentarios.service';
+import { ModalCardapioComponent } from '../../shared/components/menu-modal/menu-modal.component';
+import { CategoriaCarrosselComponent } from '../../shared/components/category-carousel/category-carousel.component';
+import { EngajamentoResumoComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
+import { agruparPor, Grupo } from '../../shared/utils/agrupar-por';
 
 type GrupoCardapio = Grupo<Cardapio>;
 

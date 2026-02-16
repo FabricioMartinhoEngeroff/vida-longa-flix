@@ -1,0 +1,43 @@
+<div class="field-container">
+
+  <div class="input-shell" [class.has-error]="!!error" [class.is-disabled]="disabled">
+    <span class="left-icon">
+      <app-auth-icon [name]="icon"></app-auth-icon>
+    </span>
+
+    <input
+      class="input"
+      [type]="inputType"
+      [placeholder]="dynamicPlaceholder"
+      [value]="value"
+      [attr.maxlength]="maxlength"
+      (input)="onInput($event)"
+      (blur)="blur()"
+      [disabled]="disabled"
+      [attr.autocomplete]="autocomplete"
+    />
+
+    @if (type === 'password') {
+      <button
+        type="button"
+        class="right-action"
+        (click)="togglePassword()"
+      >
+        <app-auth-icon [name]="rightIcon"></app-auth-icon>
+      </button>
+    }
+
+    @if (showCounter && maxlength) {
+      <span 
+        class="char-counter"
+        [ngClass]="counterClass"
+      >
+        {{ counterText }}
+      </span>
+    }
+  </div>
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+</div>

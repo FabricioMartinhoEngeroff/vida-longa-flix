@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 
 import { AdministradorCardapiosComponent } from './administrador-cardapios.component';
-import { CardapioService } from '../../compartilhado/servicos/cardapio/cardapio-service';
+import { CardapioService } from '../../shared/services/menus/menus-service';
 
 
 

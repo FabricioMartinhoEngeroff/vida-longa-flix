@@ -1,0 +1,10 @@
+<nav class="navbar" aria-label="Menu principal">
+  @for (item of visibleItems; track item.name) {
+    <app-nav-item
+      [text]="item.name"
+      [icon]="item.icon"
+      [active]="active === item.name"
+      (click)="clickItem(item)"
+    ></app-nav-item>
+  }
+</nav>

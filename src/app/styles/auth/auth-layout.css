@@ -1,0 +1,170 @@
+/* =========================
+   AUTH LAYOUT (Desktop + Web/Mobile)
+========================= */
+.auth-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  background: var(--auth-bg-right);
+}
+
+/* Painel esquerdo: logo e branding */
+.auth-left-panel {
+  flex: 1;
+  background: var(--auth-bg-left);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--auth-page-pad);
+  text-align: center;
+}
+
+.auth-brand {
+  max-width: 560px;
+}
+
+.auth-brand-title {
+  font-size: var(--auth-brand-size);
+  font-weight: 900;
+  color: var(--auth-primary);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.auth-brand-welcome {
+  margin-top: 14px;
+  font-size: var(--auth-welcome-size);
+  font-weight: 800;
+  color: #111827;
+}
+
+.auth-brand-link {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--auth-muted);
+}
+
+/* Painel direito: formulário */
+.auth-right-panel {
+  flex: 1.2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--auth-page-pad);
+  padding-top: 50px;
+  background: var(--auth-bg-right);
+}
+
+/* Card que contém o formulário */
+.auth-card {
+  width: 100%;
+  max-width: 860px;
+  background: var(--auth-card-bg);
+  border-radius: var(--auth-radius);
+  box-shadow: var(--auth-shadow);
+  padding: var(--auth-card-pad);
+}
+
+.auth-card-title {
+  font-size: var(--auth-title-size);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+/* Formulário: layout vertical com espaçamento consistente */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--auth-gap);
+}
+
+/* Grid de 2 colunas para campos lado a lado (desktop) */
+.auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--auth-gap);
+}
+
+/* Links clicáveis (ex: "Esqueci minha senha") */
+.auth-links {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #2563eb;
+  cursor: pointer;
+  user-select: none;
+}
+
+.auth-links:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+/* Tablet: empilha painéis verticalmente */
+@media (max-width: 980px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-left-panel {
+    padding-bottom: 10px;
+  }
+
+  .auth-card {
+    max-width: 720px;
+  }
+}
+
+/* Tablet pequeno: campos em 1 coluna */
+@media (max-width: 720px) {
+  .auth-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile: otimiza espaço e tamanhos */
+@media (max-width: 520px) {
+  /* Reduz drasticamente padding do painel esquerdo */
+  .auth-left-panel {
+    padding: 24px 18px 16px;
+    min-height: auto;
+  }
+  
+  /* Logo e textos menores em mobile */
+  .auth-brand-title {
+    font-size: 28px;
+  }
+  
+  .auth-brand-welcome {
+    font-size: 16px;
+    margin-top: 8px;
+  }
+  
+  /* Esconde link de política em mobile */
+  .auth-brand-link {
+    display: none;
+  }
+
+  /* Painel direito mais próximo do topo */
+  .auth-right-panel {
+    align-items: flex-start;
+    padding: 14px;
+    padding-top: 8px;
+  }
+
+  /* Card mais arredondado e com padding confortável */
+  .auth-card {
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  /* Garante campos empilhados */
+  .auth-row {
+    grid-template-columns: 1fr;
+  }
+}

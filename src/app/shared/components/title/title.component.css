@@ -1,0 +1,38 @@
+/* =========================
+   Title
+========================= */
+.title {
+  color: #2f6b3a;
+  font-weight: 700;
+
+  /* web + mobile automático */
+  font-size: clamp(22px, 3vw, 32px);
+
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
+
+  /* espaçamento geral */
+  margin: 0;
+}
+
+/* alignments */
+.title.left {
+  text-align: left;
+}
+
+.title.center {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.title.right {
+  text-align: right;
+}
+
+/* mobile ajustes */
+@media (max-width: 768px) {
+  .title {
+    padding: 0 10px;
+  }
+}
