@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+
 import { UserAuthenticationService } from '../../../auth/services/user-authentication.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
-
 
 @Component({
   selector: 'app-logout-button',
@@ -12,22 +12,23 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
   template: `
     <button
       class="btn-logout"
+      type="button"
       (click)="isModalOpen = true"
       title="Sair"
     >
       <mat-icon>logout</mat-icon>
     </button>
 
-    <app-modal-confirmacao
-      [aberta]="isModalOpen"
-      titulo="Atenção"
-      mensagem="Deseja realmente sair do sistema?"
-      textoBotaoConfirmar="Sair"
-      textoBotaoCancelar="Cancelar"
-      [tipoPerigo]="true"
-      (confirmar)="confirmLogout()"
-      (cancelar)="cancelLogout()"
-    ></app-modal-confirmacao>
+    <app-confirmation-modal
+      [open]="isModalOpen"
+      title="Atenção"
+      message="Deseja realmente sair do sistema?"
+      confirmText="Sair"
+      cancelText="Cancelar"
+      [isDanger]="true"
+      (confirm)="confirmLogout()"
+      (cancel)="cancelLogout()"
+    ></app-confirmation-modal>
   `,
   styles: [`
     .btn-logout {

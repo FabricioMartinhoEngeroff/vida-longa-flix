@@ -1,86 +1,98 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Cardapio } from '../../types/menu';
-import cardapiosIniciais from '../../../../assets/cardapios.json';
-import { FavoritosCardapiosService } from './ favoritos-cardapios';
+import { Injectable, signal, computed } from '@angular/core';
+import initialMenus from '../../../../assets/cardapios.json';
+import { Menu } from '../../types/menu';
+import { MenuFavoritesService } from './menu-favorites.sevice';
 
 
 @Injectable({
   providedIn: 'root',
 })
-export class CardapioService {
-  private readonly cardapiosSubject = new BehaviorSubject<Cardapio[]>([]);
-  readonly cardapios$ = this.cardapiosSubject.asObservable();
+export class MenuService {
 
-constructor(private favoritos: FavoritosCardapiosService) {
-  const convertidos = this.converterMockados();
-  this.cardapiosSubject.next(convertidos);
-}
+  private menusSignal = signal<Menu[]>([]);
 
-  get cardapios(): Cardapio[] {
-    return this.cardapiosSubject.value;
+  readonly menus = this.menusSignal.asReadonly();
+
+  readonly totalMenus = computed(() => this.menusSignal().length);
+
+  readonly totalLikes = computed(() =>
+    this.menusSignal().reduce((sum, m) => sum + (m.likesCount ?? 0), 0)
+  );
+
+  constructor(private favorites: MenuFavoritesService) {
+  
+    const converted = this.convertMockedMenus();
+    this.menusSignal.set(converted);
   }
 
-  add(cardapio: Cardapio): void {
-    const atualizados = [cardapio, ...this.cardapios];
-    this.cardapiosSubject.next(atualizados);
+  add(menu: Menu): void {
+    this.menusSignal.update(current => [menu, ...current]);
   }
 
-  update(cardapio: Cardapio): void {
-    const atualizados = this.cardapios.map(c => c.id === cardapio.id ? cardapio : c);
-    this.cardapiosSubject.next(atualizados);
+  update(menu: Menu): void {
+    this.menusSignal.update(current =>
+      current.map(m => m.id === menu.id ? menu : m)
+    );
   }
 
   remove(id: string): void {
-    const atualizados = this.cardapios.filter(c => c.id !== id);
-    this.cardapiosSubject.next(atualizados);
+    this.menusSignal.update(current => current.filter(m => m.id !== id));
+    this.favorites.remove(id);
   }
 
   toggleFavorite(id: string): void {
-  const atualizados = this.cardapios.map((c) => {
-    if (c.id !== id) return c;
+    this.menusSignal.update(current =>
+      current.map((menu) => {
+        if (menu.id !== id) return menu;
 
-    const likesBase = c.likesCount ?? (c.favorita ? 1 : 0);
-    const novoFavorito = !c.favorita;
-    const novoLikes = novoFavorito
-      ? likesBase + 1
-      : Math.max(0, likesBase - 1);
+        const likesBase = menu.likesCount ?? (menu.favorited ? 1 : 0);
+        const newFavorited = !menu.favorited;
+        const newLikes = newFavorited
+          ? likesBase + 1
+          : Math.max(0, likesBase - 1);
 
-    const atualizado = {
-      ...c,
-      favorita: novoFavorito,
-      likesCount: novoLikes,
-    };
-    if (atualizado.favorita) {
-      this.favoritos.adicionar(atualizado);
-    } else {
-      this.favoritos.remover(atualizado.id);
-    }
-    return atualizado;
-  });
+        const updated = {
+          ...menu,
+          favorited: newFavorited,
+          likesCount: newLikes,
+        };
 
-  this.cardapiosSubject.next(atualizados);
-}
+        if (updated.favorited) {
+          this.favorites.add(updated);
+        } else {
+          this.favorites.remove(updated.id);
+        }
 
+        return updated;
+      })
+    );
+  }
 
-  private converterMockados(): Cardapio[] {
-  return (cardapiosIniciais as any[]).map((c) => ({
-    id: String(c.id),
-    title: c.title,
-    description: c.description,
-    capa: c.capa,
-    category: c.category ?? { id: '0', name: 'Sem categoria' },
+  getMenuById(id: string): Menu | undefined {
+    return this.menusSignal().find(m => m.id === id);
+  }
 
-    receita: c.receita ?? '',
-    dicasNutri: c.dicasNutri ?? '',
-    proteinas: c.proteinas ?? 0,
-    carboidratos: c.carboidratos ?? 0,
-    gorduras: c.gorduras ?? 0,
-    fibras: c.fibras ?? 0,
-    calorias: c.calorias ?? 0,
-    favorita: c.favorita ?? false,
-    likesCount: c.likesCount ?? (c.favorita ? 1 : 0),
-  })) as Cardapio[];
-}
+  getMenusByCategory(categoryId: string): Menu[] {
+    return this.menusSignal().filter(m => m.category.id === categoryId);
+  }
 
+  private convertMockedMenus(): Menu[] {
+    return (initialMenus as any[]).map((c) => ({
+      id: String(c.id),
+      title: c.title,
+      description: c.description,
+      cover: c.capa, 
+      category: c.category ?? { id: '0', name: 'Sem categoria' },
+
+      recipe: c.receita ?? '', 
+      nutritionistTips: c.dicasNutri ?? '',  
+      proteins: c.proteinas ?? 0,  
+      carbs: c.carboidratos ?? 0,  
+      fats: c.gorduras ?? 0,  
+      fiber: c.fibras ?? 0,  
+      calories: c.calorias ?? 0,  
+      favorited: c.favorita ?? false, 
+      likesCount: c.likesCount ?? (c.favorita ? 1 : 0),
+    })) as Menu[];
+  }
 }

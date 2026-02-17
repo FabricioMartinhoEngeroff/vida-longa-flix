@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  height: 100vh;
+  text-align: center;
+  padding: 20px;
+
+  background: linear-gradient(
+    174.61deg,
+    #aebf9f 4.16%,
+    #bcc9ad 48%,
+    #d3e0c5 96.76%
+  );
+}
+
+.error-message {
+  font-size: 18px;
+  color: #555;
+  margin: 10px 0;
+}
+
+.back-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+
+  border: none;
+  background-color: #2f6b3a;
+  color: white;
+  border-radius: 8px;
+
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #4f8a58;
+}

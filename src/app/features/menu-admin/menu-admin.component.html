@@ -1,0 +1,77 @@
+<section class="menu-admin">
+  <h2>Adicionar Cardápio</h2>
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="grid">
+      <label>
+        Título
+        <input type="text" formControlName="title" />
+      </label>
+
+      <label>
+        Descrição
+        <input type="text" formControlName="description" />
+      </label>
+
+      <label>
+        Categoria
+        <input type="text" formControlName="categoryName" />
+      </label>
+    </div>
+
+    <p class="upload-hint">Arraste e solte a capa aqui ou clique para selecionar</p>
+    <label class="upload-area">
+      <input type="file" accept="image/*" (change)="onCoverFile($event)" />
+      <span class="upload-icon">
+        <mat-icon>{{ uploadIcon }}</mat-icon>
+      </span>
+      <span class="upload-text">
+        Arraste e solte a capa aqui ou clique para selecionar
+      </span>
+    </label>
+
+    <h3>Conteúdo</h3>
+    <div class="grid">
+      <label>
+        Receita
+        <input type="text" formControlName="recipe" />
+      </label>
+
+      <label>
+        Dicas da Nutri
+        <input type="text" formControlName="nutritionistTips" />
+      </label>
+    </div>
+
+    <h3>Informações Nutricionais</h3>
+
+    <div class="grid">
+      <label>
+        Proteínas
+        <input type="number" formControlName="proteins" />
+      </label>
+
+      <label>
+        Carboidratos
+        <input type="number" formControlName="carbs" />
+      </label>
+
+      <label>
+        Gorduras
+        <input type="number" formControlName="fats" />
+      </label>
+
+      <label>
+        Fibras
+        <input type="number" formControlName="fiber" />
+      </label>
+
+      <label>
+        Calorias
+        <input type="number" formControlName="calories" />
+      </label>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Salvar</button>
+  </form>
+</section>

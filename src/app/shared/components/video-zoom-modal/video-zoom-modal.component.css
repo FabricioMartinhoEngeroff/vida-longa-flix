@@ -1,0 +1,133 @@
+.modal-background {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  position: relative;
+  background: #080808;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: #4f8a58;
+}
+
+:deep(mat-icon) {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.video-player {
+  width: 100%;
+  background: black;
+  flex-shrink: 0;
+}
+
+.video-player video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  object-fit: contain;
+}
+
+.content {
+  flex: 1;
+  padding: 16px;
+  color: white;
+  background-color: #080808;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.recipe-box {
+  background: #1c1c1c;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  color: #ddd;
+}
+
+.nutrients {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.nutrients li {
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+@media (min-width: 769px) {
+  .modal-content {
+    width: 90%;
+    height: 90%;
+    max-width: 960px;
+    border-radius: 12px;
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  .video-player {
+    flex: 2;
+  }
+
+  .video-player video {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover; 
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto; 
+    max-height: 100%;
+  }
+}

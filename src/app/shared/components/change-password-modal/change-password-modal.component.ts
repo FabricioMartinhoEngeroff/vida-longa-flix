@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { calculatePasswordStrength, PasswordStrength } from '../../../auth/utils/strong-password-validator';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
 import { DEFAULT_MESSAGES } from '../../services/alert-message/default-messages.constants';
-import { PasswordStrengthIndicatorComponent } from '../../../auth/component/password-strength-indicator/password-strength-indicator.component';
+import { PasswordStrengthIndicatorComponent } from '../../../auth/components/password-strength-indicator/password-strength-indicator.component';
 
 @Component({
   selector: 'app-change-password-modal',

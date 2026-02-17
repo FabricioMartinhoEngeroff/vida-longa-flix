@@ -1,0 +1,198 @@
+.empty-message {
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+  padding: 30px 16px;
+}
+
+/* WEB / DESKTOP */
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  margin-bottom: 5px;
+}
+
+.view-all {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #2f6b3a;
+  cursor: pointer;
+}
+
+.view-all:hover {
+  text-decoration: underline;
+  color: #4f8a58;
+}
+
+.icon {
+  margin-left: 3px;
+}
+
+.video-item {
+  flex-shrink: 0;
+  width: 200px;
+  text-align: center;
+}
+
+.video-item video {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.video-item h3 {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #000;
+}
+
+.remove-button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  background-color: rgba(47, 107, 58, 0.2);
+  color: #1f4f29;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background-color: #4f8a58;
+  color: #ffffff;
+}
+
+/* MOBILE */
+.mobile {
+  padding: 14px 12px 90px;
+}
+
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.mobile-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #222;
+}
+
+.counter {
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(125, 168, 115, 0.2);
+  color: #2d6a2f;
+}
+
+.mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-card {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-card video {
+  width: 120px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.mobile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.video-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+.mobile-remove-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  background: rgba(47, 107, 58, 0.15);
+  color: #2f6b3a;
+  border: none;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.mobile-remove-button:hover {
+  background: rgba(47, 107, 58, 0.25);
+}
+
+/* MENUS + MODAL */
+.favorite-menus {
+  margin-top: 18px;
+}
+
+.menus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  padding: 0 20px 20px;
+}
+
+.menu-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  padding-bottom: 12px;
+}
+
+.menu-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.menu-card h3 {
+  padding: 10px 12px 0;
+  margin: 0;
+}
+
+.menu-card button {
+  margin: 10px 12px 0;
+}
+
+.recipe-modal .cover-large {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.recipe-modal .content {
+  padding: 12px;
+}
+
+.recipe-modal .close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}

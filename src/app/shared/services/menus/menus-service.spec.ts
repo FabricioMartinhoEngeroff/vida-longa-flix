@@ -1,78 +1,103 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
+import { MenuService } from './menus-service';
+import { MenuFavoritesService } from './menu-favorites.sevice';
 
-import { CardapioService } from './menus-service';
-import { FavoritosCardapiosService } from './ favoritos-cardapios';
 
-describe('CardapioService', () => {
-  let service: CardapioService;
+describe('MenuService', () => {
+  let service: MenuService;
 
-  const favoritosMock = {
-    adicionar: vi.fn(),
-    remover: vi.fn(),
+  const favoritesMock = {
+    add: vi.fn(),
+    remove: vi.fn(),
   };
 
   beforeEach(() => {
-    favoritosMock.adicionar.mockReset();
-    favoritosMock.remover.mockReset();
+    favoritesMock.add.mockReset();
+    favoritesMock.remove.mockReset();
 
     TestBed.configureTestingModule({
       providers: [
-        CardapioService,
-        { provide: FavoritosCardapiosService, useValue: favoritosMock },
+        MenuService,
+        { provide: MenuFavoritesService, useValue: favoritesMock },
       ],
     });
 
-    service = TestBed.inject(CardapioService);
+    service = TestBed.inject(MenuService);
   });
 
-  it('deve carregar cardápios iniciais', () => {
-    expect(service.cardapios.length).toBeGreaterThan(0);
+  it('should load initial menus', () => {
+    expect(service.menus().length).toBeGreaterThan(0);  
   });
 
-  it('deve adicionar, atualizar e remover cardápio', () => {
-    const novo = {
+  it('should add, update and remove menu', () => {
+    const newMenu = {
       id: 'x1',
       title: 'Novo',
       description: 'Desc',
-      capa: 'capa.jpg',
+      cover: 'capa.jpg',
       category: { id: '1', name: 'Teste' },
-      favorita: false,
+      recipe: '',
+      nutritionistTips: '',
+      proteins: 0,
+      carbs: 0,
+      fats: 0,
+      fiber: 0,
+      calories: 0,
+      favorited: false,
       likesCount: 0,
     };
 
-    service.add(novo as any);
-    expect(service.cardapios[0].id).toBe('x1');
+    service.add(newMenu as any);
+    expect(service.menus()[0].id).toBe('x1');  
 
-    service.update({ ...novo, title: 'Atualizado' } as any);
-    expect(service.cardapios.find((c) => c.id === 'x1')?.title).toBe('Atualizado');
+    service.update({ ...newMenu, title: 'Atualizado' } as any);
+    expect(service.menus().find((c) => c.id === 'x1')?.title).toBe('Atualizado'); 
 
     service.remove('x1');
-    expect(service.cardapios.some((c) => c.id === 'x1')).toBe(false);
+    expect(service.menus().some((c) => c.id === 'x1')).toBe(false);  
   });
 
-  it('deve alternar favorito, atualizar likes e chamar serviço de favoritos', () => {
-    const alvo = {
+  it('should toggle favorite, update likes and call favorites service', () => {
+    const target = {
       id: 'fav-1',
       title: 'Fav',
       description: 'Desc',
-      capa: 'capa.jpg',
+      cover: 'capa.jpg',
       category: { id: '1', name: 'Teste' },
-      favorita: false,
+      recipe: '',
+      nutritionistTips: '',
+      proteins: 0,
+      carbs: 0,
+      fats: 0,
+      fiber: 0,
+      calories: 0,
+      favorited: false,
       likesCount: 0,
     };
-    service.add(alvo as any);
+    service.add(target as any);
 
     service.toggleFavorite('fav-1');
-    const aposCurtir = service.cardapios.find((c) => c.id === 'fav-1')!;
-    expect(aposCurtir.favorita).toBe(true);
-    expect(aposCurtir.likesCount).toBe(1);
-    expect(favoritosMock.adicionar).toHaveBeenCalled();
+    const afterLike = service.menus().find((c) => c.id === 'fav-1')!;  
+    expect(afterLike.favorited).toBe(true);  
+    expect(afterLike.likesCount).toBe(1);
+    expect(favoritesMock.add).toHaveBeenCalled();  
 
     service.toggleFavorite('fav-1');
-    const aposDescurtir = service.cardapios.find((c) => c.id === 'fav-1')!;
-    expect(aposDescurtir.favorita).toBe(false);
-    expect(aposDescurtir.likesCount).toBe(0);
-    expect(favoritosMock.remover).toHaveBeenCalledWith('fav-1');
+    const afterUnlike = service.menus().find((c) => c.id === 'fav-1')!;  
+    expect(afterUnlike.favorited).toBe(false);  
+    expect(afterUnlike.likesCount).toBe(0);
+    expect(favoritesMock.remove).toHaveBeenCalledWith('fav-1'); 
+  });
+
+  it('should get menu by id', () => {
+    const menu = service.getMenuById(service.menus()[0].id);  
+    expect(menu).toBeDefined();
+  });
+
+  it('should filter menus by category', () => {
+    const categoryId = '1';
+    const filtered = service.getMenusByCategory(categoryId);
+    expect(filtered.every(m => m.category.id === categoryId)).toBe(true);
   });
 });

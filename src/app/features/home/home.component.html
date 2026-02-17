@@ -1,0 +1,55 @@
+<ng-template #videoItem let-video>
+  <div class="video-card" [attr.id]="'video-' + video.id">
+    <div
+      class="video-wrapper"
+      (mouseenter)="onVideoMouseEnter(video.id, $event)"
+      (mouseleave)="onVideoMouseLeave(video.id, $event)"
+      (click)="openModal(video)"
+    >
+      <img
+        [src]="video.cover"
+        [alt]="video.title"
+        class="thumbnail"
+        [class.hidden]="isPreviewVisible[video.id]"
+      />
+
+      <div class="play-overlay" [class.hidden]="isPreviewVisible[video.id]">
+        <mat-icon>play_circle_filled</mat-icon>
+      </div>
+
+      <video
+        [src]="video.url"
+        muted
+        playsinline
+        loop
+        class="video-preview"
+        [class.visible]="isPreviewVisible[video.id]"
+      ></video>
+    </div>
+
+    <div class="info-area">
+      <h3>{{ video.title }}</h3>
+      <p class="description">{{ video.description }}</p>
+    </div>
+
+    <app-engagement-summary
+  [likesCount]="video.likesCount ?? 0"
+  [commentsCount]="getTotalComments(video.id)"
+  [liked]="video.favorited ?? false"
+  (likeClick)="toggleFavorite(video.id)"
+  (commentsClick)="openModal(video)"
+></app-engagement-summary>
+
+  </div>
+</ng-template>
+
+<div class="web">
+  <app-category-carousel
+    *ngFor="let group of videosByCategory"
+    [title]="group.nome"
+    [items]="group.itens"
+    [itemTemplate]="videoItem"
+    [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\s+/g,'-')"
+  ></app-category-carousel>
+</div>
+

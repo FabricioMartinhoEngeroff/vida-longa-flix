@@ -1,0 +1,108 @@
+<p *ngIf="favoriteVideos.length === 0 && favoriteMenus.length === 0" class="empty-message">
+  Nenhum favorito foi adicionado.
+</p>
+
+<!-- Favoritos de videos -->
+<div *ngIf="favoriteVideos.length > 0">
+  <div *ngIf="!isMobile" class="web">
+    <div class="title-container">
+      <app-title [alignment]="'left'">Favoritos</app-title>
+
+      <button class="view-all" type="button" (click)="viewAll()">
+        Ver tudo
+        <mat-icon class="icon">arrow_forward</mat-icon>
+      </button>
+    </div>
+
+    <app-carousel>
+      <div class="video-item" *ngFor="let video of favoriteVideos">
+        <video
+          [src]="video.url"
+          muted
+          playsinline
+          (click)="openVideoModal(video)"
+          (mouseenter)="playVideo($event)"
+          (mouseleave)="pauseVideo($event)"
+        ></video>
+
+        <h3>{{ video.title }}</h3>
+
+        <button class="remove-button" type="button" (click)="removeVideo(video)">
+          Remover
+        </button>
+      </div>
+    </app-carousel>
+  </div>
+
+  <div *ngIf="isMobile" class="mobile">
+    <div class="mobile-header">
+      <h2 class="mobile-title">Favoritos</h2>
+      <span class="counter">{{ favoriteVideos.length }}</span>
+    </div>
+
+    <div class="mobile-list">
+      <div class="mobile-card" *ngFor="let video of favoriteVideos">
+        <video [src]="video.url" muted playsinline (click)="openVideoModal(video)"></video>
+
+        <div class="mobile-info">
+          <p class="video-title">{{ video.title }}</p>
+
+          <button class="mobile-remove-button" type="button" (click)="removeVideo(video)">
+            <mat-icon>delete</mat-icon>
+            Remover
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Favoritos de cardapios (menus) -->
+<div *ngIf="favoriteMenus.length > 0" class="favorite-menus">
+  <div class="title-container">
+    <app-title [alignment]="'left'">Cardapios Favoritos</app-title>
+  </div>
+
+  <div class="menus-grid">
+    <div class="menu-card" *ngFor="let m of favoriteMenus" (click)="openMenuModal(m)">
+      <img [src]="m.cover || 'assets/images/Logo.png'" [alt]="m.title" />
+      <h3>{{ m.title }}</h3>
+
+      <button type="button" (click)="removeMenu(m); $event.stopPropagation()">
+        Remover
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de cardapio (menu) -->
+<div class="modal-backdrop" *ngIf="selectedMenu as m">
+  <div class="modal recipe-modal">
+    <button class="close" type="button" (click)="closeMenuModal()">×</button>
+
+    <img [src]="m.cover || 'assets/images/Logo.png'" [alt]="m.title" class="cover-large" />
+
+    <div class="content">
+      <h3>{{ m.title }}</h3>
+      <p class="description">{{ m.description }}</p>
+
+      <div class="section">
+        <h4>Receita</h4>
+        <p>{{ m.recipe || 'Sem receita cadastrada.' }}</p>
+      </div>
+
+      <div class="section">
+        <h4>Dicas da Nutri</h4>
+        <p>{{ m.nutritionistTips || 'Sem dicas cadastradas.' }}</p>
+      </div>
+
+      <div class="macros">
+        <div>Proteinas: {{ m.proteins || 0 }}g</div>
+        <div>Carboidratos: {{ m.carbs || 0 }}g</div>
+        <div>Gorduras: {{ m.fats || 0 }}g</div>
+        <div>Fibras: {{ m.fiber || 0 }}g</div>
+        <div>Calorias: {{ m.calories || 0 }} kcal</div>
+      </div>
+    </div>
+  </div>
+</div>

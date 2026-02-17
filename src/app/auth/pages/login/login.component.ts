@@ -3,9 +3,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
-import { FormFieldComponent } from '../../component/form-field/form-field.component';
-import { PasswordRecoveryComponent } from '../../component/password-recovery/password-recovery.component';
-import { PrimaryButtonComponent } from '../../component/primary-button/primary-button.component';
+import { FormFieldComponent } from '../../components/form-field/form-field.component';
+import { PasswordRecoveryComponent } from '../../components/password-recovery/password-recovery.component';
+import { PrimaryButtonComponent } from '../../components/primary-button/primary-button.component';
 import { AuthService } from '../../services/auth.service';
 import { LoginForm } from '../../types/form.types';
 

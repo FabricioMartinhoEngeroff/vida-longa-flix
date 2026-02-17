@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { FormFieldComponent } from '../../component/form-field/form-field.component';
-import { PrimaryButtonComponent } from '../../component/primary-button/primary-button.component';
-import { PasswordIndicatorComponent } from '../../component/password-indicator/password-indicator.component';
+import { FormFieldComponent } from '../../components/form-field/form-field.component';
+import { PrimaryButtonComponent } from '../../components/primary-button/primary-button.component';
+import { PasswordIndicatorComponent } from '../../components/password-indicator/password-indicator.component';
 import { NotificationService, getDefaultNotificationDuration } from '../../services/notification.service';
 import { PasswordStrength, strongPasswordValidator } from '../../utils/strong-password-validator';
-import { PasswordRecoveryService } from '../../services/password-recovery.service';
 import { DEFAULT_MESSAGES } from '../../../shared/services/alert-message/default-messages.constants';
+import { PasswordRecoveryService } from '../../services/service-password-recovery/service-password-recovery';
 
 @Component({
   selector: 'app-password-change',

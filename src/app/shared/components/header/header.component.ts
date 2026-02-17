@@ -1,62 +1,76 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
+import { Subscription } from 'rxjs';
 
-
-import { NotificacoesComponent } from '../notificações/notificacoes.component';
-import { MenuUsuarioComponent } from '../user-menu/user-menu.component';
-
-
-import { CardapioService } from '../../services/menus/menus-service';
-import { VideoService } from '../../services/video/video';
+import { VideoService } from '../../services/video/video.service';
 import { SearchFieldComponent } from '../search-field/search-field.component';
 import { LogoutButtonComponent } from '../logout-button/logout-button.component';
+import { UserMenuComponent } from '../user-menu/user-menu.component';
+import { MenuService } from '../../services/menus/menus-service';
+import { NotificationsComponent } from '../notifications/notifications.component';
 
 type IndexedItem = { id: string; title: string; categoryName: string };
 
-// Tipos mínimos só pra evitar implicit any (sem depender dos teus models reais)
 type VideoLike = { id: string; title: string; category?: { name?: string } | null };
-type CardapioLike = { id: string; title: string; category?: { name?: string } | null };
+type MenuLike = { id: string; title: string; category?: { name?: string } | null };
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   standalone: true,
-  imports: [SearchFieldComponent, NotificacoesComponent, MenuUsuarioComponent, LogoutButtonComponent],
+  imports: [SearchFieldComponent, UserMenuComponent, LogoutButtonComponent, NotificationsComponent],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private subscriptions = new Subscription();
 
   searchCategories: string[] = [];
   searchSuggestions: string[] = [];
 
   private videosIndex: IndexedItem[] = [];
-  private cardapiosIndex: IndexedItem[] = [];
+  private menusIndex: IndexedItem[] = [];
 
   constructor(
     private scroller: ViewportScroller,
     private videoService: VideoService,
-    private cardapioService: CardapioService
+    private menuService: MenuService
   ) {}
 
+  
   ngOnInit(): void {
-    this.videoService.videosReels$.subscribe((videos: VideoLike[]) => {
-      this.videosIndex = videos.map((v: VideoLike) => ({
-        id: v.id,
-        title: v.title,
-        categoryName: v.category?.name || '',
-      }));
-    });
+    this.subscriptions.add(
+      this.updateVideosIndex()
+    );
 
-    this.cardapioService.cardapios$.subscribe((cardapios: CardapioLike[]) => {
-      this.cardapiosIndex = cardapios.map((c: CardapioLike) => ({
-        id: c.id,
-        title: c.title,
-        categoryName: c.category?.name || '',
-      }));
-    });
+    this.subscriptions.add(
+      this.updateMenusIndex()
+    );
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  private updateVideosIndex(): void {
+    const videos = this.videoService.videos();
+    this.videosIndex = videos.map((v: VideoLike) => ({
+      id: v.id,
+      title: v.title,
+      categoryName: v.category?.name || '',
+    }));
+  }
+
+  private updateMenusIndex(): void {
+    const menus = this.menuService.menus();
+    this.menusIndex = menus.map((m: MenuLike) => ({
+      id: m.id,
+      title: m.title,
+      categoryName: m.category?.name || '',
+    }));
+  }
+
 
   onSearchChange(value: string) {
     const term = (value || '').trim();
@@ -77,14 +91,14 @@ export class HeaderComponent implements OnInit {
     const titles = [
       ...new Set([
         ...this.videosIndex.map((v) => v.title),
-        ...this.cardapiosIndex.map((c) => c.title),
+        ...this.menusIndex.map((m) => m.title),
       ]),
     ];
 
     const categories = [
       ...new Set([
         ...this.videosIndex.map((v) => v.categoryName),
-        ...this.cardapiosIndex.map((c) => c.categoryName),
+        ...this.menusIndex.map((m) => m.categoryName),
       ]),
     ].filter(Boolean);
 
@@ -96,6 +110,7 @@ export class HeaderComponent implements OnInit {
     const id = 'cat-' + name.toLowerCase().replace(/\s+/g, '-');
     this.scroller.scrollToAnchor(id);
   }
+
 
   goToSearch(originalTerm: string) {
     const term = (originalTerm || '').trim();
@@ -111,10 +126,10 @@ export class HeaderComponent implements OnInit {
       return;
     }
 
-    const exactCardapio = this.cardapiosIndex.find((c) => this.normalize(c.title) === normalizedTerm);
-    if (exactCardapio) {
-      this.router.navigate(['/app/cardapios'], {
-        queryParams: { tipo: 'cardapio', id: exactCardapio.id, q: term },
+    const exactMenu = this.menusIndex.find((m) => this.normalize(m.title) === normalizedTerm);
+    if (exactMenu) {
+      this.router.navigate(['/app/menus'], {
+        queryParams: { tipo: 'menu', id: exactMenu.id, q: term },
       });
       return;
     }
@@ -130,19 +145,20 @@ export class HeaderComponent implements OnInit {
       return;
     }
 
-    const exactCardapioCategory = this.cardapiosIndex.find(
-      (c) => this.normalize(c.categoryName) === normalizedTerm
+    const exactMenuCategory = this.menusIndex.find(
+      (m) => this.normalize(m.categoryName) === normalizedTerm
     )?.categoryName;
 
-    if (exactCardapioCategory) {
-      this.router.navigate(['/app/cardapios'], {
-        queryParams: { tipo: 'categoria-cardapio', cat: exactCardapioCategory, q: term },
+    if (exactMenuCategory) {
+      this.router.navigate(['/app/menus'], {
+        queryParams: { tipo: 'categoria-menu', cat: exactMenuCategory, q: term },
       });
       return;
     }
 
     this.router.navigate(['/app'], { queryParams: { q: term } });
   }
+
 
   private normalize(text: string): string {
     return (text || '')

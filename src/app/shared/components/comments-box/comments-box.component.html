@@ -3,20 +3,26 @@
     <div class="title">Comentários</div>
 
     <app-favorite-button
-      [favorito]="isFavorite"
-      (aoClicar)="favoriteClick.emit()"
-    ></app-favorite-button>
+  [favorited]="favorited"
+  (toggle)="favoriteClick.emit()"
+></app-favorite-button>
+
   </div>
 
-  <div class="comment-item" *ngFor="let c of comments">
-    {{ c }}
-  </div>
+  @if (comments.length > 0) {
+    @for (c of comments; track c) {
+      <div class="comment-item">{{ c }}</div>
+    }
+  } @else {
+    <div class="comment-item empty">Seja o primeiro a comentar.</div>
+  }
 
   <div class="comment-form">
     <input
       type="text"
       placeholder="Faça um comentário..."
       [(ngModel)]="newComment"
+      (keydown.enter)="submit()"
     />
     <button type="button" (click)="submit()">Publicar</button>
   </div>

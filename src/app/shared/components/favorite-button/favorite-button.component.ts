@@ -5,15 +5,14 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-favorite-button',
   standalone: true,
   imports: [MatIconModule],
-  templateUrl: './favorite-button.component.html',
+  templateUrl:'./favorite-button.component.html',
   styleUrls: ['./favorite-button.component.css'],
 })
 export class FavoriteButtonComponent {
   @Input() favorited = false;
+  @Output() toggle = new EventEmitter<void>();
 
-  @Output() click = new EventEmitter<void>();
-
-  onClick(): void {
-    this.click.emit();
+  Click(): void {
+    this.toggle.emit();
   }
 }

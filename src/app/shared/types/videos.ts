@@ -1,4 +1,4 @@
-export interface UsuarioComentario {
+export interface UserComment {
   id: string;
   name: string;
 }
@@ -7,7 +7,7 @@ export interface Comment {
   id: string;
   text: string;
   date: string;
-  user: UsuarioComentario;
+  user: UserComment;
 }
 
 export interface Category {
@@ -20,7 +20,7 @@ export interface Video {
   title: string;
   description: string;
   url: string;
-  capa:string
+  cover: string;
 
   category: Category;
   comments: Comment[];
@@ -28,14 +28,14 @@ export interface Video {
   views: number;
   watchTime: number;
 
-  receita?: string;
-  proteinas?: number;
-  carboidratos?: number;
-  gorduras?: number;
-  fibras?: number;
-  calorias?: number;
+  recipe?: string;
+  proteins?: number;
+  carbs?: number;
+  fats?: number;
+  fiber?: number;
+  calories?: number;
 
-  favorita?: boolean;
+  favorited?: boolean;
   likesCount?: number;
   viewsCount?: number;
 }

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { MenuModalComponent } from './menu-modal.component';
-import { Menu } from '../../types/menus.types';
+import { Menu } from '../../types/menu';
 
 describe('MenuModalComponent', () => {
   let component: MenuModalComponent;
@@ -19,7 +19,8 @@ describe('MenuModalComponent', () => {
     fats: 5,
     fiber: 3,
     calories: 200,
-    favorited: false
+    favorited: false,
+    category: undefined
   };
 
   beforeEach(async () => {

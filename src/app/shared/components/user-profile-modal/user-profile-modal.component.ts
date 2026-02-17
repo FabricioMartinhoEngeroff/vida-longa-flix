@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angula
 import { MatIconModule } from '@angular/material/icon';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
 import { DEFAULT_MESSAGES } from '../../services/alert-message/default-messages.constants';
-import { FormFieldComponent } from '../../../auth/component/form-field/form-field.component';
+import { FormFieldComponent } from '../../../auth/components/form-field/form-field.component';
 
 
 @Component({

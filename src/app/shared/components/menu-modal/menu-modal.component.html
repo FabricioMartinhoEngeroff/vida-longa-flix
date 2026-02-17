@@ -41,8 +41,8 @@
         <app-comments-box
           [comments]="comments"
           [favorited]="!!m.favorited"
-          (favorite)="favorite.emit()"
-          (comment)="comment.emit($event)"
+          (favoriteClick)="favorite.emit()"
+          (commentSubmit)="comment.emit($event)"
         ></app-comments-box>
       </div>
     </div>

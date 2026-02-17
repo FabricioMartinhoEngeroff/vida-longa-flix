@@ -1,0 +1,40 @@
+@if (updatedVideo) {
+  <div class="modal-background" (click)="closeModal()">
+    <div class="modal-content" (click)="preventClose($event)">
+      <button class="close-button" type="button" (click)="closeModal()" aria-label="Fechar">
+        <mat-icon>close</mat-icon>
+      </button>
+      
+      <div class="video-player">
+        <video controls autoplay>
+          <source [src]="updatedVideo.url" type="video/mp4" />
+        </video>
+      </div>
+
+      <div class="content">
+        <h3 class="title">{{ updatedVideo.title }}</h3>
+        <p class="description">{{ updatedVideo.description }}</p>
+
+        <div class="recipe-box">
+          <strong>Receita:</strong><br />
+          {{ updatedVideo.recipe }}
+        </div>
+
+        <ul class="nutrients">
+          <li><span><strong>Proteínas:</strong></span><span>{{ updatedVideo.proteins }}g</span></li>
+          <li><span><strong>Carboidratos:</strong></span><span>{{ updatedVideo.carbs }}g</span></li>
+          <li><span><strong>Gorduras:</strong></span><span>{{ updatedVideo.fats }}g</span></li>
+          <li><span><strong>Fibras:</strong></span><span>{{ updatedVideo.fiber }}g</span></li>
+          <li><span><strong>Calorias:</strong></span><span>{{ updatedVideo.calories ?? 0 }} kcal</span></li>
+        </ul>
+
+        <app-comments-box
+          [comments]="comments"
+          [favorited]="updatedVideo.favorited ?? false"
+          (favoriteClick)="toggleFavorite()"
+          (commentSubmit)="addComment($event)"
+        ></app-comments-box>
+      </div>
+    </div>
+  </div>
+}

@@ -1,22 +1,22 @@
-import { Category } from './videos';
+import { Category } from '../types/videos';
 
-export interface Cardapio {
+export interface Menu {
   id: string;
   title: string;
   description: string;
-  capa: string;
+  cover: string;
 
   category: Category;
 
-  receita?: string;
-  dicasNutri?: string;
+  recipe?: string;
+  nutritionistTips?: string;
 
-  proteinas?: number;
-  carboidratos?: number;
-  gorduras?: number;
-  fibras?: number;
-  calorias?: number;
-  favorita?: boolean;
+  proteins?: number;
+  carbs?: number;
+  fats?: number;
+  fiber?: number;
+  calories?: number;
+  
+  favorited?: boolean;
   likesCount?: number;
-
 }

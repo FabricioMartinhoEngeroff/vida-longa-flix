@@ -1,0 +1,14 @@
+<button
+  class="btn-notifications"
+  type="button"
+  (click)="openNotifications()"
+  [attr.aria-label]="'Notificações' + (unreadCount > 0 ? ', ' + unreadCount + ' não lidas' : '')"
+>
+  <mat-icon>notifications</mat-icon>
+
+  @if (unreadCount > 0) {
+    <span class="badge">
+      {{ unreadCount > 9 ? '9+' : unreadCount }}
+    </span>
+  }
+</button>

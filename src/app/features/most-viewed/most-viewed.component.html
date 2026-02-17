@@ -1,0 +1,22 @@
+<h2 style="margin: 20px 0; font-size: 26px; color: #2f6b3a;">
+  Mais vistos
+</h2>
+
+@if (sortedVideos.length === 0) {
+  <p style="opacity: 0.7;">
+    Nenhum vídeo assistido ainda.
+  </p>
+}
+
+<div class="grid">
+  @for (video of sortedVideos; track video.id) {
+    <div class="card" (click)="openModal(video)">
+      <video [src]="video.url" muted playsinline></video>
+
+      <div class="info">
+        <strong>{{ video.title }}</strong>
+        <span>{{ video.viewsCount }} views</span>
+      </div>
+    </div>
+  }
+</div>

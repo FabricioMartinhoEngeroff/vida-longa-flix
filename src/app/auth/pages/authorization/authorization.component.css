@@ -29,6 +29,13 @@
   line-height: 1.2;
 }
 
+.auth-brand-logo {
+  display: block;
+  width: 72px;
+  height: auto;
+  margin: 10px auto 0;
+}
+
 .auth-brand-welcome {
   font-size: 24px;
   font-weight: 500;
@@ -147,11 +154,21 @@
     font-size: 32px;
   }
 
+  .auth-brand-logo {
+    width: 56px;
+  }
+
   .auth-brand-welcome {
     font-size: 18px;
   }
 
   .auth-right-panel {
-    padding: 20px;
+    padding: 28px 22px;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-right-panel {
+    padding: 28px 18px;
   }
 }

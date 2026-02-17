@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { FormFieldComponent } from '../../component/form-field/form-field.component';
-import { PrimaryButtonComponent } from '../../component/primary-button/primary-button.component';
-import { PasswordStrengthIndicatorComponent } from '../../component/password-strength-indicator/password-strength-indicator.component';
-import { EmailAdjustmentMessageComponent } from '../../component/email-adjustment-message/email-adjustment-message.component';
-import { DEFAULT_MESSAGES } from '../../constants/default-messages';
+import { FormFieldComponent } from '../../components/form-field/form-field.component';
+import { PrimaryButtonComponent } from '../../components/primary-button/primary-button.component';
+import { PasswordStrengthIndicatorComponent } from '../../components/password-strength-indicator/password-strength-indicator.component';
+import { EmailAdjustmentMessageComponent } from '../../components/email-adjustment-message/email-adjustment-message.component';
 import { getDefaultNotificationDuration, NotificationService } from '../../services/notification.service';
 import { EmailErrorType } from '../../types/form.types';
 
 import { PasswordStrength, strongPasswordValidator } from '../../utils/strong-password-validator';
 import { AuthService } from '../../services/auth.service';
+import { DEFAULT_MESSAGES } from '../../../shared/services/alert-message/default-messages.constants';
 
 
 
@@ -98,21 +98,22 @@ export class RegisterComponent {
     const control = this.form.get(path);
     if (!control || !control.touched || !control.errors) return null;
 
-    if (control.errors['required']) return 'Required field';
-    if (control.errors['email']) return 'Invalid email';
+    // PT-BR: mensagens de validacao exibidas abaixo dos campos.
+    if (control.errors['required']) return 'Campo obrigatório';
+    if (control.errors['email']) return 'E-mail inválido';
     if (control.errors['minlength'])
-      return 'Minimum ' + control.errors['minlength'].requiredLength + ' characters';
-    if (control.errors['pattern']) return 'Invalid phone';
+      return `Mínimo de ${control.errors['minlength'].requiredLength} caracteres`;
+    if (control.errors['pattern']) return 'Telefone inválido';
 
     if (control.errors['senhaFraca']) {
       const requirements = control.errors['senhaFraca'].requisitosFaltando;
       if (requirements && requirements.length > 0) {
         return requirements[0];
       }
-      return 'Password does not meet security requirements';
+      return 'A senha não atende aos requisitos de segurança';
     }
 
-    return 'Invalid value';
+    return 'Valor inválido';
   }
 
   async register() {

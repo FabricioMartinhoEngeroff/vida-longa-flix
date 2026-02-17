@@ -1,0 +1,55 @@
+<section class="menus">
+  <div class="header">
+    <h2>Cardápios</h2>
+    <p>Dicas e pratos do dia com informação nutricional.</p>
+  </div>
+
+  <ng-template #menuItem let-item>
+    <div
+      class="card"
+      [attr.id]="'menu-' + item.id"
+      (click)="open(item)"
+      role="button"
+      tabindex="0"
+    >
+      <img [src]="item.cover || 'assets/images/Logo.png'" [alt]="item.title" />
+      <div class="info">
+        <h3>{{ item.title }}</h3>
+        <span class="categoria">{{ item.category?.name }}</span>
+        <p>{{ item.description }}</p>
+
+        <app-engagement-summary
+          [likesCount]="item.likesCount ?? 0"
+          [commentsCount]="getTotalComments(item.id)"
+          [liked]="item.favorited ?? false"
+          (likeClick)="toggleFavorite(item.id)"
+          (commentsClick)="open(item)"
+        ></app-engagement-summary>
+      </div>
+    </div>
+  </ng-template>
+
+  @if (menusByCategory.length > 0) {
+    @for (group of menusByCategory; track group.nome) {
+      <app-category-carousel
+        class="categoria-bloco"
+        [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\s+/g,'-')"
+        [title]="group.nome"
+        [items]="group.itens"
+        [itemTemplate]="menuItem"
+      ></app-category-carousel>
+    }
+  } @else {
+    <p class="vazio">Nenhum cardápio cadastrado ainda.</p>
+  }
+</section>
+
+@if (selected; as s) {
+  <app-menu-modal
+    [menu]="s"
+    [comments]="getMenuComments(s.id)"
+    (close)="close()"
+    (favorite)="toggleFavorite(s.id)"
+    (comment)="addComment(s.id, $event)"
+  ></app-menu-modal>
+}

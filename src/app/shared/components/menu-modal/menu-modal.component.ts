@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommentsBoxComponent } from '../comments-box/comments-box.component';
-import { Menu } from '../../types/menus.types';
+import { Menu } from '../../types/menu';
 
 @Component({
   selector: 'app-menu-modal',

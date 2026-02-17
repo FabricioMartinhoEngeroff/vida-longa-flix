@@ -1,9 +1,9 @@
-.menu-usuario-container {
+.user-menu-container {
   position: relative;
 }
 
 /* Botão do perfil */
-.btn-perfil {
+.profile-btn {
   display: flex;
   align-items: center;
   
@@ -16,7 +16,7 @@
   transition: background 0.2s ease;
 }
 
-.btn-perfil:hover {
+.profile-btn:hover {
   background: rgba(47, 107, 58, 0.2);
 }
 
@@ -48,7 +48,7 @@
 }
 
 /* Seta */
-.seta {
+.arrow {
   color: #2f6b3a;
   font-size: 20px;
   width: 20px;
@@ -56,7 +56,7 @@
   transition: transform 0.3s ease;
 }
 
-.seta.aberto {
+.arrow.open {
   transform: rotate(180deg);
 }
 
@@ -81,7 +81,7 @@
   z-index: 1000;
 }
 
-.dropdown.aberto {
+.dropdown.open {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -95,7 +95,7 @@
   align-items: center;
 }
 
-.avatar-grande {
+.avatar-large {
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -110,19 +110,19 @@
   color: #ffffff;
 }
 
-.avatar-grande img {
+.avatar-large img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.avatar-grande mat-icon {
+.avatar-large mat-icon {
   font-size: 56px;
   width: 56px;
   height: 56px;
 }
 
-.info-usuario {
+.user-info {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -130,7 +130,7 @@
   gap: 2px;
 }
 
-.nome {
+.name {
   font-size: 15px;
   font-weight: 600;
   color: #111;
@@ -157,7 +157,7 @@
 }
 
 /* Opções do menu */
-.opcao-menu {
+.menu-option {
   width: 100%;
   display: flex;
   align-items: center;
@@ -175,26 +175,26 @@
   transition: background 0.2s ease;
 }
 
-.opcao-menu:hover {
+.menu-option:hover {
   background: #f3f4f6;
 }
 
-.opcao-menu mat-icon {
+.menu-option mat-icon {
   font-size: 20px;
   width: 20px;
   height: 20px;
   color: #111;
 }
 
-.opcao-menu.sair {
+.menu-option.logout {
   color:  #111;
 }
 
-.opcao-menu.sair mat-icon {
+.menu-option.logout mat-icon {
   color:  #111;
 }
 
-.opcao-menu.sair:hover {
+.menu-option.logout:hover {
   background:  white;
 }
 
@@ -211,23 +211,23 @@
    z-index: 999
 }
 
-.backdrop.visivel {
+.backdrop.visible {
   opacity: 1;
   visibility: visible;
 }
 
-.avatar-grande.clicavel {
+.avatar-large.clickable {
   cursor: pointer;
   position: relative;
   transition: transform 0.2s ease;
 }
 
-.avatar-grande.clicavel:hover {
+.avatar-large.clickable:hover {
   transform: scale(1.05);
 }
 
 /* Overlay de câmera */
-.overlay-camera {
+.camera-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -240,11 +240,11 @@
   transition: opacity 0.2s ease;
 }
 
-.avatar-grande.clicavel:hover .overlay-camera {
+.avatar-large.clickable:hover .camera-overlay {
   opacity: 1;
 }
 
-.overlay-camera mat-icon {
+.camera-overlay mat-icon {
   font-size: 28px;
   width: 28px;
   height: 28px;
@@ -252,12 +252,12 @@
 }
 
 /* Estado arrastando */
-.avatar-grande.arrastando {
+.avatar-large.dragging {
   border: 3px dashed #2f6b3a;
   transform: scale(1.08);
 }
 
-.avatar-grande.arrastando .overlay-camera {
+.avatar-large.dragging .camera-overlay {
   opacity: 1;
   background: rgba(47, 107, 58, 0.8);
 }
@@ -265,7 +265,7 @@
 
 /* Mobile */
 @media (max-width: 768px) {
-  .btn-perfil {
+  .profile-btn {
     padding: 1px 2px ;
   }
   
