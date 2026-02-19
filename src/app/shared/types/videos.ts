@@ -21,21 +21,16 @@ export interface Video {
   description: string;
   url: string;
   cover: string;
-
-  category: Category;
-  comments: Comment[];
-
+  category: { id: string; name: string };
+  comments: any[];
   views: number;
   watchTime: number;
-
-  recipe?: string;
-  proteins?: number;
-  carbs?: number;
-  fats?: number;
-  fiber?: number;
-  calories?: number;
-
-  favorited?: boolean;
-  likesCount?: number;
-  viewsCount?: number;
+  recipe: string;
+  protein: number;     
+  carbs: number;
+  fat: number;          
+  fiber: number;
+  calories: number;
+  favorited: boolean;
+  likesCount: number;
 }

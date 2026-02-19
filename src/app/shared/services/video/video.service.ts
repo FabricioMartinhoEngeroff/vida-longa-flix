@@ -88,9 +88,9 @@ private convertMockedVideos(): Video[] {
       watchTime: 0,
 
       recipe: video.receita || '',
-      proteins: video.proteinas ?? 0,
+      protein: video.proteinas ?? 0,
       carbs: video.carboidratos ?? 0,
-      fats: video.gorduras ?? 0,
+      fat: video.gorduras ?? 0,
       fiber: video.fibras ?? 0,
       calories: video.calorias ?? 0,
 

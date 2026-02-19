@@ -11,9 +11,9 @@ export interface Menu {
   recipe?: string;
   nutritionistTips?: string;
 
-  proteins?: number;
+  protein?: number;
   carbs?: number;
-  fats?: number;
+  fat?: number;
   fiber?: number;
   calories?: number;
   

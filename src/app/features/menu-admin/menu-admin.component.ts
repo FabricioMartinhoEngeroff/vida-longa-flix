@@ -30,9 +30,9 @@ export class MenuAdminComponent {
 
       recipe: [''],
       nutritionistTips: [''],
-      proteins: [0],
+      protein: [0],
       carbs: [0],
-      fats: [0],
+      fat: [0],
       fiber: [0],
       calories: [0],
     });
@@ -63,9 +63,9 @@ export class MenuAdminComponent {
 
       recipe: this.form.value.recipe || '',
       nutritionistTips: this.form.value.nutritionistTips || '',
-      proteins: Number(this.form.value.proteins || 0),
+      protein: Number(this.form.value.protein || 0),
       carbs: Number(this.form.value.carbs || 0),
-      fats: Number(this.form.value.fats || 0),
+      fat: Number(this.form.value.fat || 0),
       fiber: Number(this.form.value.fiber || 0),
       calories: Number(this.form.value.calories || 0),
     };
@@ -74,9 +74,9 @@ export class MenuAdminComponent {
 
     this.form.reset({
       categoryName: 'Sem categoria',
-      proteins: 0,
+      protein: 0,
       carbs: 0,
-      fats: 0,
+      fat: 0,
       fiber: 0,
       calories: 0,
     });

@@ -44,9 +44,9 @@ describe('VideoAdminComponent', () => {
       cover: 'https://example.com/cover.jpg',
       categoryName: 'Lanches',
       recipe: 'Receita',
-      proteins: 3,
+      protein: 3,
       carbs: 20,
-      fats: 5,
+      fat: 5,
       fiber: 2,
       calories: 120,
     });

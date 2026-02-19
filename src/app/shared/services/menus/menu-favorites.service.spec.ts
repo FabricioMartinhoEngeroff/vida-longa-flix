@@ -13,9 +13,9 @@ describe('MenuFavoritesService', () => {
     category: { id: '1', name: 'Teste' },
     recipe: '',
     nutritionistTips: '',
-    proteins: 0,
+    protein: 0,
     carbs: 0,
-    fats: 0,
+    fat: 0,
     fiber: 0,
     calories: 0
   };
@@ -28,9 +28,9 @@ describe('MenuFavoritesService', () => {
     category: { id: '2', name: 'Teste 2' },
     recipe: '',
     nutritionistTips: '',
-    proteins: 0,
+    protein: 0,
     carbs: 0,
-    fats: 0,
+    fat: 0,
     fiber: 0,
     calories: 0
   };

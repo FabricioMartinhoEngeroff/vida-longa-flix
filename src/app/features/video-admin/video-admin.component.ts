@@ -29,9 +29,9 @@ export class VideoAdminComponent {
       categoryName: ['Sem categoria'],
 
       recipe: [''],
-      proteins: [0],
+      protein: [0],
       carbs: [0],
-      fats: [0],
+      fat: [0],
       fiber: [0],
       calories: [0],
     });
@@ -76,22 +76,23 @@ export class VideoAdminComponent {
       watchTime: 0,
 
       recipe: this.form.value.recipe || '',
-      proteins: Number(this.form.value.proteins || 0),
+      protein: Number(this.form.value.protein || 0),
       carbs: Number(this.form.value.carbs || 0),
-      fats: Number(this.form.value.fats || 0),
+      fat: Number(this.form.value.fat || 0),
       fiber: Number(this.form.value.fiber || 0),
       calories: Number(this.form.value.calories || 0),
 
       favorited: false,
+      likesCount: 0, 
     };
 
     this.videoService.addVideo(video);
 
     this.form.reset({
       categoryName: 'Sem categoria',
-      proteins: 0,
+      protein: 0,
       carbs: 0,
-      fats: 0,
+      fat: 0,
       fiber: 0,
       calories: 0,
     });

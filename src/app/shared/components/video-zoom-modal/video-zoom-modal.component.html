@@ -21,16 +21,16 @@
         </div>
 
         <ul class="nutrients">
-          <li><span><strong>Proteínas:</strong></span><span>{{ updatedVideo.proteins }}g</span></li>
+          <li><span><strong>Proteínas:</strong></span><span>{{ updatedVideo.protein }}g</span></li>
           <li><span><strong>Carboidratos:</strong></span><span>{{ updatedVideo.carbs }}g</span></li>
-          <li><span><strong>Gorduras:</strong></span><span>{{ updatedVideo.fats }}g</span></li>
+          <li><span><strong>Gorduras:</strong></span><span>{{ updatedVideo.fat }}g</span></li>
           <li><span><strong>Fibras:</strong></span><span>{{ updatedVideo.fiber }}g</span></li>
-          <li><span><strong>Calorias:</strong></span><span>{{ updatedVideo.calories ?? 0 }} kcal</span></li>
+          <li><span><strong>Calorias:</strong></span><span>{{ updatedVideo.calories }} kcal</span></li>
         </ul>
 
         <app-comments-box
           [comments]="comments"
-          [favorited]="updatedVideo.favorited ?? false"
+          [favorited]="updatedVideo.favorited"
           (favoriteClick)="toggleFavorite()"
           (commentSubmit)="addComment($event)"
         ></app-comments-box>

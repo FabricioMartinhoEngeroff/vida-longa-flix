@@ -86,9 +86,9 @@ export class MenuService {
 
       recipe: c.receita ?? '', 
       nutritionistTips: c.dicasNutri ?? '',  
-      proteins: c.proteinas ?? 0,  
+      protein: c.proteinas ?? 0,  
       carbs: c.carboidratos ?? 0,  
-      fats: c.gorduras ?? 0,  
+      fat: c.gorduras ?? 0,  
       fiber: c.fibras ?? 0,  
       calories: c.calorias ?? 0,  
       favorited: c.favorita ?? false, 

@@ -44,9 +44,9 @@ describe('MenuAdminComponent', () => {
       cover: 'https://example.com/cover.jpg',
       recipe: 'Modo de preparo',
       nutritionistTips: 'Dica da nutri',
-      proteins: 20,
+      protein: 20,
       carbs: 30,
-      fats: 10,
+      fat: 10,
       fiber: 5,
       calories: 350,
     });
