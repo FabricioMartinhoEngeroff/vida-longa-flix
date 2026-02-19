@@ -22,7 +22,8 @@ export interface Video {
   url: string;
   cover: string;
   category: { id: string; name: string };
-  comments: any[];
+  comments: Comment[];      
+  commentCount: number;    
   views: number;
   watchTime: number;
   recipe: string;
@@ -33,4 +34,18 @@ export interface Video {
   calories: number;
   favorited: boolean;
   likesCount: number;
+}
+
+export interface VideoRequest {
+  title: string;
+  description: string;
+  url: string;
+  cover: string;
+  categoryId: string;
+  recipe?: string;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  fiber?: number;
+  calories?: number;
 }

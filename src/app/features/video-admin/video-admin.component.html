@@ -14,9 +14,14 @@
       </label>
 
       <label>
-        Categoria
-        <input type="text" formControlName="categoryName" />
-      </label>
+  Categoria
+  <select formControlName="categoryId">
+    <option value="" disabled>Selecione uma categoria</option>
+    @for (cat of categories; track cat.id) {
+      <option [value]="cat.id">{{ cat.name }}</option>
+    }
+  </select>
+</label>
     </div>
 
     <p class="upload-hint">Arraste e solte o vídeo aqui ou clique para selecionar</p>
