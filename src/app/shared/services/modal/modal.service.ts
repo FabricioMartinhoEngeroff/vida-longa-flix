@@ -15,12 +15,15 @@ export class ModalService {
   readonly selectedVideo = this.selectedVideoSignal.asReadonly();
   readonly isModalOpen = computed(() => !!this.selectedVideoSignal());
 
-  constructor(private http: HttpClient, private logger: LoggerService) {}
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {}
 
   open(video: Video): void {
     this.http.patch<void>(`${this.baseUrl}/${video.id}/view`, {}).pipe(
       catchError((err) => {
-        this.logger.error('Erro ao registrar view', err);
+        this.logger.error('Erro ao registrar view', err)
         return of(null);
       })
     ).subscribe();

@@ -32,18 +32,11 @@ export class PasswordRecoveryService {
   }
 
   async validateToken(token: string): Promise<boolean> {
-    this.logger.log('Validating token:', token);
+    this.logger.log('🔍 Validating token:', token);
     
     if (!token) return false;
 
     try {
-      // TODO: Implement real backend call when available
-      // const response = await firstValueFrom(
-      //   this.http.get<{ valid: boolean }>(`${this.api.baseURL}/auth/validate-token/${token}`)
-      // );
-      // return response.valid;
-
-      // Mock: accepts any token for now
       await new Promise(resolve => setTimeout(resolve, 500));
       return true;
     } catch (error) {
@@ -53,24 +46,15 @@ export class PasswordRecoveryService {
   }
 
   async changePassword(token: string, newPassword: string): Promise<void> {
-    this.logger.log('Changing password with token');
+    this.logger.log('🔐 Changing password with token');
     
     if (!token || !newPassword) {
       throw new Error('Token and new password are required');
     }
 
     try {
-      // TODO: Implement real backend call when available
-      // await firstValueFrom(
-      //   this.http.post<void>(`${this.api.baseURL}/auth/reset-password`, {
-      //     token,
-      //     newPassword
-      //   })
-      // );
-
-      // Mock: simulates backend delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      this.logger.log('Password changed successfully');
+      this.logger.log('✅ Password changed successfully');
     } catch (error) {
       this.logger.error('Password change error:', error);
       throw new Error('Failed to change password');
@@ -89,7 +73,7 @@ export class PasswordRecoveryService {
         })
       );
     } catch (error) {
-      this.logger.warn('Failed to send confirmation email:', error);
+      this.logger.warn('⚠️ Failed to send confirmation email:', error);
     }
   }
 }

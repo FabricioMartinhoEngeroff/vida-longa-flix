@@ -117,7 +117,7 @@ export class HomeComponent implements OnInit {
   }
 
   viewAll(): void {
-    console.log('Ver tudo clicado');
+    // TODO: ver tudo
   }
 
   private tryScrollToSearchTarget(): void {

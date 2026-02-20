@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
@@ -34,23 +34,6 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
-  private readonly MOCK_ACCOUNTS = [
-    {
-      id: '1',
-      name: 'Fabricio Engeroff',
-      email: 'fa.engeroff@gmail.com',
-      password: '@Fabricio123456789',
-      admin: true,
-    },
-    {
-      id: '2',
-      name: 'Demo User',
-      email: 'demo@vidalonga.com',
-      password: '@Demo123456',
-      admin: false,
-    },
-  ] as const;
-
   constructor(
     private http: HttpClient,
     private api: ApiService,
@@ -64,7 +47,7 @@ export class AuthService {
   private loadSession() {
     const token = localStorage.getItem(this.TOKEN_KEY);
     const userData = localStorage.getItem(this.USER_KEY);
-    
+
     if (token && userData) {
       try {
         this.userSubject.next(JSON.parse(userData));
@@ -75,41 +58,39 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<TokenResponse> {
-  try {
-    const payload = this.mapLoginToApi(email, password);
+    try {
+      const payload = this.mapLoginToApi(email, password);
 
-    const response = await firstValueFrom(
-      this.http.post<TokenResponse>(`${this.api.baseURL}/auth/login`, payload)
-    );
+      const response = await firstValueFrom(
+        this.http.post<TokenResponse>(`${this.api.baseURL}/auth/login`, payload)
+      );
 
-    if (!response?.token) {
-      throw new Error('Token not returned by API');
+      if (!response?.token) {
+        throw new Error('Token not returned by API');
+      }
+
+      const user: User = response.user || {
+        id: '',
+        name: '',
+        email: payload.email,
+        phone: '',
+        taxId: '',
+        address: undefined,
+        photo: null,
+        profileComplete: true,
+      };
+
+      this.saveSession(response.token, user);
+      return response;
+    } catch (error) {
+      throw handleApiError(error, 'Erro ao fazer login');
     }
-
-    const user: User = response.user || {
-      id: '',
-      name: '',
-      email: payload.email,
-      phone: '',
-      taxId: '',
-      address: undefined,
-      photo: null,
-      profileComplete: true,
-    };
-
-    this.saveSession(response.token, user);
-    return response;
-  } catch (error) {
-    throw handleApiError(error, 'Erro ao fazer login');
   }
-}
-
 
   async register(data: RegisterData): Promise<TokenResponse> {
     try {
       const payload = this.mapRegisterToApi(data);
 
-      // Real API call
       const response = await firstValueFrom(
         this.http.post<TokenResponse>(`${this.api.baseURL}/auth/register`, payload)
       );
@@ -131,7 +112,6 @@ export class AuthService {
 
       this.saveSession(response.token, user);
 
-      // Send WhatsApp welcome message (don't block if it fails)
       try {
         await this.whatsAppService.sendWelcomeMessage({
           name: data.name,
@@ -147,28 +127,28 @@ export class AuthService {
     }
   }
 
- async fetchAuthenticatedUser(): Promise<User | null> {
-  const token = this.getToken();
-  if (!token) {
-    this.router.navigateByUrl('/login');
-    return null;
-  }
-
-  try {
-    const response = await firstValueFrom(
-      this.http.get<User>(`${this.api.baseURL}/users/me`)  // sem headers manuais
-    );
-
-    if (response) {
-      this.userSubject.next(response);
+  async fetchAuthenticatedUser(): Promise<User | null> {
+    const token = this.getToken();
+    if (!token) {
+      this.router.navigateByUrl('/login');
+      return null;
     }
 
-    return response ?? null;
-  } catch (error) {
-    this.logger.error('Error fetching authenticated user:', error);
-    return null;
+    try {
+      const response = await firstValueFrom(
+        this.http.get<User>(`${this.api.baseURL}/users/me`)
+      );
+
+      if (response) {
+        this.userSubject.next(response);
+      }
+
+      return response ?? null;
+    } catch (error) {
+      this.logger.error('Error fetching authenticated user:', error);
+      return null;
+    }
   }
-}
 
   async updateProfile(data: ProfileData): Promise<User> {
     const currentUser = this.user;
@@ -176,7 +156,6 @@ export class AuthService {
       throw new Error('User not authenticated');
     }
 
-    // TODO: Call real backend
     const updatedUser: User = {
       ...currentUser,
       name: data.name,
@@ -188,9 +167,10 @@ export class AuthService {
       updatedAt: new Date()
     };
 
-    const token = this.getToken() || 'fake_token_' + Date.now();
+    const token = this.getToken();
+    if (!token) throw new Error('User not authenticated');
     this.saveSession(token, updatedUser);
-    
+
     return updatedUser;
   }
 
@@ -206,7 +186,8 @@ export class AuthService {
       updatedAt: new Date()
     };
 
-    const token = this.getToken() || 'fake_token_' + Date.now();
+    const token = this.getToken();
+    if (!token) throw new Error('User not authenticated');
     this.saveSession(token, updatedUser);
   }
 

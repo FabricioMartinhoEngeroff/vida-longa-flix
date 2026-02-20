@@ -15,10 +15,13 @@ export interface WelcomeMessageData {
 export class WhatsAppService {
   private apiUrl = environment.apiUrl || 'http://localhost:8080';
 
-  constructor(private http: HttpClient, private logger: LoggerService) {}
+  constructor(
+   private http: HttpClient,
+  private logger: LoggerService
+) {}
 
   async sendWelcomeMessage(data: WelcomeMessageData): Promise<void> {
-    this.logger.log('Enviando WhatsApp de boas-vindas para:', data.phone);
+    this.logger.log('📱 Enviando WhatsApp de boas-vindas para:', data.phone);
     
     try {
       const params = new URLSearchParams({
@@ -36,7 +39,7 @@ export class WhatsAppService {
 
       this.logger.log('WhatsApp enviado:', response);
     } catch (error) {
-      this.logger.error('Erro ao enviar WhatsApp:', error);
+      this.logger.error('❌ Erro ao enviar WhatsApp:', error);
       throw error;
     }
   }

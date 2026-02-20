@@ -7,8 +7,8 @@ import { FormFieldComponent } from '../../components/form-field/form-field.compo
 import { PasswordRecoveryComponent } from '../../components/password-recovery/password-recovery.component';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button.component';
 import { AuthService } from '../../services/auth.service';
-import { LoggerService } from '../../services/logger.service';
 import { LoginForm } from '../../types/form.types';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-login',
@@ -74,7 +74,7 @@ export class LoginComponent {
       await this.authService.login(email, password);
       this.router.navigateByUrl('/app', { replaceUrl: true });
     } catch (e) {
-      this.logger.error('Erro ao realizar login:', e);
+     this.logger.error('Erro ao realizar login:', e);
     } finally {
       this.loading = false;
     }

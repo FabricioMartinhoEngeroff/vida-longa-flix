@@ -1,28 +1,21 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
-export function handleApiError(error: unknown, defaultMessage: string): never {
-  console.error('🚨 API Error:', error);
+export function handleApiError(error: any, context: string): Error {
+  if (!environment.production) {
+    console.error('API Error:', error);
 
-  let message = defaultMessage;
+    if (error?.status) {
+      console.error(`Status: ${error.status}`);
+      console.error('Body:', error.error);
+    } else if (error?.message) {
+      console.error('Error:', error.message);
+    }
+  }
 
   if (error instanceof HttpErrorResponse) {
-    if (error.error) {
-      const msg =
-        typeof error.error === 'string'
-          ? error.error
-          : (error.error?.message as string | undefined);
-
-      if (msg) message = msg;
-    }
-
-    console.error(`❌ Status: ${error.status}`);
-    console.error('📝 Body:', error.error);
+    return new Error(error.error?.message || context);
   }
 
-  else if (error instanceof Error) {
-    console.error('Error:', error.message);
-    message = error.message || defaultMessage;
-  }
-
-  throw new Error(message);
+  return new Error(error?.message || context);
 }

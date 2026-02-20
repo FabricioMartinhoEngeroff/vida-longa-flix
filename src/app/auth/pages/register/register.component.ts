@@ -11,6 +11,7 @@ import { EmailErrorType } from '../../types/form.types';
 import { PasswordStrength, strongPasswordValidator } from '../../utils/strong-password-validator';
 import { AuthService } from '../../services/auth.service';
 import { DEFAULT_MESSAGES } from '../../../shared/services/alert-message/default-messages.constants';
+import { LoggerService } from '../../services/logger.service';
 
 
 
@@ -40,7 +41,8 @@ export class RegisterComponent {
     private fb: FormBuilder, 
     private router: Router, 
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private logger: LoggerService
   ) {
    
     this.form = this.fb.group({
@@ -154,7 +156,7 @@ export class RegisterComponent {
 
     } catch (e: any) {
       this.notificationService.error(e.message || DEFAULT_MESSAGES.GENERIC_ERROR.text);
-      console.error(e);
+      this.logger.error(e);
     } finally {
       this.loading = false;
     }

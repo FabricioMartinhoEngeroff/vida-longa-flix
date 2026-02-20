@@ -5,6 +5,7 @@ import { EmailService } from '../../services/email/email.service';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { LogoComponent } from '../logo/logo.component';
 import { PrimaryButtonComponent } from '../primary-button/primary-button.component';
+import { LoggerService } from '../../services/logger.service';
 
 type RecoveryForm = FormGroup<{
   email: FormControl<string>;
@@ -28,7 +29,8 @@ export class PasswordRecoveryComponent {
 
   constructor(
     private fb: FormBuilder,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private logger: LoggerService,
   ) {
     this.recoveryForm = this.fb.group({
       email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
@@ -65,7 +67,7 @@ export class PasswordRecoveryComponent {
       setTimeout(() => this.goToLogin(), 2000);
     } catch (e) {
       this.errorMessage = 'Não foi possível enviar o e-mail. Tente novamente.';
-      console.error(e);
+      this.logger.error('Erro ao enviar e-mail de recuperação:', e);
     } finally {
       this.loading = false;
     }

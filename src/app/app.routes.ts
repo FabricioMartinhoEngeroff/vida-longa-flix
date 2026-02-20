@@ -13,6 +13,7 @@ import { VideoAdminComponent } from './features/video-admin/video-admin.componen
 import { MenusComponent } from './features/menus/menus.component';
 import { MenuAdminComponent } from './features/menu-admin/menu-admin.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
+import { authGuard } from './auth/services/auth.guard';
 
 
 export const routes: Routes = [
@@ -38,17 +39,18 @@ export const routes: Routes = [
       { path: 'favorites', component: FavoritesComponent },
       { path: 'most-viewed', component: MostViewedComponent },
       { path: 'history', component: HomeComponent },
-      { path: 'video-admin', component: VideoAdminComponent },
       { path: 'menus', component: MenusComponent },
       { path: 'menu-admin', component: MenuAdminComponent },
-
       // Aliases PT-BR (mantem compatibilidade)
       { path: 'favoritos', component: FavoritesComponent },
       { path: 'mais-vistos', component: MostViewedComponent },
       { path: 'historico', component: HomeComponent },
-      { path: 'admin-videos', component: VideoAdminComponent },
       { path: 'cardapios', component: MenusComponent },
-      { path: 'admin-cardapios', component: MenuAdminComponent },
+
+{ path: 'video-admin', component: VideoAdminComponent, canActivate: [authGuard] },
+{ path: 'menu-admin', component: MenuAdminComponent, canActivate: [authGuard] },
+{ path: 'admin-videos', component: VideoAdminComponent, canActivate: [authGuard] },
+{ path: 'admin-cardapios', component: MenuAdminComponent, canActivate: [authGuard] },
     ],
   },
 

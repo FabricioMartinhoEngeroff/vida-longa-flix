@@ -111,7 +111,7 @@ export class UserMenuComponent {
   }
 
   saveProfile(data: any): void {
-    console.log('💾 Salvar perfil:', data);
+    // TODO: salvar perfil
     // TODO: Enviar para backend
     this.isProfileModalOpen = false;
     this.notificationService.showDefault(DEFAULT_MESSAGES.PROFILE_UPDATED);
@@ -123,7 +123,7 @@ export class UserMenuComponent {
   }
 
   goToSettings(): void {
-    console.log('⚙️ Ir para configurações');
+    // TODO: ir para configurações
     this.closeMenu();
   }
 
@@ -145,7 +145,7 @@ export class UserMenuComponent {
   }
 
   confirmPasswordChange(data: { currentPassword: string; newPassword: string }): void {
-    console.log('🔐 Mudar senha:', data);
+    // TODO: mudar senha
 
     this.isChangePasswordModalOpen = false;
     this.closeMenu();

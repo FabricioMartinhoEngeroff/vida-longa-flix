@@ -23,7 +23,7 @@ export class VideoService {
   constructor(
     private http: HttpClient,
     private favoritesService: FavoritesService,
-    private logger: LoggerService
+    private logger: LoggerService 
   ) {
     this.loadVideos();
   }
@@ -31,7 +31,7 @@ export class VideoService {
   loadVideos(): void {
     this.http.get<Video[]>(this.baseUrl).pipe(
       catchError((err) => {
-        this.logger.error('Erro ao carregar vídeos', err);
+        this.logger.error('Erro ao carregar vídeos', err)
         return of([]);
       })
     ).subscribe(videos => this.videosSignal.set(videos));
@@ -41,7 +41,7 @@ export class VideoService {
     this.http.post<void>(this.baseUrl, request).pipe(
       tap(() => this.loadVideos()),
       catchError((err) => {
-        this.logger.error('Erro ao criar vídeo', err);
+        this.logger.error('Erro ao criar vídeo', err)
         return of(null);
       })
     ).subscribe();
@@ -51,7 +51,7 @@ export class VideoService {
     this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
       tap(() => this.loadVideos()),
       catchError((err) => {
-        this.logger.error('Erro ao deletar vídeo', err);
+        this.logger.error('Erro ao deletar vídeo', err)
         return of(null);
       })
     ).subscribe();

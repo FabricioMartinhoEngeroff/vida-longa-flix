@@ -14,6 +14,6 @@ export class NotificationsComponent {
 
   openNotifications(): void {
     // Logica principal: ao clicar, abre a area/modal de notificacoes.
-    console.log('Abrir notificacoes');
+    // TODO: abrir notificações
   }
 }

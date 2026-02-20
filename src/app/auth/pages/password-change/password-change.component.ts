@@ -40,7 +40,7 @@ export class PasswordChangeComponent implements OnInit {
     private route: ActivatedRoute,
     private notificationService: NotificationService,
     private recoveryService: PasswordRecoveryService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     this.form = this.fb.group({
       newPassword: [
@@ -132,7 +132,7 @@ export class PasswordChangeComponent implements OnInit {
     }, getDefaultNotificationDuration('success'));
   } catch (e) {
     this.notificationService.showDefault(DEFAULT_MESSAGES.ERROR_RESETTING_PASSWORD);
-    this.logger.error("Erro ao redefinir senha:", e);
+    this.logger.error('Erro ao alterar senha:', e);
   } finally {
     this.loading = false;
   }
