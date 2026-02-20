@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { LoggerService } from '../logger.service';
 
 export interface WelcomeMessageData {
   name: string;
@@ -14,10 +15,10 @@ export interface WelcomeMessageData {
 export class WhatsAppService {
   private apiUrl = environment.apiUrl || 'http://localhost:8080';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private logger: LoggerService) {}
 
   async sendWelcomeMessage(data: WelcomeMessageData): Promise<void> {
-    console.log('📱 Enviando WhatsApp de boas-vindas para:', data.phone);
+    this.logger.log('Enviando WhatsApp de boas-vindas para:', data.phone);
     
     try {
       const params = new URLSearchParams({
@@ -33,9 +34,9 @@ export class WhatsAppService {
         )
       );
 
-      console.log('✅ WhatsApp enviado:', response);
+      this.logger.log('WhatsApp enviado:', response);
     } catch (error) {
-      console.error('❌ Erro ao enviar WhatsApp:', error);
+      this.logger.error('Erro ao enviar WhatsApp:', error);
       throw error;
     }
   }

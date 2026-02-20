@@ -10,6 +10,7 @@ import { NotificationService, getDefaultNotificationDuration } from '../../servi
 import { PasswordStrength, strongPasswordValidator } from '../../utils/strong-password-validator';
 import { DEFAULT_MESSAGES } from '../../../shared/services/alert-message/default-messages.constants';
 import { PasswordRecoveryService } from '../../services/service-password-recovery/service-password-recovery';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-password-change',
@@ -38,7 +39,8 @@ export class PasswordChangeComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private notificationService: NotificationService,
-    private recoveryService: PasswordRecoveryService
+    private recoveryService: PasswordRecoveryService,
+    private logger: LoggerService
   ) {
     this.form = this.fb.group({
       newPassword: [
@@ -130,7 +132,7 @@ export class PasswordChangeComponent implements OnInit {
     }, getDefaultNotificationDuration('success'));
   } catch (e) {
     this.notificationService.showDefault(DEFAULT_MESSAGES.ERROR_RESETTING_PASSWORD);
-    console.error(e);
+    this.logger.error("Erro ao redefinir senha:", e);
   } finally {
     this.loading = false;
   }

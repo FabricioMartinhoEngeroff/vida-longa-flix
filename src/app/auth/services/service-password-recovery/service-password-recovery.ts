@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../api/api.service';
+import { LoggerService } from '../logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class PasswordRecoveryService {
   constructor(
     private http: HttpClient,
-    private api: ApiService
+    private api: ApiService,
+    private logger: LoggerService
   ) {}
 
   async sendRecoveryEmail(email: string): Promise<void> {
@@ -24,13 +26,13 @@ export class PasswordRecoveryService {
         })
       );
     } catch (error) {
-      console.error('Error sending recovery email:', error);
+      this.logger.error('Error sending recovery email:', error);
       throw new Error('Failed to send recovery email');
     }
   }
 
   async validateToken(token: string): Promise<boolean> {
-    console.log('🔍 Validating token:', token);
+    this.logger.log('Validating token:', token);
     
     if (!token) return false;
 
@@ -45,13 +47,13 @@ export class PasswordRecoveryService {
       await new Promise(resolve => setTimeout(resolve, 500));
       return true;
     } catch (error) {
-      console.error('Token validation error:', error);
+      this.logger.error('Token validation error:', error);
       return false;
     }
   }
 
   async changePassword(token: string, newPassword: string): Promise<void> {
-    console.log('🔐 Changing password with token');
+    this.logger.log('Changing password with token');
     
     if (!token || !newPassword) {
       throw new Error('Token and new password are required');
@@ -68,9 +70,9 @@ export class PasswordRecoveryService {
 
       // Mock: simulates backend delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('✅ Password changed successfully');
+      this.logger.log('Password changed successfully');
     } catch (error) {
-      console.error('Password change error:', error);
+      this.logger.error('Password change error:', error);
       throw new Error('Failed to change password');
     }
   }
@@ -87,7 +89,7 @@ export class PasswordRecoveryService {
         })
       );
     } catch (error) {
-      console.warn('⚠️ Failed to send confirmation email:', error);
+      this.logger.warn('Failed to send confirmation email:', error);
     }
   }
 }

@@ -4,6 +4,7 @@ import { tap, catchError, of } from 'rxjs';
 import { Video, VideoRequest } from '../../types/videos';
 import { FavoritesService } from '../favorites/favorites.service.';
 import { environment } from '../../../../environments/environment';
+import { LoggerService } from '../../../auth/services/logger.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,8 @@ export class VideoService {
 
   constructor(
     private http: HttpClient,
-    private favoritesService: FavoritesService
+    private favoritesService: FavoritesService,
+    private logger: LoggerService
   ) {
     this.loadVideos();
   }
@@ -29,7 +31,7 @@ export class VideoService {
   loadVideos(): void {
     this.http.get<Video[]>(this.baseUrl).pipe(
       catchError((err) => {
-        console.error('Erro ao carregar vídeos', err);
+        this.logger.error('Erro ao carregar vídeos', err);
         return of([]);
       })
     ).subscribe(videos => this.videosSignal.set(videos));
@@ -39,7 +41,7 @@ export class VideoService {
     this.http.post<void>(this.baseUrl, request).pipe(
       tap(() => this.loadVideos()),
       catchError((err) => {
-        console.error('Erro ao criar vídeo', err);
+        this.logger.error('Erro ao criar vídeo', err);
         return of(null);
       })
     ).subscribe();
@@ -49,7 +51,7 @@ export class VideoService {
     this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
       tap(() => this.loadVideos()),
       catchError((err) => {
-        console.error('Erro ao deletar vídeo', err);
+        this.logger.error('Erro ao deletar vídeo', err);
         return of(null);
       })
     ).subscribe();

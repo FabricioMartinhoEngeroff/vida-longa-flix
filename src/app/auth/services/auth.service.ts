@@ -7,6 +7,7 @@ import { WhatsAppService } from './whatsapp/whatsapp.service';
 import { User, RegisterData, ProfileData } from '../types/user.types';
 import { applyPhoneMaskAuto } from '../utils/masks.utils';
 import { handleApiError } from '../utils/handle-api-error';
+import { LoggerService } from './logger.service';
 
 interface TokenResponse {
   token: string;
@@ -54,7 +55,8 @@ export class AuthService {
     private http: HttpClient,
     private api: ApiService,
     private router: Router,
-    private whatsAppService: WhatsAppService
+    private whatsAppService: WhatsAppService,
+    private logger: LoggerService
   ) {
     this.loadSession();
   }
@@ -73,57 +75,35 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<TokenResponse> {
-    try {
-      const payload = this.mapLoginToApi(email, password);
-      
-      // Check mock accounts first
-      const mockAccount = this.MOCK_ACCOUNTS.find(
-        (account) => account.email.toLowerCase() === payload.email && account.password === payload.password
-      );
+  try {
+    const payload = this.mapLoginToApi(email, password);
 
-      if (mockAccount) {
-        const token = mockAccount.admin ? 'token_dev_admin_123' : 'token_dev_user_123';
-        const user: User = {
-          id: mockAccount.id,
-          name: mockAccount.name,
-          email: mockAccount.email,
-          phone: '',
-          taxId: '',
-          address: undefined,
-          photo: null,
-          profileComplete: true,
-        };
-        
-        this.saveSession(token, user);
-        return { token, user };
-      }
+    const response = await firstValueFrom(
+      this.http.post<TokenResponse>(`${this.api.baseURL}/auth/login`, payload)
+    );
 
-      // Real API call
-      const response = await firstValueFrom(
-        this.http.post<TokenResponse>(`${this.api.baseURL}/auth/login`, payload)
-      );
-
-      if (!response?.token) {
-        throw new Error('Token not returned by API');
-      }
-
-      const user: User = response.user || {
-        id: '',
-        name: '',
-        email: payload.email,
-        phone: '',
-        taxId: '',
-        address: undefined,
-        photo: null,
-        profileComplete: true,
-      };
-
-      this.saveSession(response.token, user);
-      return response;
-    } catch (error) {
-      throw handleApiError(error, 'Erro ao fazer login');
+    if (!response?.token) {
+      throw new Error('Token not returned by API');
     }
+
+    const user: User = response.user || {
+      id: '',
+      name: '',
+      email: payload.email,
+      phone: '',
+      taxId: '',
+      address: undefined,
+      photo: null,
+      profileComplete: true,
+    };
+
+    this.saveSession(response.token, user);
+    return response;
+  } catch (error) {
+    throw handleApiError(error, 'Erro ao fazer login');
   }
+}
+
 
   async register(data: RegisterData): Promise<TokenResponse> {
     try {
@@ -158,7 +138,7 @@ export class AuthService {
           phone: data.phone
         });
       } catch (e) {
-        console.warn('⚠️ WhatsApp not sent, but registration completed:', e);
+        this.logger.warn('WhatsApp not sent, but registration completed:', e);
       }
 
       return response;
@@ -167,47 +147,28 @@ export class AuthService {
     }
   }
 
-  async fetchAuthenticatedUser(): Promise<User | null> {
-    const token = this.getToken();
-    
-    // Dev mode
-    if (token === 'token_dev_admin_123' || token === 'token_dev_user_123') {
-      return {
-        id: '1',
-        name: 'Fabricio (DEV)',
-        email: 'fa.engeroff@gmail.com',
-        phone: '',
-        taxId: '',
-        address: undefined,
-        photo: null,
-        profileComplete: false
-      };
-    }
-
-    if (!token) {
-      this.router.navigateByUrl('/login');
-      return null;
-    }
-
-    try {
-      const headers = new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      });
-
-      const response = await firstValueFrom(
-        this.http.get<User>(`${this.api.baseURL}/users/me`, { headers })
-      );
-
-      if (response) {
-        this.userSubject.next(response);
-      }
-
-      return response ?? null;
-    } catch (error) {
-      console.error('Error fetching authenticated user:', error);
-      return null;
-    }
+ async fetchAuthenticatedUser(): Promise<User | null> {
+  const token = this.getToken();
+  if (!token) {
+    this.router.navigateByUrl('/login');
+    return null;
   }
+
+  try {
+    const response = await firstValueFrom(
+      this.http.get<User>(`${this.api.baseURL}/users/me`)  // sem headers manuais
+    );
+
+    if (response) {
+      this.userSubject.next(response);
+    }
+
+    return response ?? null;
+  } catch (error) {
+    this.logger.error('Error fetching authenticated user:', error);
+    return null;
+  }
+}
 
   async updateProfile(data: ProfileData): Promise<User> {
     const currentUser = this.user;

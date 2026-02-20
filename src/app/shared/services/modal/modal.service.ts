@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Video } from '../../types/videos';
+import { LoggerService } from '../../../auth/services/logger.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,12 +15,12 @@ export class ModalService {
   readonly selectedVideo = this.selectedVideoSignal.asReadonly();
   readonly isModalOpen = computed(() => !!this.selectedVideoSignal());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private logger: LoggerService) {}
 
   open(video: Video): void {
     this.http.patch<void>(`${this.baseUrl}/${video.id}/view`, {}).pipe(
       catchError((err) => {
-        console.error('Erro ao registrar view', err);
+        this.logger.error('Erro ao registrar view', err);
         return of(null);
       })
     ).subscribe();
