@@ -3,11 +3,11 @@ import { ActivatedRoute, Params } from '@angular/router';
 
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { Menu } from '../../shared/types/menu';
-import { CommentsService } from '../../shared/services/comments/comments.service';
 import { MenuModalComponent } from '../../shared/components/menu-modal/menu-modal.component';
 import { CategoryCarouselComponent } from '../../shared/components/category-carousel/category-carousel.component';
 import { EngagementSummaryComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
 import { agruparPor as groupBy, Grupo as Group } from '../../shared/utils/agrupar-por';
+import { MenuCommentsService } from '../../shared/services/menus/menu-comments-service';
 
 type MenuGroup = Group<Menu>;
 
@@ -33,11 +33,12 @@ export class MenusComponent implements OnInit {
   private menuModalInHistory = false;
 
   constructor(
-    private menuService: MenuService,
-    private commentsService: CommentsService,
-    private route: ActivatedRoute
-  ) {
+  private menuService: MenuService,
+  private commentsService: MenuCommentsService,
+  private route: ActivatedRoute
+) {
     effect(() => {
+      this.commentsState = this.commentsService.comments();
       const list = this.menuService.menus();
       this.menusList = list;
 
@@ -62,17 +63,17 @@ export class MenusComponent implements OnInit {
     });
   }
 
-  addComment(id: string, text: string): void {
-    this.commentsService.add('menu', id, text);
-  }
+ addComment(id: string, text: string): void {
+  this.commentsService.add(id, text);
+}
 
   getTotalComments(id: string): number {
-    return this.commentsState[`menu:${id}`]?.length ?? 0;
-  }
+  return this.commentsState[id]?.length ?? 0;
+}
 
-  getMenuComments(id: string): string[] {
-    return this.commentsState[`menu:${id}`] ?? [];
-  }
+getMenuComments(id: string): string[] {
+  return this.commentsState[id] ?? [];
+}
 
   open(menu: Menu): void {
     if (!this.selected && typeof window !== 'undefined') {

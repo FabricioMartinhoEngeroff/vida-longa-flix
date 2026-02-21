@@ -10,9 +10,12 @@ export interface Comment {
   user: UserComment;
 }
 
+export type CategoryType = 'VIDEO' | 'MENU';
+
 export interface Category {
   id: string;
   name: string;
+  type: CategoryType;
 }
 
 export interface Video {

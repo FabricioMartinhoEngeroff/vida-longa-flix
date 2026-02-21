@@ -1,48 +1,55 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
-type CommentType = 'video' | 'menu';
+export interface CommentResponse {
+  id: string;
+  text: string;
+  date: string;
+  user: { id: string; name: string };
+}
 
 @Injectable({ providedIn: 'root' })
 export class CommentsService {
 
-  private state = signal<Record<string, string[]>>({});
+  private readonly baseUrl = `${environment.apiUrl}/comments`;
+
+  // estado local por videoId
+  private state = signal<Record<string, CommentResponse[]>>({});
 
   readonly comments = this.state.asReadonly();
 
-  private key(type: CommentType, id: string): string {
-    return `${type}:${id}`;
+  constructor(private http: HttpClient) {}
+
+  loadByVideo(videoId: string): void {
+    this.http.get<CommentResponse[]>(`${this.baseUrl}/video/${videoId}`)
+      .subscribe({
+        next: (list) => this.state.update(current => ({
+          ...current,
+          [`video:${videoId}`]: list
+        })),
+        error: () => {} // silencia 404 quando não há comentários
+      });
   }
 
-  get(type: CommentType, id: string): string[] {
-    return this.state()[this.key(type, id)] ?? [];
+  get(videoId: string): CommentResponse[] {
+    return this.state()[`video:${videoId}`] ?? [];
   }
 
-  
-  add(type: CommentType, id: string, text: string): void {
+  add(videoId: string, text: string): void {
     const txt = (text ?? '').trim();
     if (!txt) return;
 
-    const key = this.key(type, id);
-
-    this.state.update(current => ({
-      ...current,
-      [key]: [...(current[key] ?? []), `Você: ${txt}`]
-    }));
+    this.http.post<void>(this.baseUrl, { text, videoId })
+      .subscribe(() => this.loadByVideo(videoId));
   }
 
-  clear(type: CommentType, id: string): void {
-    const key = this.key(type, id);
-    
-    this.state.update(current => {
-      const { [key]: removed, ...rest } = current;
-      return rest;
-    });
+  delete(commentId: string, videoId: string): void {
+    this.http.delete<void>(`${this.baseUrl}/${commentId}`)
+      .subscribe(() => this.loadByVideo(videoId));
   }
 
-  readonly totalComments = computed(() => {
-    return Object.values(this.state()).reduce(
-      (total, comments) => total + comments.length,
-      0
-    );
-  });
+  readonly totalComments = computed(() =>
+    Object.values(this.state()).reduce((total, list) => total + list.length, 0)
+  );
 }

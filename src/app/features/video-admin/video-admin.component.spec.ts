@@ -12,8 +12,8 @@ describe('VideoAdminComponent', () => {
   let addVideoSpy: ReturnType<typeof vi.fn>;
 
   const mockCategories = [
-    { id: 'cat-uuid-1', name: 'Bolos' },
-    { id: 'cat-uuid-2', name: 'Salgados' },
+    { id: 'cat-uuid-1', name: 'Bolos', type: 'VIDEO' },
+    { id: 'cat-uuid-2', name: 'Salgados', type: 'VIDEO' },
   ];
 
   beforeEach(async () => {
@@ -29,8 +29,11 @@ describe('VideoAdminComponent', () => {
 
     httpMock = TestBed.inject(HttpTestingController);
 
-    // Responde o GET de categorias do construtor
-    const req = httpMock.expectOne(`${environment.apiUrl}/categories`);
+    const req = httpMock.expectOne((r) =>
+      r.method === 'GET' &&
+      r.url === `${environment.apiUrl}/categories` &&
+      r.params.get('type') === 'VIDEO'
+    );
     req.flush(mockCategories);
 
     fixture.detectChanges();

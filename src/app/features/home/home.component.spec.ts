@@ -22,14 +22,13 @@ describe('HomeComponent', () => {
   };
 
   const commentsServiceMock = {
-    get: vi.fn((type: 'video' | 'menu', id: string) => {
-      const state: Record<string, string[]> = {
-        'video:10': ['Voce: teste'],
-        'menu:10': ['Voce: outro'],
-      };
-      return state[`${type}:${id}`] ?? [];
-    }),
-  };
+  get: vi.fn((id: string) => {
+    const state: Record<string, string[]> = {
+      '10': ['Voce: teste'],
+    };
+    return state[id] ?? [];
+  }),
+};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

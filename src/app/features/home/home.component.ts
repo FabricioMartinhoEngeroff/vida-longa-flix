@@ -113,8 +113,8 @@ export class HomeComponent implements OnInit {
   }
 
   getTotalComments(videoId: string): number {
-    return this.commentsService.get('video', videoId).length;
-  }
+  return this.commentsService.get(videoId).length;
+}
 
   viewAll(): void {
     // TODO: ver tudo

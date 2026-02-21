@@ -1,73 +1,81 @@
 import { TestBed } from '@angular/core/testing';
-import { CommentsService } from './comments.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { CommentsService, CommentResponse } from './comments.service';
+import { environment } from '../../../../environments/environment';
 
 describe('CommentsService', () => {
   let service: CommentsService;
+  let http: HttpTestingController;
+
+  const mockComments: CommentResponse[] = [
+    { id: '1', text: 'ótimo vídeo', date: '2024-01-01', user: { id: 'u1', name: 'João' } }
+  ];
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
     service = TestBed.inject(CommentsService);
+    http = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => http.verify());
 
   it('should create service', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should separate comments by type and id', () => {
-    service.add('video', '1', 'video comment');
-    service.add('menu', '1', 'menu comment');
+  it('should load comments by video', () => {
+    service.loadByVideo('video-1');
 
-    expect(service.get('video', '1')).toEqual(['Você: video comment']);
-    expect(service.get('menu', '1')).toEqual(['Você: menu comment']);
+    const req = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockComments);
+
+    expect(service.get('video-1').length).toBe(1);
+    expect(service.get('video-1')[0].text).toBe('ótimo vídeo');
+  });
+
+  it('should return empty array when no comments loaded', () => {
+    expect(service.get('video-999')).toEqual([]);
+  });
+
+  it('should add comment and reload', () => {
+    service.add('video-1', 'novo comentário');
+
+    const postReq = http.expectOne(`${environment.apiUrl}/comments`);
+    expect(postReq.request.method).toBe('POST');
+    expect(postReq.request.body).toEqual({ text: 'novo comentário', videoId: 'video-1' });
+    postReq.flush(null);
+
+    const getReq = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    getReq.flush(mockComments);
+
+    expect(service.get('video-1').length).toBe(1);
   });
 
   it('should not add empty comment', () => {
-    service.add('video', '9', '   ');
-    expect(service.get('video', '9')).toEqual([]);
+    service.add('video-1', '   ');
+    http.expectNone(`${environment.apiUrl}/comments`);
   });
 
-  it('should accumulate multiple comments', () => {
-    service.add('video', '1', 'first comment');
-    service.add('video', '1', 'second comment');
+  it('should delete comment and reload', () => {
+    service.delete('comment-1', 'video-1');
 
-    const comments = service.get('video', '1');
-    expect(comments.length).toBe(2);
-    expect(comments[0]).toBe('Você: first comment');
-    expect(comments[1]).toBe('Você: second comment');
+    const deleteReq = http.expectOne(`${environment.apiUrl}/comments/comment-1`);
+    expect(deleteReq.request.method).toBe('DELETE');
+    deleteReq.flush(null);
+
+    const getReq = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    getReq.flush([]);
   });
 
-  it('should return empty array for non-existent entity', () => {
-    const comments = service.get('video', '999');
-    expect(comments).toEqual([]);
-  });
-
-  it('should clear comments for specific entity', () => {
-    service.add('video', '1', 'comment 1');
-    service.add('video', '1', 'comment 2');
-    
-    service.clear('video', '1');
-    
-    expect(service.get('video', '1')).toEqual([]);
-  });
-
-  it('should calculate total comments using computed signal', () => {
-    service.add('video', '1', 'comment 1');
-    service.add('video', '2', 'comment 2');
-    service.add('menu', '1', 'comment 3');
-
-    expect(service.totalComments()).toBe(3);
-  });
-
-  it('should update total comments reactively', () => {
+  it('should calculate totalComments reactively', () => {
     expect(service.totalComments()).toBe(0);
-    
-    service.add('video', '1', 'comment 1');
+
+    service.loadByVideo('video-1');
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush(mockComments);
+
     expect(service.totalComments()).toBe(1);
-    
-    service.add('video', '1', 'comment 2');
-    expect(service.totalComments()).toBe(2);
-    
-    service.clear('video', '1');
-    expect(service.totalComments()).toBe(0);
   });
 });

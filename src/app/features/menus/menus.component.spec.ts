@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 
 import { MenusComponent } from './menus.component';
 import { MenuService } from '../../shared/services/menus/menus-service';
-import { CommentsService } from '../../shared/services/comments/comments.service';
+import { MenuCommentsService } from '../../shared/services/menus/menu-comments-service';
 
 describe('MenusComponent', () => {
   let commentsState: Record<string, string[]> = {};
@@ -25,7 +25,7 @@ describe('MenusComponent', () => {
       imports: [MenusComponent],
       providers: [
         { provide: MenuService, useValue: menuServiceMock },
-        { provide: CommentsService, useValue: commentsServiceMock },
+        { provide: MenuCommentsService, useValue: commentsServiceMock },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
       ],
     }).compileComponents();
@@ -33,32 +33,28 @@ describe('MenusComponent', () => {
 
   it('should create', () => {
     const fixture = TestBed.createComponent(MenusComponent);
-    const component = fixture.componentInstance;
     fixture.detectChanges();
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should count and get comments by menu key', () => {
+  it('should count and get comments by id', () => {
     const fixture = TestBed.createComponent(MenusComponent);
     const component = fixture.componentInstance;
     fixture.detectChanges();
 
-    commentsState = {
-      'menu:7': ['Você: ótimo'],
-      'video:7': ['Você: vídeo'],
-    };
+    commentsState = { '7': ['Você: ótimo'] };
 
     expect(component.getTotalComments('7')).toBe(1);
     expect(component.getMenuComments('7')).toEqual(['Você: ótimo']);
   });
 
-  it('should add comment with menu type', () => {
+  it('should add comment', () => {
     const fixture = TestBed.createComponent(MenusComponent);
     const component = fixture.componentInstance;
     fixture.detectChanges();
 
     component.addComment('42', 'novo');
 
-    expect(commentsServiceMock.add).toHaveBeenCalledWith('menu', '42', 'novo');
+    expect(commentsServiceMock.add).toHaveBeenCalledWith('42', 'novo');
   });
 });

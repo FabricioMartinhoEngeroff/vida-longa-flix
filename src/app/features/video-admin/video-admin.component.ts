@@ -25,7 +25,7 @@ constructor(
   private videoService: VideoService,
   private http: HttpClient
 ) {
-  this.http.get<Category[]>(`${environment.apiUrl}/categories`)
+  this.http.get<Category[]>(`${environment.apiUrl}/categories`, { params: { type: 'VIDEO' } })
     .subscribe(cats => this.categories = cats);
 
   this.form = this.fb.group({
@@ -33,7 +33,7 @@ constructor(
     description: ['', [Validators.required, Validators.minLength(5)]],
     url: ['', [Validators.required]],
     cover: [''],
-    categoryId: ['', Validators.required],  // ← UUID da categoria
+    categoryId: ['', Validators.required],
     recipe: [''],
     protein: [0],
     carbs: [0],
