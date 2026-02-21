@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, effect } from '@angular/core';
+import { Component, HostListener, Inject, OnInit, effect } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { MenuService } from '../../shared/services/menus/menus-service';
@@ -34,7 +34,7 @@ export class MenusComponent implements OnInit {
 
   constructor(
   private menuService: MenuService,
-  private commentsService: MenuCommentsService,
+  @Inject(MenuCommentsService) private commentsService: MenuCommentsService,
   private route: ActivatedRoute
 ) {
     effect(() => {
