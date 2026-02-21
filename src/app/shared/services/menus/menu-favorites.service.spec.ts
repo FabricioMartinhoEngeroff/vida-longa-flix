@@ -6,34 +6,34 @@ describe('MenuFavoritesService', () => {
   let service: MenuFavoritesService;
 
   const mockMenu: Menu = {
-    id: '1',
-    title: 'Cardapio Teste',
-    description: 'Descricao',
-    cover: 'capa.jpg',
-    category: { id: '1', name: 'Teste' },
-    recipe: '',
-    nutritionistTips: '',
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0,
-    calories: 0
-  };
+  id: '1',
+  title: 'Cardapio Teste',
+  description: 'Descricao',
+  cover: 'capa.jpg',
+  category: { id: '1', name: 'Teste', type: 'MENU' },
+  recipe: '',
+  nutritionistTips: '',
+  protein: 0,
+  carbs: 0,
+  fat: 0,
+  fiber: 0,
+  calories: 0
+};
 
-  const mockMenu2: Menu = {
-    id: '2',
-    title: 'Cardapio 2',
-    description: 'Descricao 2',
-    cover: 'capa2.jpg',
-    category: { id: '2', name: 'Teste 2' },
-    recipe: '',
-    nutritionistTips: '',
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0,
-    calories: 0
-  };
+const mockMenu2: Menu = {
+  id: '2',
+  title: 'Cardapio 2',
+  description: 'Descricao 2',
+  cover: 'capa2.jpg',
+  category: { id: '2', name: 'Teste 2', type: 'MENU' },
+  recipe: '',
+  nutritionistTips: '',
+  protein: 0,
+  carbs: 0,
+  fat: 0,
+  fiber: 0,
+  calories: 0
+};
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

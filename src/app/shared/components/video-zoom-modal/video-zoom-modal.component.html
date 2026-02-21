@@ -29,11 +29,11 @@
         </ul>
 
         <app-comments-box
-          [comments]="comments"
-          [favorited]="updatedVideo.favorited"
-          (favoriteClick)="toggleFavorite()"
-          (commentSubmit)="addComment($event)"
-        ></app-comments-box>
+  [comments]="commentTexts"
+  [favorited]="updatedVideo.favorited"
+  (favoriteClick)="toggleFavorite()"
+  (commentSubmit)="addComment($event)"
+></app-comments-box>
       </div>
     </div>
   </div>

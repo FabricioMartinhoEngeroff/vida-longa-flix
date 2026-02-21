@@ -20,15 +20,15 @@ describe('FavoriteButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit click on button click', () => {
-    fixture.detectChanges();
-    const emitSpy = vi.spyOn(component.click, 'emit');
+  it('should emit toggle on button click', () => {
+  fixture.detectChanges();
+  const emitSpy = vi.spyOn(component.toggle, 'emit');
 
-    const button = fixture.debugElement.query(By.css('button.button'));
-    button.triggerEventHandler('click', null);
+  const button = fixture.debugElement.query(By.css('button.button'));
+  button.triggerEventHandler('click', null);
 
-    expect(emitSpy).toHaveBeenCalled();
-  });
+  expect(emitSpy).toHaveBeenCalled();
+});
 
   it('should not have favorited class when favorited=false', () => {
     component.favorited = false;

@@ -59,7 +59,7 @@ export class MenuAdminComponent {
       description: this.form.value.description,
       cover: this.form.value.cover || '',
 
-      category: { id, name },
+      category: { id, name, type: 'MENU' },
 
       recipe: this.form.value.recipe || '',
       nutritionistTips: this.form.value.nutritionistTips || '',

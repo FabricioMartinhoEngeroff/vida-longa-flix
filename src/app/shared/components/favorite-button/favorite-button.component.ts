@@ -12,7 +12,7 @@ export class FavoriteButtonComponent {
   @Input() favorited = false;
   @Output() toggle = new EventEmitter<void>();
 
-  Click(): void {
+  onClick(): void {
     this.toggle.emit();
   }
 }

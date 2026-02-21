@@ -2,7 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RegisterComponent } from './register.component';
 import { provideRouter } from '@angular/router';
 import { vi } from 'vitest';
-import { AuthService } from '../../api/auth.service';
+import { AuthService } from '../../services/auth.service';
+
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;

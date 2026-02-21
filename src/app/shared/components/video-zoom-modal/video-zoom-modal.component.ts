@@ -5,7 +5,7 @@ import { CommentsBoxComponent } from '../comments-box/comments-box.component';
 import { Video } from '../../types/videos';
 import { ModalService } from '../../services/modal/modal.service';
 import { VideoService } from '../../services/video/video.service';
-import { CommentsService } from '../../services/comments/comments.service';
+import { CommentResponse, CommentsService } from '../../services/comments/comments.service';
 
 
 
@@ -19,7 +19,11 @@ import { CommentsService } from '../../services/comments/comments.service';
 export class VideoZoomModalComponent implements OnDestroy {
   selectedVideo: Video | null = null;
    updatedVideo: Video | null = null; 
-  comments: string[] = [];
+  comments: CommentResponse[] = [];
+
+   get commentTexts(): string[] {
+    return this.comments.map(c => c.text);
+  }
 
   private hasHistoryEntry = false;
   private subscriptions = new Subscription();
@@ -39,27 +43,30 @@ export class VideoZoomModalComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private handleSelectedVideo(video: Video | null): void {
-    this.selectedVideo = video;
+ private handleSelectedVideo(video: Video | null): void {
+  this.selectedVideo = video;
 
-    if (!this.selectedVideo) {
-      this.updatedVideo = null;
-      this.comments = [];
-      this.hasHistoryEntry = false;
-      return;
-    }
-
-    if (!this.hasHistoryEntry && typeof window !== 'undefined') {
-      window.history.pushState({ modal: 'video' }, '');
-      this.hasHistoryEntry = true;
-    }
-
-   this.updatedVideo =
-      this.videoService.videos().find((v) => v.id === this.selectedVideo?.id) ??
-      this.selectedVideo;
-
-    this.comments = this.commentsService.get('video', this.updatedVideo.id);
+  if (!this.selectedVideo) {
+    this.updatedVideo = null;
+    this.comments = [];
+    this.hasHistoryEntry = false;
+    return;
   }
+
+  if (!this.hasHistoryEntry && typeof window !== 'undefined') {
+    window.history.pushState({ modal: 'video' }, '');
+    this.hasHistoryEntry = true;
+  }
+
+  this.updatedVideo =
+    this.videoService.videos().find((v) => v.id === this.selectedVideo?.id) ??
+    this.selectedVideo;
+
+  
+  this.commentsService.loadByVideo(this.updatedVideo.id);
+  this.comments = this.commentsService.get(this.updatedVideo.id);
+}
+
 
   @HostListener('window:popstate')
   onPopState(): void {
@@ -71,8 +78,8 @@ export class VideoZoomModalComponent implements OnDestroy {
   addComment(text: string): void {
      if (!this.updatedVideo) return;
 
-    this.commentsService.add('video', this.updatedVideo.id, text);
-    this.comments = this.commentsService.get('video', this.updatedVideo.id);
+     this.commentsService.add(this.updatedVideo.id, text);
+  this.comments = this.commentsService.get(this.updatedVideo.id);
   }
 
   closeModal(): void {

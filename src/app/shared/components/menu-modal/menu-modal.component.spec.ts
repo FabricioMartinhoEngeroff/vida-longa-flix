@@ -8,20 +8,20 @@ describe('MenuModalComponent', () => {
   let fixture: ComponentFixture<MenuModalComponent>;
 
   const mockMenu: Menu = {
-    id: '1',
-    title: 'Test Menu',
-    description: 'Test Description',
-    cover: 'test-cover.jpg',
-    recipe: 'Test Recipe',
-    nutritionistTips: 'Test Tips',
-    protein: 10,
-    carbs: 20,
-    fat: 5,
-    fiber: 3,
-    calories: 200,
-    favorited: false,
-    category: undefined
-  };
+  id: '1',
+  title: 'Test Menu',
+  description: 'Test Description',
+  cover: 'test-cover.jpg',
+  recipe: 'Test Recipe',
+  nutritionistTips: 'Test Tips',
+  protein: 10,
+  carbs: 20,
+  fat: 5,
+  fiber: 3,
+  calories: 200,
+  favorited: false,
+  category: { id: 'cat-1', name: 'Sem categoria', type: 'MENU' },
+};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
