@@ -1,128 +1,133 @@
 import { TestBed } from '@angular/core/testing';
-import { Video } from '../../types/videos';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
+import { FavoriteDTO, ItemType } from '../../types/favorite';
+import { environment } from '../../../../environments/environment';
 import { FavoritesService } from './favorites.service.';
+
+const baseUrl = `${environment.apiUrl}/favorites`;
+
+const mockFavorites: FavoriteDTO[] = [
+  { itemId: '1', itemType: 'VIDEO', createdAt: new Date().toISOString() },
+  { itemId: '2', itemType: 'MENU', createdAt: new Date().toISOString() },
+];
 
 describe('FavoritesService', () => {
   let service: FavoritesService;
-
-  const mockVideo1: Video = {
-    id: '1',
-    title: 'Video 1',
-    description: 'Description 1',
-    url: 'url1',
-    cover: 'cover1.jpg',
-    category: { id: 'cat1', name: 'Category 1' },
-    comments: [],
-    commentCount: 0,
-    views: 0,
-    watchTime: 0,
-    recipe: '',
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0,
-    calories: 0,
-    favorited: false,
-    likesCount: 0,
-  };
-
-  const mockVideo2: Video = {
-    id: '2',
-    title: 'Video 2',
-    description: 'Description 2',
-    url: 'url2',
-    cover: 'cover2.jpg',
-    category: { id: 'cat2', name: 'Category 2' },
-    comments: [],
-    commentCount: 0,
-    views: 0,
-    watchTime: 0,
-    recipe: '',
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0,
-    calories: 0,
-    favorited: false,
-    likesCount: 0,
-  };
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [FavoritesService],
+    });
+
     service = TestBed.inject(FavoritesService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => httpMock.verify());
 
   it('should create service', () => {
     expect(service).toBeTruthy();
   });
 
   it('should start with empty favorites', () => {
-    expect(service.listFavorites()).toEqual([]);
+    expect(service.favorites().length).toBe(0);
     expect(service.totalFavorites()).toBe(0);
   });
 
-  it('should add video to favorites', () => {
-    service.addFavorite(mockVideo1);
+  it('should load all favorites from backend', () => {
+    service.load();
 
-    expect(service.listFavorites().length).toBe(1);
-    expect(service.listFavorites()[0].id).toBe('1');
-    expect(service.totalFavorites()).toBe(1);
+    const req = httpMock.expectOne(baseUrl);
+    expect(req.request.method).toBe('GET');
+    req.flush(mockFavorites);
+
+    expect(service.favorites().length).toBe(2);
+    expect(service.totalFavorites()).toBe(2);
   });
 
-  it('should not add duplicate video', () => {
-    service.addFavorite(mockVideo1);
-    service.addFavorite(mockVideo1);
+  it('should separate video and menu favorites via computed', () => {
+    service.load();
+    httpMock.expectOne(baseUrl).flush(mockFavorites);
 
-    expect(service.listFavorites().length).toBe(1);
+    expect(service.videoFavorites().length).toBe(1);
+    expect(service.videoFavorites()[0].itemId).toBe('1');
+    expect(service.menuFavorites().length).toBe(1);
+    expect(service.menuFavorites()[0].itemId).toBe('2');
   });
 
-  it('should remove video from favorites', () => {
-    service.addFavorite(mockVideo1);
-    service.addFavorite(mockVideo2);
+  it('should load favorites by type', () => {
+    service.loadByType('VIDEO');
 
-    service.removeFavorite('1');
+    const req = httpMock.expectOne(`${baseUrl}/VIDEO`);
+    req.flush([mockFavorites[0]]);
 
-    expect(service.listFavorites().length).toBe(1);
-    expect(service.listFavorites()[0].id).toBe('2');
+    expect(service.videoFavorites().length).toBe(1);
   });
 
-  it('should check if video is favorited', () => {
-    expect(service.isFavorited('1')).toBe(false);
+  it('should add favorite on toggle when not favorited', () => {
+    service.toggle('3', 'VIDEO');
 
-    service.addFavorite(mockVideo1);
+    const req = httpMock.expectOne(`${baseUrl}/VIDEO/3`);
+    req.flush({ favorited: true, itemId: '3', itemType: 'VIDEO' });
 
-    expect(service.isFavorited('1')).toBe(true);
-    expect(service.isFavorited('2')).toBe(false);
+    expect(service.isFavorited('3', 'VIDEO')).toBe(true);
+    expect(service.videoFavorites().length).toBe(1);
   });
 
-  it('should toggle favorite', () => {
-    service.toggleFavorite(mockVideo1);
-    expect(service.isFavorited('1')).toBe(true);
+  it('should remove favorite on toggle when already favorited', () => {
+    service.load();
+    httpMock.expectOne(baseUrl).flush([mockFavorites[0]]);
+    expect(service.isFavorited('1', 'VIDEO')).toBe(true);
 
-    service.toggleFavorite(mockVideo1);
-    expect(service.isFavorited('1')).toBe(false);
+    service.toggle('1', 'VIDEO');
+    const req = httpMock.expectOne(`${baseUrl}/VIDEO/1`);
+    req.flush({ favorited: false, itemId: '1', itemType: 'VIDEO' });
+
+    expect(service.isFavorited('1', 'VIDEO')).toBe(false);
+    expect(service.videoFavorites().length).toBe(0);
+  });
+
+  it('should not change state when toggle fails', () => {
+    service.toggle('1', 'VIDEO');
+    const req = httpMock.expectOne(`${baseUrl}/VIDEO/1`);
+    req.error(new ProgressEvent('error'));
+
+    expect(service.isFavorited('1', 'VIDEO')).toBe(false);
+  });
+
+  it('should check isFavorited correctly', () => {
+    service.load();
+    httpMock.expectOne(baseUrl).flush(mockFavorites);
+
+    expect(service.isFavorited('1', 'VIDEO')).toBe(true);
+    expect(service.isFavorited('1', 'MENU')).toBe(false);
+    expect(service.isFavorited('99', 'VIDEO')).toBe(false);
+  });
+
+  it('should filter by type via byType()', () => {
+    service.load();
+    httpMock.expectOne(baseUrl).flush(mockFavorites);
+
+    const videoFavs = service.byType('VIDEO')();
+    expect(videoFavs.length).toBe(1);
+    expect(videoFavs[0].itemId).toBe('1');
   });
 
   it('should clear all favorites', () => {
-    service.addFavorite(mockVideo1);
-    service.addFavorite(mockVideo2);
+    service.load();
+    httpMock.expectOne(baseUrl).flush(mockFavorites);
 
-    service.clearAll();
-
-    expect(service.listFavorites()).toEqual([]);
+    service.clear();
+    expect(service.favorites().length).toBe(0);
     expect(service.totalFavorites()).toBe(0);
   });
 
-  it('should update totalFavorites reactively', () => {
-    expect(service.totalFavorites()).toBe(0);
-
-    service.addFavorite(mockVideo1);
-    expect(service.totalFavorites()).toBe(1);
-
-    service.addFavorite(mockVideo2);
-    expect(service.totalFavorites()).toBe(2);
-
-    service.removeFavorite('1');
-    expect(service.totalFavorites()).toBe(1);
+  it('should set empty array when load fails', () => {
+    service.load();
+    httpMock.expectOne(baseUrl).error(new ProgressEvent('error'));
+    expect(service.favorites().length).toBe(0);
   });
 });

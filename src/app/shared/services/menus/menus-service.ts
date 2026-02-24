@@ -1,28 +1,43 @@
 import { Injectable, signal, computed } from '@angular/core';
 import initialMenus from '../../../../assets/cardapios.json';
 import { Menu } from '../../types/menu';
-import { MenuFavoritesService } from './menu-favorites.sevice';
+import { FavoritesService } from '../favorites/favorites.service.';
 
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class MenuService {
 
   private menusSignal = signal<Menu[]>([]);
 
   readonly menus = this.menusSignal.asReadonly();
-
   readonly totalMenus = computed(() => this.menusSignal().length);
-
   readonly totalLikes = computed(() =>
     this.menusSignal().reduce((sum, m) => sum + (m.likesCount ?? 0), 0)
   );
 
-  constructor(private favorites: MenuFavoritesService) {
-  
+  constructor(private favoritesService: FavoritesService) {
     const converted = this.convertMockedMenus();
     this.menusSignal.set(converted);
+  }
+
+  toggleFavorite(id: string): void {
+    // Chama o backend via FavoritesService
+    this.favoritesService.toggle(id, 'MENU');
+
+    // Atualiza estado local otimisticamente
+    this.menusSignal.update(current =>
+      current.map(menu => {
+        if (menu.id !== id) return menu;
+        const newFavorited = !menu.favorited;
+        return {
+          ...menu,
+          favorited: newFavorited,
+          likesCount: newFavorited
+            ? (menu.likesCount ?? 0) + 1
+            : Math.max(0, (menu.likesCount ?? 0) - 1)
+        };
+      })
+    );
   }
 
   add(menu: Menu): void {
@@ -36,35 +51,8 @@ export class MenuService {
   }
 
   remove(id: string): void {
-    this.menusSignal.update(current => current.filter(m => m.id !== id));
-    this.favorites.remove(id);
-  }
-
-  toggleFavorite(id: string): void {
     this.menusSignal.update(current =>
-      current.map((menu) => {
-        if (menu.id !== id) return menu;
-
-        const likesBase = menu.likesCount ?? (menu.favorited ? 1 : 0);
-        const newFavorited = !menu.favorited;
-        const newLikes = newFavorited
-          ? likesBase + 1
-          : Math.max(0, likesBase - 1);
-
-        const updated = {
-          ...menu,
-          favorited: newFavorited,
-          likesCount: newLikes,
-        };
-
-        if (updated.favorited) {
-          this.favorites.add(updated);
-        } else {
-          this.favorites.remove(updated.id);
-        }
-
-        return updated;
-      })
+      current.filter(m => m.id !== id)
     );
   }
 
@@ -77,22 +65,21 @@ export class MenuService {
   }
 
   private convertMockedMenus(): Menu[] {
-    return (initialMenus as any[]).map((c) => ({
+    return (initialMenus as any[]).map(c => ({
       id: String(c.id),
       title: c.title,
       description: c.description,
-      cover: c.capa, 
+      cover: c.capa,
       category: c.category ?? { id: '0', name: 'Sem categoria' },
-
-      recipe: c.receita ?? '', 
-      nutritionistTips: c.dicasNutri ?? '',  
-      protein: c.proteinas ?? 0,  
-      carbs: c.carboidratos ?? 0,  
-      fat: c.gorduras ?? 0,  
-      fiber: c.fibras ?? 0,  
-      calories: c.calorias ?? 0,  
-      favorited: c.favorita ?? false, 
-      likesCount: c.likesCount ?? (c.favorita ? 1 : 0),
+      recipe: c.receita ?? '',
+      nutritionistTips: c.dicasNutri ?? '',
+      protein: c.proteinas ?? 0,
+      carbs: c.carboidratos ?? 0,
+      fat: c.gorduras ?? 0,
+      fiber: c.fibras ?? 0,
+      calories: c.calorias ?? 0,
+      favorited: this.favoritesService.isFavorited(String(c.id), 'MENU'),
+      likesCount: c.likesCount ?? 0,
     })) as Menu[];
   }
 }

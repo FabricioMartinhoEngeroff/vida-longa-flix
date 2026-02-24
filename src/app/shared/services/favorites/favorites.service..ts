@@ -1,53 +1,98 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Video } from '../../types/videos';
+import { HttpClient } from '@angular/common/http';
+import { tap, catchError, of } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+import {
+  FavoriteDTO,
+  FavoriteStatusDTO,
+  ItemType,
+  ToggleResponseDTO,
+} from '../../types/favorite';
 
-
-
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class FavoritesService {
-  
-  private favoritesSignal = signal<Video[]>([]);
+
+  private readonly baseUrl = `${environment.apiUrl}/favorites`;
+
+  private favoritesSignal = signal<FavoriteDTO[]>([]);
 
   readonly favorites = this.favoritesSignal.asReadonly();
 
   readonly totalFavorites = computed(() => this.favoritesSignal().length);
 
-  listFavorites(): Video[] {
-    return this.favoritesSignal();
-  }
+  readonly videoFavorites = computed(() =>
+    this.favoritesSignal().filter(f => f.itemType === 'VIDEO')
+  );
 
-  addFavorite(video: Video): void {
-    this.favoritesSignal.update(current => {
-      if (current.some(fav => fav.id === video.id)) {
-        return current;
-      }
-      return [...current, video];
-    });
-  }
+  readonly menuFavorites = computed(() =>
+    this.favoritesSignal().filter(f => f.itemType === 'MENU')
+  );
 
-  removeFavorite(id: string): void {
-    this.favoritesSignal.update(current =>
-      current.filter(v => v.id !== id)
+  byType(type: ItemType) {
+    return computed(() =>
+      this.favoritesSignal().filter(f => f.itemType === type)
     );
   }
 
+  constructor(private http: HttpClient) {}
 
-  isFavorited(id: string): boolean {
-    return this.favoritesSignal().some(v => v.id === id);
+  load(): void {
+    this.http.get<FavoriteDTO[]>(this.baseUrl).pipe(
+      catchError(() => of([]))
+    ).subscribe(favorites => this.favoritesSignal.set(favorites));
   }
 
-  
-  toggleFavorite(video: Video): void {
-    if (this.isFavorited(video.id)) {
-      this.removeFavorite(video.id);
-    } else {
-      this.addFavorite(video);
-    }
+  loadByType(type: ItemType): void {
+    this.http.get<FavoriteDTO[]>(`${this.baseUrl}/${type}`).pipe(
+      catchError(() => of([]))
+    ).subscribe(favorites => {
+      this.favoritesSignal.update(current => [
+        ...current.filter(f => f.itemType !== type),
+        ...favorites
+      ]);
+    });
   }
 
-  clearAll(): void {
+  toggle(itemId: string, type: ItemType): void {
+    this.http.post<ToggleResponseDTO>(
+      `${this.baseUrl}/${type}/${itemId}`, {}
+    ).pipe(
+      catchError(() => of(null))
+    ).subscribe(response => {
+      if (!response) return;
+
+      if (response.favorited) {
+        this.favoritesSignal.update(current => [
+          ...current,
+          {
+            itemId: response.itemId,
+            itemType: response.itemType,
+            createdAt: new Date().toISOString()
+          }
+        ]);
+      } else {
+        this.favoritesSignal.update(current =>
+          current.filter(f =>
+            !(f.itemId === itemId && f.itemType === type)
+          )
+        );
+      }
+    });
+  }
+
+  isFavorited(itemId: string, type: ItemType): boolean {
+    return this.favoritesSignal().some(
+      f => f.itemId === itemId && f.itemType === type
+    );
+  }
+
+  getStatus(itemId: string, type: ItemType) {
+    return this.http.get<FavoriteStatusDTO>(
+      `${this.baseUrl}/${type}/${itemId}/status`
+    ).pipe(catchError(() => of({ favorited: false, likesCount: 0 })));
+  }
+
+  clear(): void {
     this.favoritesSignal.set([]);
   }
 }

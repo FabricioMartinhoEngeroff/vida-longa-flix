@@ -1,19 +1,16 @@
-import { Component, HostListener, OnInit, effect } from '@angular/core';
+import { Component, OnInit, HostListener, effect } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-
 import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
 import { TitleComponent } from '../../shared/components/title/title.component';
-
 import { Video } from '../../shared/types/videos';
-import { FavoritesService } from '../../shared/services/favorites/favorites.service.';
-import { ModalService } from '../../shared/services/modal/modal.service';
-import { VideoService } from '../../shared/services/video/video.service';
-
-import { MenuService } from '../../shared/services/menus/menus-service';
 import { Menu } from '../../shared/types/menu';
-import { MenuFavoritesService } from '../../shared/services/menus/menu-favorites.sevice';
+
+import { VideoService } from '../../shared/services/video/video.service';
+import { MenuService } from '../../shared/services/menus/menus-service';
+import { ModalService } from '../../shared/services/modal/modal.service';
+import { FavoritesService } from '../../shared/services/favorites/favorites.service.';
 
 @Component({
   selector: 'app-favorites',
@@ -23,41 +20,48 @@ import { MenuFavoritesService } from '../../shared/services/menus/menu-favorites
   styleUrls: ['./favorites.component.css'],
 })
 export class FavoritesComponent implements OnInit {
+
   favoriteVideos: Video[] = [];
   favoriteMenus: Menu[] = [];
   selectedMenu: Menu | null = null;
-
-  isMobile: boolean = window.innerWidth <= 768;
+  isMobile = window.innerWidth <= 768;
 
   private menuModalInHistory = false;
 
   constructor(
     private router: Router,
     private favoritesService: FavoritesService,
-    private modalService: ModalService,
     private videoService: VideoService,
     private menuService: MenuService,
-    private menuFavoritesService: MenuFavoritesService
+    private modalService: ModalService
   ) {
-    
+    // Sincroniza videos favoritados com o estado do FavoritesService
     effect(() => {
-      this.favoriteVideos = this.favoritesService.favorites();
+      const favoriteIds = new Set(
+        this.favoritesService.videoFavorites().map(f => f.itemId)
+      );
+      this.favoriteVideos = this.videoService.videos()
+        .filter(v => favoriteIds.has(v.id));
     });
 
+    // Sincroniza menus favoritados com o estado do FavoritesService
     effect(() => {
-      this.favoriteMenus = this.menuFavoritesService.favorites();
+      const favoriteIds = new Set(
+        this.favoritesService.menuFavorites().map(f => f.itemId)
+      );
+      this.favoriteMenus = this.menuService.menus()
+        .filter(m => favoriteIds.has(m.id));
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Carrega favoritos do backend ao entrar na tela
+    this.favoritesService.load();
+  }
 
   @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth <= 768;
-  }
-
-  viewAll(): void {
-    this.router.navigate(['/app/favoritos']);
   }
 
   openVideoModal(video: Video): void {
@@ -69,7 +73,7 @@ export class FavoritesComponent implements OnInit {
   }
 
   openMenuModal(menu: Menu): void {
-    if (!this.selectedMenu && typeof window !== 'undefined') {
+    if (!this.selectedMenu) {
       window.history.pushState({ modal: 'favorites-menu' }, '');
       this.menuModalInHistory = true;
     }
@@ -78,10 +82,8 @@ export class FavoritesComponent implements OnInit {
 
   closeMenuModal(): void {
     if (!this.selectedMenu) return;
-
     this.selectedMenu = null;
-
-    if (this.menuModalInHistory && typeof window !== 'undefined') {
+    if (this.menuModalInHistory) {
       this.menuModalInHistory = false;
       window.history.back();
     }
@@ -89,26 +91,11 @@ export class FavoritesComponent implements OnInit {
 
   @HostListener('window:popstate')
   onPopState(): void {
-    if (!this.selectedMenu) return;
     this.selectedMenu = null;
     this.menuModalInHistory = false;
   }
 
   removeMenu(menu: Menu): void {
     this.menuService.toggleFavorite(menu.id);
-  }
-
-  playVideo(event: Event): void {
-    if (!this.isMobile) {
-      const video = event.target as HTMLVideoElement;
-      video.play();
-    }
-  }
-
-  pauseVideo(event: Event): void {
-    if (!this.isMobile) {
-      const video = event.target as HTMLVideoElement;
-      video.pause();
-    }
   }
 }

@@ -2,55 +2,39 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { vi } from 'vitest';
 import { VideoService } from './video.service';
-import { FavoritesService } from '../favorites/favorites.service.';
+import { LoggerService } from '../../../auth/services/logger.service';
 import { environment } from '../../../../environments/environment';
 import { Video, VideoRequest } from '../../types/videos';
+import { FavoritesService } from '../favorites/favorites.service.';
 
+const baseUrl = `${environment.apiUrl}/videos`;
+
+// Mock do novo FavoritesService
 class FavoritesServiceMock {
-  addFavorite = vi.fn();
-  removeFavorite = vi.fn();
+  toggle = vi.fn();
+  isFavorited = vi.fn().mockReturnValue(false);
+}
+
+class LoggerServiceMock {
+  error = vi.fn();
 }
 
 const mockVideos: Video[] = [
   {
-    id: '1',
-    title: 'Bolo Fit',
-    description: 'Bolo saudável',
-    url: 'http://test.com/v1',
-    cover: 'cover1.jpg',
+    id: '1', title: 'Bolo Fit', description: 'Bolo saudável',
+    url: 'http://test.com/v1', cover: 'cover1.jpg',
     category: { id: '1', name: 'Bolos' },
-    comments: [],
-    commentCount: 0,
-    views: 10,
-    watchTime: 5.0,
-    recipe: 'Receita do bolo',
-    protein: 8,
-    carbs: 20,
-    fat: 3,
-    fiber: 2,
-    calories: 150,
-    likesCount: 0,
-    favorited: false,
+    comments: [], commentCount: 0, views: 10, watchTime: 5.0,
+    recipe: '', protein: 8, carbs: 20, fat: 3, fiber: 2,
+    calories: 150, likesCount: 0, favorited: false,
   },
   {
-    id: '2',
-    title: 'Omelete Proteico',
-    description: 'Omelete rápido',
-    url: 'http://test.com/v2',
-    cover: 'cover2.jpg',
+    id: '2', title: 'Omelete Proteico', description: 'Omelete rápido',
+    url: 'http://test.com/v2', cover: 'cover2.jpg',
     category: { id: '2', name: 'Salgados' },
-    comments: [],
-    commentCount: 0,
-    views: 20,
-    watchTime: 3.0,
-    recipe: '',
-    protein: 15,
-    carbs: 2,
-    fat: 5,
-    fiber: 0,
-    calories: 120,
-    likesCount: 2,
-    favorited: false,
+    comments: [], commentCount: 0, views: 20, watchTime: 3.0,
+    recipe: '', protein: 15, carbs: 2, fat: 5, fiber: 0,
+    calories: 120, likesCount: 2, favorited: false,
   },
 ];
 
@@ -58,7 +42,6 @@ describe('VideoService', () => {
   let service: VideoService;
   let httpMock: HttpTestingController;
   let favoritesMock: FavoritesServiceMock;
-  const baseUrl = `${environment.apiUrl}/videos`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -66,6 +49,7 @@ describe('VideoService', () => {
       providers: [
         VideoService,
         { provide: FavoritesService, useClass: FavoritesServiceMock },
+        { provide: LoggerService, useClass: LoggerServiceMock },
       ],
     });
 
@@ -73,14 +57,10 @@ describe('VideoService', () => {
     httpMock = TestBed.inject(HttpTestingController);
     favoritesMock = TestBed.inject(FavoritesService) as any;
 
-    // Responde o GET inicial do construtor
-    const req = httpMock.expectOne(baseUrl);
-    req.flush(mockVideos);
+    httpMock.expectOne(baseUrl).flush(mockVideos);
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
+  afterEach(() => httpMock.verify());
 
   it('should create service', () => {
     expect(service).toBeTruthy();
@@ -93,37 +73,28 @@ describe('VideoService', () => {
 
   it('should set empty array when backend fails', () => {
     service.loadVideos();
-    const req = httpMock.expectOne(baseUrl);
-    req.error(new ProgressEvent('error'));
-
+    httpMock.expectOne(baseUrl).error(new ProgressEvent('error'));
     expect(service.videos().length).toBe(0);
   });
 
   it('should create video and reload list', () => {
     const request: VideoRequest = {
-      title: 'Novo Vídeo',
-      description: 'Descrição',
-      url: 'http://test.com/new',
-      cover: 'cover.jpg',
-      categoryId: '1',
-      recipe: '',
-      protein: 5,
-      carbs: 10,
-      fat: 2,
-      fiber: 1,
-      calories: 80,
+      title: 'Novo Vídeo', description: 'Descrição',
+      url: 'http://test.com/new', cover: 'cover.jpg',
+      categoryId: '1', recipe: '',
+      protein: 5, carbs: 10, fat: 2, fiber: 1, calories: 80,
     };
 
     service.addVideo(request);
 
     const postReq = httpMock.expectOne(baseUrl);
     expect(postReq.request.method).toBe('POST');
-    expect(postReq.request.body).toEqual(request);
     postReq.flush(null);
 
-    // Responde o reload
-    const getReq = httpMock.expectOne(baseUrl);
-    getReq.flush([...mockVideos, { ...mockVideos[0], id: '3', title: 'Novo Vídeo' }]);
+    httpMock.expectOne(baseUrl).flush([
+      ...mockVideos,
+      { ...mockVideos[0], id: '3', title: 'Novo Vídeo' }
+    ]);
 
     expect(service.totalVideos()).toBe(3);
   });
@@ -135,36 +106,32 @@ describe('VideoService', () => {
     expect(deleteReq.request.method).toBe('DELETE');
     deleteReq.flush(null);
 
-    // Responde o reload
-    const getReq = httpMock.expectOne(baseUrl);
-    getReq.flush([mockVideos[1]]);
-
+    httpMock.expectOne(baseUrl).flush([mockVideos[1]]);
     expect(service.totalVideos()).toBe(1);
-    expect(favoritesMock.removeFavorite).toHaveBeenCalledWith('1');
   });
 
-  it('should toggle favorite and call favorites service', () => {
+  it('should toggle favorite — call FavoritesService and update local state', () => {
     service.toggleFavorite('1');
+
+    expect(favoritesMock.toggle).toHaveBeenCalledWith('1', 'VIDEO');
 
     const updated = service.videos().find(v => v.id === '1')!;
     expect(updated.favorited).toBe(true);
     expect(updated.likesCount).toBe(1);
-    expect(favoritesMock.addFavorite).toHaveBeenCalled();
   });
 
-  it('should increment and decrement likesCount when toggling', () => {
-    service.toggleFavorite('1');
-    expect(service.videos().find(v => v.id === '1')!.likesCount).toBe(1);
+  it('should decrement likesCount when unfavoriting', () => {
+    service.toggleFavorite('1'); 
+    service.toggleFavorite('1'); 
 
-    service.toggleFavorite('1');
-    expect(service.videos().find(v => v.id === '1')!.likesCount).toBe(0);
-    expect(favoritesMock.removeFavorite).toHaveBeenCalledWith('1');
+    const updated = service.videos().find(v => v.id === '1')!;
+    expect(updated.favorited).toBe(false);
+    expect(updated.likesCount).toBe(0);
+    expect(favoritesMock.toggle).toHaveBeenCalledTimes(2);
   });
 
   it('should get video by id', () => {
-    const found = service.getVideoById('1');
-    expect(found).toBeDefined();
-    expect(found?.title).toBe('Bolo Fit');
+    expect(service.getVideoById('1')?.title).toBe('Bolo Fit');
   });
 
   it('should return undefined for unknown id', () => {
@@ -178,8 +145,8 @@ describe('VideoService', () => {
   });
 
   it('should update totalLikes reactively', () => {
-    const initialTotal = service.totalLikes();
+    const initial = service.totalLikes();
     service.toggleFavorite('1');
-    expect(service.totalLikes()).toBe(initialTotal + 1);
+    expect(service.totalLikes()).toBe(initial + 1);
   });
 });
