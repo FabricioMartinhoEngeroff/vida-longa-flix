@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import { WhatsAppService } from './whatsapp/whatsapp.service';
 import { User, RegisterData, ProfileData } from '../types/user.types';
 import { applyPhoneMaskAuto } from '../utils/masks.utils';
 import { handleApiError } from '../utils/handle-api-error';
@@ -38,7 +37,6 @@ export class AuthService {
     private http: HttpClient,
     private api: ApiService,
     private router: Router,
-    private whatsAppService: WhatsAppService,
     private logger: LoggerService
   ) {
     this.loadSession();
@@ -88,44 +86,38 @@ export class AuthService {
   }
 
   async register(data: RegisterData): Promise<TokenResponse> {
-    try {
-      const payload = this.mapRegisterToApi(data);
+  try {
+    const payload = this.mapRegisterToApi(data);
 
-      const response = await firstValueFrom(
-        this.http.post<TokenResponse>(`${this.api.baseURL}/auth/register`, payload)
-      );
+    const response = await firstValueFrom(
+      this.http.post<TokenResponse>(`${this.api.baseURL}/auth/register`, payload)
+    );
 
-      if (!response?.token) {
-        throw new Error('Token not returned by API');
-      }
-
-      const user: User = response.user || {
-        id: '',
-        name: payload.name,
-        email: payload.email,
-        phone: data.phone,
-        taxId: '',
-        address: undefined,
-        photo: null,
-        profileComplete: false,
-      };
-
-      this.saveSession(response.token, user);
-
-      try {
-        await this.whatsAppService.sendWelcomeMessage({
-          name: data.name,
-          phone: data.phone
-        });
-      } catch (e) {
-        this.logger.warn('WhatsApp not sent, but registration completed:', e);
-      }
-
-      return response;
-    } catch (error) {
-      throw handleApiError(error, 'Erro ao registrar usuário');
+    if (!response?.token) {
+      throw new Error('Token not returned by API');
     }
+
+    const user: User = response.user || {
+      id: '',
+      name: payload.name,
+      email: payload.email,
+      phone: data.phone,
+      taxId: '',
+      address: undefined,
+      photo: null,
+      profileComplete: false,
+      roles: []
+    };
+
+    this.saveSession(response.token, user);
+
+    // WhatsApp removido daqui — backend já envia no /auth/register
+    return response;
+
+  } catch (error) {
+    throw handleApiError(error, 'Erro ao registrar usuário');
   }
+}
 
   async fetchAuthenticatedUser(): Promise<User | null> {
     const token = this.getToken();
