@@ -2,7 +2,6 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, catchError, of } from 'rxjs';
 import { Video, VideoRequest } from '../../types/videos';
-
 import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../auth/services/logger.service';
 import { FavoritesService } from '../favorites/favorites.service.';
@@ -10,7 +9,10 @@ import { FavoritesService } from '../favorites/favorites.service.';
 @Injectable({ providedIn: 'root' })
 export class VideoService {
 
-  private readonly baseUrl = `${environment.apiUrl}/videos`;
+  // URLs separadas — leitura é pública, escrita é admin
+  private readonly publicUrl = `${environment.apiUrl}/videos`;
+  private readonly adminUrl = `${environment.apiUrl}/admin/videos`;
+
   private videosSignal = signal<Video[]>([]);
 
   readonly videos = this.videosSignal.asReadonly();
@@ -27,14 +29,14 @@ export class VideoService {
     this.loadVideos();
   }
 
+  // Rota pública — GET /videos
   loadVideos(): void {
-    this.http.get<Video[]>(this.baseUrl).pipe(
+    this.http.get<Video[]>(this.publicUrl).pipe(
       catchError(err => {
         this.logger.error('Erro ao carregar vídeos', err);
         return of([]);
       })
     ).subscribe(videos => {
-      // Sincroniza favorited com o estado do FavoritesService
       const synced = videos.map(v => ({
         ...v,
         favorited: this.favoritesService.isFavorited(v.id, 'VIDEO'),
@@ -45,10 +47,7 @@ export class VideoService {
   }
 
   toggleFavorite(id: string): void {
-    // Chama o backend via FavoritesService
     this.favoritesService.toggle(id, 'VIDEO');
-
-    // Atualiza estado local otimisticamente
     this.videosSignal.update(current =>
       current.map(video => {
         if (video.id !== id) return video;
@@ -64,8 +63,10 @@ export class VideoService {
     );
   }
 
+  // Rota admin — POST /admin/videos
+  // O interceptor injeta o Bearer token automaticamente
   addVideo(request: VideoRequest): void {
-    this.http.post<void>(this.baseUrl, request).pipe(
+    this.http.post<void>(this.adminUrl, request).pipe(
       tap(() => this.loadVideos()),
       catchError(err => {
         this.logger.error('Erro ao criar vídeo', err);
@@ -74,8 +75,9 @@ export class VideoService {
     ).subscribe();
   }
 
+  // Rota admin — DELETE /admin/videos/{id}
   removeVideo(id: string): void {
-    this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
+    this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
       tap(() => this.loadVideos()),
       catchError(err => {
         this.logger.error('Erro ao deletar vídeo', err);

@@ -14,7 +14,7 @@ import { MenusComponent } from './features/menus/menus.component';
 import { MenuAdminComponent } from './features/menu-admin/menu-admin.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
 import { authGuard } from './auth/services/auth.guard';
-
+import { adminGuard } from './auth/services/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'authorization', pathMatch: 'full' },
@@ -24,7 +24,6 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'password-change', component: PasswordChangeComponent },
 
-  // Aliases PT-BR
   { path: 'autorizacao', component: AuthorizationComponent },
   { path: 'registrar', component: RegisterComponent },
   { path: 'redefinir-senha', component: PasswordChangeComponent },
@@ -32,25 +31,21 @@ export const routes: Routes = [
   {
     path: 'app',
     component: BasePageComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', component: HomeComponent },
 
-      // Ingles
       { path: 'favorites', component: FavoritesComponent },
-      { path: 'most-viewed', component: MostViewedComponent },
-      { path: 'history', component: HomeComponent },
-      { path: 'menus', component: MenusComponent },
-      { path: 'menu-admin', component: MenuAdminComponent },
-      // Aliases PT-BR (mantem compatibilidade)
       { path: 'favoritos', component: FavoritesComponent },
+      { path: 'most-viewed', component: MostViewedComponent },
       { path: 'mais-vistos', component: MostViewedComponent },
+      { path: 'history', component: HomeComponent },
       { path: 'historico', component: HomeComponent },
+      { path: 'menus', component: MenusComponent },
       { path: 'cardapios', component: MenusComponent },
 
-{ path: 'video-admin', component: VideoAdminComponent, canActivate: [authGuard] },
-{ path: 'menu-admin', component: MenuAdminComponent, canActivate: [authGuard] },
-{ path: 'admin-videos', component: VideoAdminComponent, canActivate: [authGuard] },
-{ path: 'admin-cardapios', component: MenuAdminComponent, canActivate: [authGuard] },
+      { path: 'video-admin', component: VideoAdminComponent, canActivate: [adminGuard] },
+      { path: 'menu-admin', component: MenuAdminComponent, canActivate: [adminGuard] },
     ],
   },
 

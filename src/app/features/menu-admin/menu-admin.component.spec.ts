@@ -2,95 +2,111 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { MenuAdminComponent } from './menu-admin.component';
 import { MenuService } from '../../shared/services/menus/menus-service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { environment } from '../../../environments/environment';
 
+const categoriesUrl = `${environment.apiUrl}/categories`;
 
 describe('MenuAdminComponent', () => {
   let component: MenuAdminComponent;
   let fixture: ComponentFixture<MenuAdminComponent>;
-  let addSpy: ReturnType<typeof vi.fn>;
+  let httpMock: HttpTestingController;
+  let addMenuSpy: ReturnType<typeof vi.fn>;
+
+  const mockCategories = [
+    { id: 'uuid-1', name: 'Almoço', type: 'MENU' },
+    { id: 'uuid-2', name: 'Jantar', type: 'MENU' },
+  ];
 
   beforeEach(async () => {
-    addSpy = vi.fn();
+    addMenuSpy = vi.fn();
 
     await TestBed.configureTestingModule({
-      imports: [MenuAdminComponent],
-      providers: [{ provide: MenuService, useValue: { add: addSpy } }],
+      imports: [MenuAdminComponent, HttpClientTestingModule],
+      providers: [
+        { provide: MenuService, useValue: { addMenu: addMenuSpy } }
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MenuAdminComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    // Consome o GET de categorias que o ngOnInit dispara
+    httpMock.expectOne(req =>
+      req.url.includes('/categories') && req.params.get('type') === 'MENU'
+    ).flush(mockCategories);
+
+    httpMock = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => httpMock.verify());
 
   it('should create component', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should load categories on init', () => {
+    expect(component.categories.length).toBe(2);
+    expect(component.categories[0].name).toBe('Almoço');
+  });
+
   it('should not save if form is invalid', () => {
-    component.form.patchValue({
-      title: '',
-      description: '',
-    });
-
+    component.form.patchValue({ title: '', description: '' });
     component.save();
-    expect(addSpy).not.toHaveBeenCalled();
+    expect(addMenuSpy).not.toHaveBeenCalled();
   });
 
-  it('should call add when form is valid', () => {
-    component.form.patchValue({
-      title: 'Cardápio do Dia',
-      description: 'Refeição saudável e simples',
-      categoryName: 'Almoço',
-      cover: 'https://example.com/cover.jpg',
-      recipe: 'Modo de preparo',
-      nutritionistTips: 'Dica da nutri',
-      protein: 20,
-      carbs: 30,
-      fat: 10,
-      fiber: 5,
-      calories: 350,
-    });
-
-    component.save();
-    expect(addSpy).toHaveBeenCalled();
+ it('should call addMenu when form is valid', () => {
+  component.form.patchValue({
+    title: 'Cardápio do Dia',
+    description: 'Refeição saudável e simples',
+    categoryId: 'uuid-1',
+    cover: 'https://example.com/cover.jpg',
+    recipe: 'Modo de preparo',
+    nutritionistTips: 'Dica da nutri',
+    protein: 20,
+    carbs: 30,
+    fat: 10,
+    fiber: 5,
+    calories: 350,
   });
 
-  it('should reset form after successful save', () => {
+  component.save();
+
+  // Verifica campos específicos sem objectContaining
+  const called = addMenuSpy.mock.calls[0][0];
+  expect(called.title).toBe('Cardápio do Dia');
+  expect(called.categoryId).toBe('uuid-1');
+  expect(called.protein).toBe(20);
+  expect(called.calories).toBe(350);
+});
+
+  it('should reset form after save', () => {
     component.form.patchValue({
       title: 'Test Menu',
       description: 'Test Description',
+      categoryId: 'uuid-1',
     });
 
     component.save();
 
-    expect(component.form.get('title')?.value).toBe(null);
-    expect(component.form.get('categoryName')?.value).toBe('Sem categoria');
+    expect(component.form.get('title')?.value).toBeNull();
+    expect(component.form.get('categoryId')?.value).toBe('');
   });
 
   it('should process cover file upload', () => {
     const file = new File([''], 'test.jpg', { type: 'image/jpeg' });
-    const event = {
-      target: {
-        files: [file]
-      }
-    } as any;
+    const event = { target: { files: [file] } } as any;
 
     component.onCoverFile(event);
 
     expect(component.form.get('cover')?.value).toContain('blob:');
   });
 
-  it('should normalize category name', () => {
-    component.form.patchValue({
-      title: 'Test Menu',
-      description: 'Test Description',
-      categoryName: 'ALMOÇO',
-    });
-
-    component.save();
-
-    const callArg = addSpy.mock.calls[0][0];
-    expect(callArg.category.name).toBe('Almoço');
-    expect(callArg.category.id).toBe('almoço');
+  it('should not call addMenu when no file selected', () => {
+    const event = { target: { files: [] } } as any;
+    component.onCoverFile(event);
+    expect(component.form.get('cover')?.value).toBe('');
   });
 });

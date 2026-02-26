@@ -1,11 +1,16 @@
 import { Injectable, signal, computed } from '@angular/core';
-import initialMenus from '../../../../assets/cardapios.json';
-import { Menu } from '../../types/menu';
+import { HttpClient } from '@angular/common/http';
+import { catchError, of, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
+import { Menu, MenuRequest } from '../../types/menu';
 import { FavoritesService } from '../favorites/favorites.service.';
-
+import { LoggerService } from '../../../auth/services/logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
+
+  private readonly publicUrl = `${environment.apiUrl}/menus`;
+  private readonly adminUrl = `${environment.apiUrl}/admin/menus`;
 
   private menusSignal = signal<Menu[]>([]);
 
@@ -15,16 +20,32 @@ export class MenuService {
     this.menusSignal().reduce((sum, m) => sum + (m.likesCount ?? 0), 0)
   );
 
-  constructor(private favoritesService: FavoritesService) {
-    const converted = this.convertMockedMenus();
-    this.menusSignal.set(converted);
+  constructor(
+    private http: HttpClient,
+    private favoritesService: FavoritesService,
+    private logger: LoggerService
+  ) {
+    this.loadMenus();
+  }
+
+  loadMenus(): void {
+    this.http.get<Menu[]>(this.publicUrl).pipe(
+      catchError(err => {
+        this.logger.error('Erro ao carregar menus', err);
+        return of([]);
+      })
+    ).subscribe(menus => {
+      const synced = menus.map(m => ({
+        ...m,
+        favorited: this.favoritesService.isFavorited(m.id, 'MENU'),
+        likesCount: m.likesCount ?? 0
+      }));
+      this.menusSignal.set(synced);
+    });
   }
 
   toggleFavorite(id: string): void {
-    // Chama o backend via FavoritesService
     this.favoritesService.toggle(id, 'MENU');
-
-    // Atualiza estado local otimisticamente
     this.menusSignal.update(current =>
       current.map(menu => {
         if (menu.id !== id) return menu;
@@ -40,20 +61,24 @@ export class MenuService {
     );
   }
 
-  add(menu: Menu): void {
-    this.menusSignal.update(current => [menu, ...current]);
+  addMenu(request: MenuRequest): void {
+    this.http.post<void>(this.adminUrl, request).pipe(
+      tap(() => this.loadMenus()),
+      catchError(err => {
+        this.logger.error('Erro ao criar menu', err);
+        return of(null);
+      })
+    ).subscribe();
   }
 
-  update(menu: Menu): void {
-    this.menusSignal.update(current =>
-      current.map(m => m.id === menu.id ? menu : m)
-    );
-  }
-
-  remove(id: string): void {
-    this.menusSignal.update(current =>
-      current.filter(m => m.id !== id)
-    );
+  removeMenu(id: string): void {
+    this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
+      tap(() => this.loadMenus()),
+      catchError(err => {
+        this.logger.error('Erro ao deletar menu', err);
+        return of(null);
+      })
+    ).subscribe();
   }
 
   getMenuById(id: string): Menu | undefined {
@@ -62,24 +87,5 @@ export class MenuService {
 
   getMenusByCategory(categoryId: string): Menu[] {
     return this.menusSignal().filter(m => m.category.id === categoryId);
-  }
-
-  private convertMockedMenus(): Menu[] {
-    return (initialMenus as any[]).map(c => ({
-      id: String(c.id),
-      title: c.title,
-      description: c.description,
-      cover: c.capa,
-      category: c.category ?? { id: '0', name: 'Sem categoria' },
-      recipe: c.receita ?? '',
-      nutritionistTips: c.dicasNutri ?? '',
-      protein: c.proteinas ?? 0,
-      carbs: c.carboidratos ?? 0,
-      fat: c.gorduras ?? 0,
-      fiber: c.fibras ?? 0,
-      calories: c.calorias ?? 0,
-      favorited: this.favoritesService.isFavorited(String(c.id), 'MENU'),
-      likesCount: c.likesCount ?? 0,
-    })) as Menu[];
   }
 }

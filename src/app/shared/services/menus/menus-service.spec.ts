@@ -1,115 +1,157 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { vi } from 'vitest';
 import { MenuService } from './menus-service';
 import { FavoritesService } from '../favorites/favorites.service.';
+import { LoggerService } from '../../../auth/services/logger.service';
+import { environment } from '../../../../environments/environment';
+import { Menu, MenuRequest } from '../../types/menu';
 
+const baseUrl = `${environment.apiUrl}/menus`;
+const adminUrl = `${environment.apiUrl}/admin/menus`;
 
-// Mock do novo FavoritesService genérico
 class FavoritesServiceMock {
   toggle = vi.fn();
   isFavorited = vi.fn().mockReturnValue(false);
 }
 
+class LoggerServiceMock {
+  error = vi.fn();
+}
+
+const mockMenus: Menu[] = [
+  {
+    id: '1', title: 'Frango Grelhado', description: 'Rico em proteína',
+    cover: 'cover1.jpg',
+    category: { id: '1', name: 'Almoço', type: 'MENU' }, // <- type
+    recipe: 'Grelhe por 20 min', nutritionistTips: 'Prefira azeite',
+    protein: 40, carbs: 10, fat: 5, fiber: 2,
+    calories: 250, likesCount: 0, favorited: false,
+  },
+  {
+    id: '2', title: 'Vitamina de Banana', description: 'Café energético',
+    cover: 'cover2.jpg',
+    category: { id: '2', name: 'Café da Manhã', type: 'MENU' }, // <- type
+    recipe: 'Bata no liquidificador', nutritionistTips: 'Adicione mel',
+    protein: 8, carbs: 45, fat: 3, fiber: 5,
+    calories: 220, likesCount: 2, favorited: false,
+  },
+];
+
 describe('MenuService', () => {
   let service: MenuService;
+  let httpMock: HttpTestingController;
   let favoritesMock: FavoritesServiceMock;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
         MenuService,
         { provide: FavoritesService, useClass: FavoritesServiceMock },
+        { provide: LoggerService, useClass: LoggerServiceMock },
       ],
     });
 
     service = TestBed.inject(MenuService);
+    httpMock = TestBed.inject(HttpTestingController);
     favoritesMock = TestBed.inject(FavoritesService) as any;
+
+    // Consome o GET inicial que o construtor dispara
+    httpMock.expectOne(baseUrl).flush(mockMenus);
   });
 
-  it('should load initial menus from JSON', () => {
-    expect(service.menus().length).toBeGreaterThan(0);
+  afterEach(() => httpMock.verify());
+
+  it('should create service', () => {
+    expect(service).toBeTruthy();
   });
 
-  it('should add, update and remove menu', () => {
-    const newMenu = {
-      id: 'x1', title: 'Novo', description: 'Desc',
-      cover: 'capa.jpg', category: { id: '1', name: 'Teste' },
-      recipe: '', nutritionistTips: '',
-      protein: 0, carbs: 0, fat: 0, fiber: 0,
-      calories: 0, favorited: false, likesCount: 0,
+  it('should load menus from backend', () => {
+    expect(service.menus().length).toBe(2);
+    expect(service.totalMenus()).toBe(2);
+  });
+
+  it('should set empty array when backend fails', () => {
+    service.loadMenus();
+    httpMock.expectOne(baseUrl).error(new ProgressEvent('error'));
+    expect(service.menus().length).toBe(0);
+  });
+
+  it('should create menu and reload list', () => {
+    const request: MenuRequest = {
+      title: 'Novo Menu', description: 'Descrição',
+      cover: 'cover.jpg', categoryId: '1',
+      recipe: 'Receita', nutritionistTips: 'Dica',
+      protein: 20, carbs: 30, fat: 5, fiber: 3, calories: 200,
     };
 
-    service.add(newMenu as any);
-    expect(service.menus()[0].id).toBe('x1');
+    service.addMenu(request);
 
-    service.update({ ...newMenu, title: 'Atualizado' } as any);
-    expect(service.menus().find(m => m.id === 'x1')?.title).toBe('Atualizado');
+    // POST vai para rota admin
+    const postReq = httpMock.expectOne(adminUrl);
+    expect(postReq.request.method).toBe('POST');
+    postReq.flush(null);
 
-    service.remove('x1');
-    expect(service.menus().some(m => m.id === 'x1')).toBe(false);
+    // Reload busca da rota pública
+    httpMock.expectOne(baseUrl).flush([
+      ...mockMenus,
+      { ...mockMenus[0], id: '3', title: 'Novo Menu' }
+    ]);
+
+    expect(service.totalMenus()).toBe(3);
+  });
+
+  it('should delete menu and reload list', () => {
+    service.removeMenu('1');
+
+    // DELETE vai para rota admin
+    const deleteReq = httpMock.expectOne(`${adminUrl}/1`);
+    expect(deleteReq.request.method).toBe('DELETE');
+    deleteReq.flush(null);
+
+    // Reload busca da rota pública
+    httpMock.expectOne(baseUrl).flush([mockMenus[1]]);
+    expect(service.totalMenus()).toBe(1);
   });
 
   it('should toggle favorite — call FavoritesService and update local state', () => {
-    const target = {
-      id: 'fav-1', title: 'Fav', description: 'Desc',
-      cover: 'capa.jpg', category: { id: '1', name: 'Teste' },
-      recipe: '', nutritionistTips: '',
-      protein: 0, carbs: 0, fat: 0, fiber: 0,
-      calories: 0, favorited: false, likesCount: 0,
-    };
-    service.add(target as any);
+    service.toggleFavorite('1');
 
-    service.toggleFavorite('fav-1');
+    expect(favoritesMock.toggle).toHaveBeenCalledWith('1', 'MENU');
 
-    expect(favoritesMock.toggle).toHaveBeenCalledWith('fav-1', 'MENU');
-
-    const afterLike = service.menus().find(m => m.id === 'fav-1')!;
-    expect(afterLike.favorited).toBe(true);
-    expect(afterLike.likesCount).toBe(1);
+    const updated = service.menus().find(m => m.id === '1')!;
+    expect(updated.favorited).toBe(true);
+    expect(updated.likesCount).toBe(1);
   });
 
   it('should decrement likesCount when unfavoriting', () => {
-    const target = {
-      id: 'fav-2', title: 'Fav2', description: 'Desc',
-      cover: 'capa.jpg', category: { id: '1', name: 'Teste' },
-      recipe: '', nutritionistTips: '',
-      protein: 0, carbs: 0, fat: 0, fiber: 0,
-      calories: 0, favorited: false, likesCount: 0,
-    };
-    service.add(target as any);
+    service.toggleFavorite('1');
+    service.toggleFavorite('1');
 
-    service.toggleFavorite('fav-2');
-    service.toggleFavorite('fav-2');
-
-    const afterUnlike = service.menus().find(m => m.id === 'fav-2')!;
-    expect(afterUnlike.favorited).toBe(false);
-    expect(afterUnlike.likesCount).toBe(0);
+    const updated = service.menus().find(m => m.id === '1')!;
+    expect(updated.favorited).toBe(false);
+    expect(updated.likesCount).toBe(0);
     expect(favoritesMock.toggle).toHaveBeenCalledTimes(2);
   });
 
   it('should get menu by id', () => {
-    const first = service.menus()[0];
-    expect(service.getMenuById(first.id)).toBeDefined();
+    expect(service.getMenuById('1')?.title).toBe('Frango Grelhado');
+  });
+
+  it('should return undefined for unknown id', () => {
+    expect(service.getMenuById('999')).toBeUndefined();
   });
 
   it('should filter menus by category', () => {
-    const categoryId = service.menus()[0].category.id;
-    const filtered = service.getMenusByCategory(categoryId);
-    expect(filtered.every(m => m.category.id === categoryId)).toBe(true);
+    const filtered = service.getMenusByCategory('1');
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].category.name).toBe('Almoço');
   });
 
   it('should update totalLikes reactively', () => {
-    const target = {
-      id: 'likes-1', title: 'T', description: 'D',
-      cover: 'c.jpg', category: { id: '1', name: 'T' },
-      recipe: '', nutritionistTips: '',
-      protein: 0, carbs: 0, fat: 0, fiber: 0,
-      calories: 0, favorited: false, likesCount: 0,
-    };
-    service.add(target as any);
-
     const initial = service.totalLikes();
-    service.toggleFavorite('likes-1');
+    service.toggleFavorite('1');
     expect(service.totalLikes()).toBe(initial + 1);
   });
 });

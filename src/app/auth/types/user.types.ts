@@ -45,7 +45,8 @@ export interface User {
   phone?: string;
   address?: Address;
   photo?: string | null;
-  profileComplete: boolean;  
+  profileComplete: boolean;
+  roles?: string[];        // <- adicionar
   createdAt?: Date;
   updatedAt?: Date;
 }

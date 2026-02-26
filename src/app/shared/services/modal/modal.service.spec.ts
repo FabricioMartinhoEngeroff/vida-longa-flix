@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { vi } from 'vitest';
-import { ModalService } from './modal.service';
+import { ModalService } from './modal.service'
 import { LoggerService } from '../../../auth/services/logger.service';
 import { environment } from '../../../../environments/environment';
 import { Video } from '../../types/videos';

@@ -15,7 +15,13 @@
 
       <label>
         Categoria
-        <input type="text" formControlName="categoryName" />
+        <!-- select alimentado pelo backend — igual ao VideoAdminComponent -->
+        <select formControlName="categoryId">
+          <option value="" disabled>Selecione uma categoria</option>
+          <option *ngFor="let cat of categories" [value]="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
       </label>
     </div>
 
@@ -44,7 +50,6 @@
     </div>
 
     <h3>Informações Nutricionais</h3>
-
     <div class="grid">
       <label>
         Proteínas

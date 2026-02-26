@@ -8,8 +8,8 @@ import { Video, VideoRequest } from '../../types/videos';
 import { FavoritesService } from '../favorites/favorites.service.';
 
 const baseUrl = `${environment.apiUrl}/videos`;
+const adminUrl = `${environment.apiUrl}/admin/videos`;
 
-// Mock do novo FavoritesService
 class FavoritesServiceMock {
   toggle = vi.fn();
   isFavorited = vi.fn().mockReturnValue(false);
@@ -87,7 +87,8 @@ describe('VideoService', () => {
 
     service.addVideo(request);
 
-    const postReq = httpMock.expectOne(baseUrl);
+    // POST vai para rota admin
+    const postReq = httpMock.expectOne(adminUrl);
     expect(postReq.request.method).toBe('POST');
     postReq.flush(null);
 
@@ -102,7 +103,7 @@ describe('VideoService', () => {
   it('should delete video and reload list', () => {
     service.removeVideo('1');
 
-    const deleteReq = httpMock.expectOne(`${baseUrl}/1`);
+    const deleteReq = httpMock.expectOne(`${adminUrl}/1`);
     expect(deleteReq.request.method).toBe('DELETE');
     deleteReq.flush(null);
 
@@ -121,8 +122,8 @@ describe('VideoService', () => {
   });
 
   it('should decrement likesCount when unfavoriting', () => {
-    service.toggleFavorite('1'); 
-    service.toggleFavorite('1'); 
+    service.toggleFavorite('1');
+    service.toggleFavorite('1');
 
     const updated = service.videos().find(v => v.id === '1')!;
     expect(updated.favorited).toBe(false);

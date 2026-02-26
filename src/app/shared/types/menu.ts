@@ -20,3 +20,17 @@ export interface Menu {
   favorited?: boolean;
   likesCount?: number;
 }
+
+export interface MenuRequest {
+  title: string;
+  description: string;
+  cover?: string;
+  categoryId: string;        
+  recipe?: string;
+  nutritionistTips?: string;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  fiber?: number;
+  calories?: number;
+}
