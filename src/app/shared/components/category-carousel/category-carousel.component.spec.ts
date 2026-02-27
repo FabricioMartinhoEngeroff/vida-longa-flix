@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { CategoryCarouselComponent } from './category-carousel.component';
 
@@ -32,16 +33,16 @@ describe('CategoryCarouselComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
   });
 
   it('should render the title', () => {
+    fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Frutas');
   });
 
   it('should render all items using the provided template', () => {
+    fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     const rendered = Array.from(el.querySelectorAll('.rendered-item')).map((x) =>
       x.textContent?.trim()
@@ -51,10 +52,14 @@ describe('CategoryCarouselComponent', () => {
   });
 
   it('should update rendered items when items input changes', async () => {
+    fixture.detectChanges();
     const host = fixture.componentInstance;
     host.items = ['Pêra'];
-    fixture.detectChanges();
-    await fixture.whenStable();
+    fixture.changeDetectorRef.detectChanges();
+
+    const carousel = fixture.debugElement.query(By.directive(CategoryCarouselComponent))
+      .componentInstance as CategoryCarouselComponent;
+    expect(carousel.items).toEqual(['Pêra']);
 
     const el = fixture.nativeElement as HTMLElement;
     const rendered = Array.from(el.querySelectorAll('.rendered-item')).map((x) =>

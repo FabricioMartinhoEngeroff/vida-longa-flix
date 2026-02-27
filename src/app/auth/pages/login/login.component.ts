@@ -71,7 +71,8 @@ export class LoginComponent {
 
     try {
       const { email, password } = this.form.getRawValue();
-      await this.authService.login(email, password);
+      const { keepLoggedIn } = this.form.getRawValue();
+      await this.authService.login(email, password, keepLoggedIn);
       this.router.navigateByUrl('/app', { replaceUrl: true });
     } catch (e) {
      this.logger.error('Erro ao realizar login:', e);

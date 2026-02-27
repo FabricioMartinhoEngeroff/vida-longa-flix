@@ -38,11 +38,10 @@ describe('MenusComponent', () => {
   });
 
   it('should count and get comments by id', () => {
+    commentsState = { '7': ['Você: ótimo'] };
     const fixture = TestBed.createComponent(MenusComponent);
     const component = fixture.componentInstance;
     fixture.detectChanges();
-
-    commentsState = { '7': ['Você: ótimo'] };
 
     expect(component.getTotalComments('7')).toBe(1);
     expect(component.getMenuComments('7')).toEqual(['Você: ótimo']);

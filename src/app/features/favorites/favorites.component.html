@@ -14,24 +14,42 @@
       </button>
     </div>
 
-    <app-carousel>
-      <div class="video-item" *ngFor="let video of favoriteVideos">
-        <video
-          [src]="video.url"
-          muted
-          playsinline
-          (click)="openVideoModal(video)"
-          (mouseenter)="playVideo($event)"
-          (mouseleave)="pauseVideo($event)"
-        ></video>
+    <ng-template #videoItem let-video>
+      <div class="video-card" [attr.id]="'video-' + video.id">
+        <div class="video-wrapper" (click)="openVideoModal(video)">
+          <img
+            [src]="video.cover || 'assets/images/Logo.png'"
+            [alt]="video.title"
+            class="thumbnail"
+          />
 
-        <h3>{{ video.title }}</h3>
+          <div class="play-overlay">
+            <mat-icon>play_circle_filled</mat-icon>
+          </div>
+        </div>
 
-        <button class="remove-button" type="button" (click)="removeVideo(video)">
+        <div class="info-area">
+          <h3>{{ video.title }}</h3>
+          <p class="description">{{ video.description }}</p>
+        </div>
+
+        <button
+          class="remove-button"
+          type="button"
+          (click)="removeVideo(video); $event.stopPropagation()"
+        >
           Remover
         </button>
       </div>
-    </app-carousel>
+    </ng-template>
+
+    <app-category-carousel
+      *ngFor="let group of videosByCategory"
+      [title]="group.nome"
+      [items]="group.itens"
+      [itemTemplate]="videoItem"
+      [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\\s+/g, '-')"
+    ></app-category-carousel>
   </div>
 
   <div *ngIf="isMobile" class="mobile">
@@ -42,7 +60,12 @@
 
     <div class="mobile-list">
       <div class="mobile-card" *ngFor="let video of favoriteVideos">
-        <video [src]="video.url" muted playsinline (click)="openVideoModal(video)"></video>
+        <img
+          class="mobile-thumb"
+          [src]="video.cover || 'assets/images/Logo.png'"
+          [alt]="video.title"
+          (click)="openVideoModal(video)"
+        />
 
         <div class="mobile-info">
           <p class="video-title">{{ video.title }}</p>
@@ -63,46 +86,50 @@
     <app-title [alignment]="'left'">Cardapios Favoritos</app-title>
   </div>
 
-  <div class="menus-grid">
-    <div class="menu-card" *ngFor="let m of favoriteMenus" (click)="openMenuModal(m)">
-      <img [src]="m.cover || 'assets/images/Logo.png'" [alt]="m.title" />
-      <h3>{{ m.title }}</h3>
+  <ng-template #menuItem let-item>
+    <div
+      class="card"
+      [attr.id]="'menu-' + item.id"
+      (click)="openMenuModal(item)"
+      role="button"
+      tabindex="0"
+    >
+      <img [src]="item.cover || 'assets/images/Logo.png'" [alt]="item.title" />
+      <div class="info">
+        <h3>{{ item.title }}</h3>
+        <span class="categoria">{{ item.category?.name }}</span>
+        <p>{{ item.description }}</p>
 
-      <button type="button" (click)="removeMenu(m); $event.stopPropagation()">
-        Remover
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de cardapio (menu) -->
-<div class="modal-backdrop" *ngIf="selectedMenu as m">
-  <div class="modal recipe-modal">
-    <button class="close" type="button" (click)="closeMenuModal()">×</button>
-
-    <img [src]="m.cover || 'assets/images/Logo.png'" [alt]="m.title" class="cover-large" />
-
-    <div class="content">
-      <h3>{{ m.title }}</h3>
-      <p class="description">{{ m.description }}</p>
-
-      <div class="section">
-        <h4>Receita</h4>
-        <p>{{ m.recipe || 'Sem receita cadastrada.' }}</p>
-      </div>
-
-      <div class="section">
-        <h4>Dicas da Nutri</h4>
-        <p>{{ m.nutritionistTips || 'Sem dicas cadastradas.' }}</p>
-      </div>
-
-      <div class="macros">
-        <div>Proteinas: {{ m.protein || 0 }}g</div>
-        <div>Carboidratos: {{ m.carbs || 0 }}g</div>
-        <div>Gorduras: {{ m.fat || 0 }}g</div>
-        <div>Fibras: {{ m.fiber || 0 }}g</div>
-        <div>Calorias: {{ m.calories || 0 }} kcal</div>
+        <app-engagement-summary
+          [likesCount]="item.likesCount ?? 0"
+          [commentsCount]="getTotalMenuComments(item.id)"
+          [liked]="item.favorited ?? false"
+          (likeClick)="toggleMenuFavorite(item.id)"
+          (commentsClick)="openMenuModal(item)"
+        ></app-engagement-summary>
       </div>
     </div>
-  </div>
+  </ng-template>
+
+  @if (menusByCategory.length > 0) {
+    @for (group of menusByCategory; track group.nome) {
+      <app-category-carousel
+        class="categoria-bloco"
+        [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\\s+/g,'-')"
+        [title]="group.nome"
+        [items]="group.itens"
+        [itemTemplate]="menuItem"
+      ></app-category-carousel>
+    }
+  }
 </div>
+
+@if (selectedMenu; as m) {
+  <app-menu-modal
+    [menu]="m"
+    [comments]="getMenuComments(m.id)"
+    (close)="closeMenuModal()"
+    (favorite)="toggleMenuFavorite(m.id)"
+    (comment)="addMenuComment(m.id, $event)"
+  ></app-menu-modal>
+}

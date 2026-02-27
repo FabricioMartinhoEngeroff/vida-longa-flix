@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
-import { UserAuthenticationService } from '../../../auth/services/user-authentication.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
@@ -72,7 +72,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
 export class LogoutButtonComponent {
   isModalOpen = false;
 
-  constructor(private authService: UserAuthenticationService) {}
+  constructor(private authService: AuthService) {}
 
   confirmLogout(): void {
     this.authService.logout();

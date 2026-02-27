@@ -28,6 +28,7 @@ describe('MenuAdminComponent', () => {
       ],
     }).compileComponents();
 
+    httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(MenuAdminComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -36,8 +37,6 @@ describe('MenuAdminComponent', () => {
     httpMock.expectOne(req =>
       req.url.includes('/categories') && req.params.get('type') === 'MENU'
     ).flush(mockCategories);
-
-    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => httpMock.verify());
@@ -96,12 +95,17 @@ describe('MenuAdminComponent', () => {
   });
 
   it('should process cover file upload', () => {
+    const createObjectURL = (URL as any).createObjectURL;
+    (URL as any).createObjectURL = vi.fn(() => 'blob:mock');
+
     const file = new File([''], 'test.jpg', { type: 'image/jpeg' });
     const event = { target: { files: [file] } } as any;
 
     component.onCoverFile(event);
 
     expect(component.form.get('cover')?.value).toContain('blob:');
+
+    (URL as any).createObjectURL = createObjectURL;
   });
 
   it('should not call addMenu when no file selected', () => {

@@ -52,7 +52,7 @@ describe('PasswordChangeComponent', () => {
     expect(passwordControl?.hasError('senhaFraca')).toBe(false);
   });
 
-  it('should show validating state initially', () => {
-    expect(component.validatingToken).toBe(true);
+  it('should stop validating when token is missing', () => {
+    expect(component.validatingToken).toBe(false);
   });
 });

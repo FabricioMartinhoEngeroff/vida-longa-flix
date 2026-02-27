@@ -5,14 +5,16 @@ import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { NavbarComponent } from './navbar.component';
 import { NavItemComponent } from '../nav-item/nav-item.component';
-import { UserAuthenticationService } from '../../../auth/services/user-authentication.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
   let events$: Subject<any>;
 
-  const authMock = { user: null };
+  const user$ = new BehaviorSubject<any>(null);
+  const authMock = { user: null, user$: user$.asObservable() };
   const routerMock = { 
     navigate: vi.fn(), 
     url: '/', 
@@ -29,7 +31,7 @@ describe('NavbarComponent', () => {
       imports: [NavbarComponent], 
       providers: [
         { provide: Router, useValue: routerMock },
-        { provide: UserAuthenticationService, useValue: authMock },
+        { provide: AuthService, useValue: authMock },
       ],
     }).compileComponents();
 

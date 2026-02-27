@@ -6,6 +6,7 @@ import { FavoritesService } from '../favorites/favorites.service.';
 import { LoggerService } from '../../../auth/services/logger.service';
 import { environment } from '../../../../environments/environment';
 import { Menu, MenuRequest } from '../../types/menu';
+import { ContentNotificationsService } from '../notifications/content-notifications.service';
 
 const baseUrl = `${environment.apiUrl}/menus`;
 const adminUrl = `${environment.apiUrl}/admin/menus`;
@@ -17,6 +18,10 @@ class FavoritesServiceMock {
 
 class LoggerServiceMock {
   error = vi.fn();
+}
+
+class NotificationsMock {
+  add = vi.fn();
 }
 
 const mockMenus: Menu[] = [
@@ -42,6 +47,7 @@ describe('MenuService', () => {
   let service: MenuService;
   let httpMock: HttpTestingController;
   let favoritesMock: FavoritesServiceMock;
+  let notificationsMock: NotificationsMock;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,12 +56,14 @@ describe('MenuService', () => {
         MenuService,
         { provide: FavoritesService, useClass: FavoritesServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: ContentNotificationsService, useClass: NotificationsMock },
       ],
     });
 
     service = TestBed.inject(MenuService);
     httpMock = TestBed.inject(HttpTestingController);
     favoritesMock = TestBed.inject(FavoritesService) as any;
+    notificationsMock = TestBed.inject(ContentNotificationsService) as any;
 
     // Consome o GET inicial que o construtor dispara
     httpMock.expectOne(baseUrl).flush(mockMenus);
@@ -99,6 +107,7 @@ describe('MenuService', () => {
       { ...mockMenus[0], id: '3', title: 'Novo Menu' }
     ]);
 
+    expect(notificationsMock.add).toHaveBeenCalledWith('MENU', 'Novo Menu');
     expect(service.totalMenus()).toBe(3);
   });
 

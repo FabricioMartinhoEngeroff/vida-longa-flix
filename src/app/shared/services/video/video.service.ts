@@ -5,6 +5,7 @@ import { Video, VideoRequest } from '../../types/videos';
 import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../auth/services/logger.service';
 import { FavoritesService } from '../favorites/favorites.service.';
+import { ContentNotificationsService } from '../notifications/content-notifications.service';
 
 @Injectable({ providedIn: 'root' })
 export class VideoService {
@@ -24,7 +25,8 @@ export class VideoService {
   constructor(
     private http: HttpClient,
     private favoritesService: FavoritesService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private notifications: ContentNotificationsService
   ) {
     this.loadVideos();
   }
@@ -67,7 +69,10 @@ export class VideoService {
   // O interceptor injeta o Bearer token automaticamente
   addVideo(request: VideoRequest): void {
     this.http.post<void>(this.adminUrl, request).pipe(
-      tap(() => this.loadVideos()),
+      tap(() => {
+        this.notifications.add('VIDEO', request.title);
+        this.loadVideos();
+      }),
       catchError(err => {
         this.logger.error('Erro ao criar vídeo', err);
         return of(null);

@@ -22,11 +22,14 @@ describe('ConfirmationModalComponent', () => {
   });
 
   it('should display title and message', () => {
-    component.title = 'Test Title';
-    component.message = 'Test Message';
-    fixture.detectChanges();
+    const localFixture = TestBed.createComponent(ConfirmationModalComponent);
+    const localComponent = localFixture.componentInstance;
+    localComponent.open = true;
+    localComponent.title = 'Test Title';
+    localComponent.message = 'Test Message';
+    localFixture.detectChanges();
 
-    const compiled = fixture.nativeElement;
+    const compiled = localFixture.nativeElement;
     expect(compiled.querySelector('.title').textContent).toContain('Test Title');
     expect(compiled.querySelector('.message').textContent).toContain('Test Message');
   });
@@ -68,30 +71,38 @@ describe('ConfirmationModalComponent', () => {
   });
 
   it('should display custom button texts', () => {
-    component.confirmText = 'Yes';
-    component.cancelText = 'No';
-    fixture.detectChanges();
+    const localFixture = TestBed.createComponent(ConfirmationModalComponent);
+    const localComponent = localFixture.componentInstance;
+    localComponent.open = true;
+    localComponent.confirmText = 'Yes';
+    localComponent.cancelText = 'No';
+    localFixture.detectChanges();
 
-    const confirmBtn = fixture.nativeElement.querySelector('.confirm-btn');
-    const cancelBtn = fixture.nativeElement.querySelector('.cancel-btn');
+    const confirmBtn = localFixture.nativeElement.querySelector('.confirm-btn');
+    const cancelBtn = localFixture.nativeElement.querySelector('.cancel-btn');
     
     expect(confirmBtn.textContent.trim()).toBe('Yes');
     expect(cancelBtn.textContent.trim()).toBe('No');
   });
 
   it('should apply danger class when isDanger is true', () => {
-    component.isDanger = true;
-    fixture.detectChanges();
+    const localFixture = TestBed.createComponent(ConfirmationModalComponent);
+    const localComponent = localFixture.componentInstance;
+    localComponent.open = true;
+    localComponent.isDanger = true;
+    localFixture.detectChanges();
 
-    const confirmBtn = fixture.nativeElement.querySelector('.confirm-btn');
+    const confirmBtn = localFixture.nativeElement.querySelector('.confirm-btn');
     expect(confirmBtn.classList.contains('danger')).toBe(true);
   });
 
   it('should not render when open is false', () => {
-    component.open = false;
-    fixture.detectChanges();
+    const localFixture = TestBed.createComponent(ConfirmationModalComponent);
+    const localComponent = localFixture.componentInstance;
+    localComponent.open = false;
+    localFixture.detectChanges();
 
-    const backdrop = fixture.nativeElement.querySelector('.backdrop');
+    const backdrop = localFixture.nativeElement.querySelector('.backdrop');
     expect(backdrop).toBeNull();
   });
 });

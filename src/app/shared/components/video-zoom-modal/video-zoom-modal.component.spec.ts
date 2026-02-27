@@ -28,6 +28,7 @@ describe('VideoZoomModalComponent', () => {
   const commentsServiceMock = {
     get: vi.fn().mockReturnValue([]),
     add: vi.fn(),
+    loadByVideo: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -54,7 +55,7 @@ describe('VideoZoomModalComponent', () => {
 
     component.addComment('test comment');
 
-    expect(commentsServiceMock.add).toHaveBeenCalledWith('video', '5', 'test comment');
+    expect(commentsServiceMock.add).toHaveBeenCalledWith('5', 'test comment');
   });
 
   it('should toggle favorite', () => {

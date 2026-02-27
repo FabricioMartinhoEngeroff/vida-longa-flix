@@ -6,6 +6,7 @@ import { LoggerService } from '../../../auth/services/logger.service';
 import { environment } from '../../../../environments/environment';
 import { Video, VideoRequest } from '../../types/videos';
 import { FavoritesService } from '../favorites/favorites.service.';
+import { ContentNotificationsService } from '../notifications/content-notifications.service';
 
 const baseUrl = `${environment.apiUrl}/videos`;
 const adminUrl = `${environment.apiUrl}/admin/videos`;
@@ -17,6 +18,10 @@ class FavoritesServiceMock {
 
 class LoggerServiceMock {
   error = vi.fn();
+}
+
+class NotificationsMock {
+  add = vi.fn();
 }
 
 const mockVideos: Video[] = [
@@ -42,6 +47,7 @@ describe('VideoService', () => {
   let service: VideoService;
   let httpMock: HttpTestingController;
   let favoritesMock: FavoritesServiceMock;
+  let notificationsMock: NotificationsMock;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,12 +56,14 @@ describe('VideoService', () => {
         VideoService,
         { provide: FavoritesService, useClass: FavoritesServiceMock },
         { provide: LoggerService, useClass: LoggerServiceMock },
+        { provide: ContentNotificationsService, useClass: NotificationsMock },
       ],
     });
 
     service = TestBed.inject(VideoService);
     httpMock = TestBed.inject(HttpTestingController);
     favoritesMock = TestBed.inject(FavoritesService) as any;
+    notificationsMock = TestBed.inject(ContentNotificationsService) as any;
 
     httpMock.expectOne(baseUrl).flush(mockVideos);
   });
@@ -97,6 +105,7 @@ describe('VideoService', () => {
       { ...mockVideos[0], id: '3', title: 'Novo Vídeo' }
     ]);
 
+    expect(notificationsMock.add).toHaveBeenCalledWith('VIDEO', 'Novo Vídeo');
     expect(service.totalVideos()).toBe(3);
   });
 

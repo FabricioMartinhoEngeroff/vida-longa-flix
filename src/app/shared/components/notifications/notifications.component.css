@@ -74,3 +74,231 @@
     height: 22px;
   }
 }
+
+/* Modal / Popover */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 72px 16px 16px;
+  box-sizing: border-box;
+}
+
+.panel {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 96px);
+  background: #ffffff;
+  border-radius: 14px;
+  border: 2px solid rgba(47, 107, 58, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 8px;
+  border-bottom: 1px solid rgba(47, 107, 58, 0.15);
+}
+
+.panel-header .title {
+  font-weight: 700;
+  color: #111;
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  color: #2f6b3a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.close-btn:hover {
+  background: rgba(47, 107, 58, 0.1);
+}
+
+.close-btn:active {
+  transform: scale(0.95);
+}
+
+.close-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid rgba(47, 107, 58, 0.12);
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: rgba(47, 107, 58, 0.08);
+  border-radius: 10px;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.tab.active {
+  background: rgba(47, 107, 58, 0.18);
+  color: #2f6b3a;
+}
+
+.tab:active {
+  transform: scale(0.98);
+}
+
+.list {
+  padding: 10px 12px;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.empty {
+  padding: 22px 10px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(47, 107, 58, 0.18);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.item:hover {
+  background: rgba(47, 107, 58, 0.06);
+}
+
+.item:active {
+  transform: scale(0.99);
+}
+
+.item.unread {
+  border-color: rgba(47, 107, 58, 0.35);
+  background: rgba(125, 168, 115, 0.12);
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(47, 107, 58, 0.12);
+  color: #2f6b3a;
+}
+
+.date {
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.item-title {
+  font-size: 14px;
+  color: #111;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.panel-footer {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid rgba(47, 107, 58, 0.12);
+  background: rgba(125, 168, 115, 0.12);
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.99);
+}
+
+.action-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.action-btn.primary {
+  background: #2f6b3a;
+  color: white;
+}
+
+.action-btn.primary:hover {
+  background: #4f8a58;
+}
+
+.action-btn.outline {
+  background: transparent;
+  border: 2px solid rgba(47, 107, 58, 0.35);
+  color: #2f6b3a;
+}
+
+.action-btn.outline:hover {
+  background: rgba(47, 107, 58, 0.08);
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    padding-top: 64px;
+    justify-content: center;
+  }
+
+  .panel {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 88px);
+  }
+
+  .panel-footer {
+    flex-direction: column-reverse;
+  }
+}
