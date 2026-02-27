@@ -98,4 +98,22 @@ export class FavoritesComponent implements OnInit {
   removeMenu(menu: Menu): void {
     this.menuService.toggleFavorite(menu.id);
   }
+
+  viewAll(): void {}
+
+  playVideo(event: Event): void {
+    const videoEl = event.currentTarget as HTMLVideoElement | null;
+    if (!videoEl) return;
+
+    videoEl.currentTime = 0;
+    videoEl.play().catch(() => {});
+  }
+
+  pauseVideo(event: Event): void {
+    const videoEl = event.currentTarget as HTMLVideoElement | null;
+    if (!videoEl) return;
+
+    videoEl.pause();
+    videoEl.currentTime = 0;
+  }
 }
