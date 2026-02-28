@@ -1,29 +1,33 @@
-import { Component, HostListener, OnDestroy, effect } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnDestroy, effect, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
-import { CommentsBoxComponent } from '../comments-box/comments-box.component';
+import { CommentsBoxComponent, CommentItem } from '../comments-box/comments-box.component';
 import { Video } from '../../types/videos';
 import { ModalService } from '../../services/modal/modal.service';
 import { VideoService } from '../../services/video/video.service';
 import { CommentResponse, CommentsService } from '../../services/comments/comments.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 
 @Component({
   selector: 'app-video-zoom-modal',
   standalone: true,
-  imports: [MatIconModule, CommentsBoxComponent],
+  imports: [MatIconModule, CommentsBoxComponent, ConfirmationModalComponent],
   templateUrl:'./video-zoom-modal.component.html',
   styleUrls: ['./video-zoom-modal.component.css'],
 })
 export class VideoZoomModalComponent implements OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
   selectedVideo: Video | null = null;
    updatedVideo: Video | null = null; 
   comments: CommentResponse[] = [];
 
-   get commentTexts(): string[] {
-    return this.comments.map(c => c.text);
-  }
+  isAdmin = false;
+  isDeleteCommentModalOpen = false;
+  private pendingCommentId: string | null = null;
 
   private hasHistoryEntry = false;
   private subscriptions = new Subscription();
@@ -31,12 +35,29 @@ export class VideoZoomModalComponent implements OnDestroy {
   constructor(
     private modalService: ModalService,
     private videoService: VideoService,
-    private commentsService: CommentsService
+    private commentsService: CommentsService,
+    private authService: AuthService
   ) {
     effect(() => {
       const video = this.modalService.selectedVideo();
       this.handleSelectedVideo(video as Video | null);
     });
+
+    effect(() => {
+      const video = this.modalService.selectedVideo() as Video | null;
+      this.commentsService.comments(); // depend on signal updates
+      if (!video?.id) {
+        this.comments = [];
+        return;
+      }
+      this.comments = this.commentsService.get(video.id);
+    });
+
+    this.authService.user$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((u) => {
+        this.isAdmin = !!u?.roles?.some((r) => r === 'ROLE_ADMIN');
+      });
   }
 
   ngOnDestroy(): void {
@@ -64,7 +85,6 @@ export class VideoZoomModalComponent implements OnDestroy {
 
   
   this.commentsService.loadByVideo(this.updatedVideo.id);
-  this.comments = this.commentsService.get(this.updatedVideo.id);
 }
 
 
@@ -79,7 +99,31 @@ export class VideoZoomModalComponent implements OnDestroy {
      if (!this.updatedVideo) return;
 
      this.commentsService.add(this.updatedVideo.id, text);
-  this.comments = this.commentsService.get(this.updatedVideo.id);
+  }
+
+  askDeleteComment(commentId: string): void {
+    this.pendingCommentId = commentId;
+    this.isDeleteCommentModalOpen = true;
+  }
+
+  cancelDeleteComment(): void {
+    this.isDeleteCommentModalOpen = false;
+    this.pendingCommentId = null;
+  }
+
+  confirmDeleteComment(): void {
+    if (!this.updatedVideo || !this.pendingCommentId) return;
+    this.commentsService.delete(this.pendingCommentId, this.updatedVideo.id);
+    this.cancelDeleteComment();
+  }
+
+  get commentItems(): CommentItem[] {
+    return (this.comments ?? []).map((c) => ({
+      id: c.id,
+      text: c.text,
+      author: c.user?.name,
+      date: c.date,
+    }));
   }
 
   closeModal(): void {

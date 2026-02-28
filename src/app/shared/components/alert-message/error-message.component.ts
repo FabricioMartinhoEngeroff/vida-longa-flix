@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
@@ -120,19 +120,14 @@ export class ErrorMessageComponent implements OnInit, OnDestroy {
   text = '';
   private subscription?: Subscription;
   private timeoutId?: ReturnType<typeof setTimeout>;
-  private destroyed = false;
 
-  constructor(
-    private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private notificationService: NotificationService) {}
 
   ngOnInit() {
     this.subscription = this.notificationService.notification$.subscribe(notification => {
       if (notification.type === 'error') {
         this.text = notification.text;
         this.visible = true;
-        this.scheduleDetectChanges();
         
         if (this.timeoutId) {
           clearTimeout(this.timeoutId);
@@ -140,7 +135,6 @@ export class ErrorMessageComponent implements OnInit, OnDestroy {
         
         this.timeoutId = setTimeout(() => {
           this.visible = false;
-          this.scheduleDetectChanges();
         }, notification.durationMs);
       }
     });
@@ -148,28 +142,15 @@ export class ErrorMessageComponent implements OnInit, OnDestroy {
 
   close() {
     this.visible = false;
-    this.scheduleDetectChanges();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
   }
 
   ngOnDestroy() {
-    this.destroyed = true;
     this.subscription?.unsubscribe();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
-  }
-
-  private scheduleDetectChanges(): void {
-    queueMicrotask(() => {
-      if (this.destroyed) return;
-      try {
-        this.cdr.detectChanges();
-      } catch {
-        // Avoid surfacing ExpressionChangedAfterItHasBeenCheckedError from forced sync checks.
-      }
-    });
   }
 }

@@ -88,4 +88,64 @@
 
     <button type="submit" [disabled]="form.invalid">Salvar</button>
   </form>
+
+  <h3 class="section-title">Vídeos cadastrados</h3>
+  @if (videosList().length > 0) {
+    <div class="resource-list">
+      @for (v of videosList(); track v.id) {
+        <div class="resource-item">
+          <div class="resource-main">
+            <div class="resource-name">{{ v.title }}</div>
+            <div class="resource-meta">Categoria: {{ v.category?.name || 'Sem categoria' }}</div>
+          </div>
+
+          <button
+            type="button"
+            class="trash-btn"
+            aria-label="Deletar vídeo"
+            (click)="askDeleteVideo(v.id, v.title)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="resource-empty">Nenhum vídeo cadastrado.</div>
+  }
+
+  <h3 class="section-title">Categorias</h3>
+  @if (categories.length > 0) {
+    <div class="resource-list">
+      @for (c of categories; track c.id) {
+        <div class="resource-item">
+          <div class="resource-main">
+            <div class="resource-name">{{ c.name }}</div>
+          </div>
+
+          <button
+            type="button"
+            class="trash-btn"
+            aria-label="Deletar categoria"
+            (click)="askDeleteCategory(c.id, c.name)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="resource-empty">Nenhuma categoria cadastrada.</div>
+  }
+
+  <app-confirmation-modal
+    [open]="isDeleteModalOpen"
+    [title]="deleteTitle"
+    [message]="deleteMessage"
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    [isDanger]="true"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  ></app-confirmation-modal>
 </section>

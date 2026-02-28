@@ -4,12 +4,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { VideoService } from '../../shared/services/video/video.service';
 import { Category, VideoRequest } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 
 
 @Component({
   selector: 'app-video-admin',
   standalone: true,
-  imports: [ReactiveFormsModule, MatIconModule],
+  imports: [ReactiveFormsModule, MatIconModule, ConfirmationModalComponent],
   templateUrl: './video-admin.component.html',
   styleUrls: ['./video-admin.component.css'],
 })
@@ -17,29 +18,36 @@ export class VideoAdminComponent {
   form: FormGroup;
   uploadIcon = 'cloud_upload';
 
- categories: Category[] = [];
+  categories: Category[] = [];
 
-constructor(
-  private fb: FormBuilder,
-  private videoService: VideoService,
-  private categoriesService: CategoriesService
-) {
-  this.categoriesService.list('VIDEO').subscribe(cats => this.categories = cats);
+  isDeleteModalOpen = false;
+  private pendingDelete: { kind: 'VIDEO' | 'CATEGORY'; id: string; label: string } | null = null;
 
-  this.form = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(3)]],
-    description: ['', [Validators.required, Validators.minLength(5)]],
-    url: ['', [Validators.required]],
-    cover: [''],
-    categoryName: ['', Validators.required],
-    recipe: [''],
-    protein: [0],
-    carbs: [0],
-    fat: [0],
-    fiber: [0],
-    calories: [0],
-  });
-}
+  constructor(
+    private fb: FormBuilder,
+    private videoService: VideoService,
+    private categoriesService: CategoriesService
+  ) {
+    this.categoriesService.list('VIDEO').subscribe((cats) => (this.categories = cats));
+
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(5)]],
+      url: ['', [Validators.required]],
+      cover: [''],
+      categoryName: ['', Validators.required],
+      recipe: [''],
+      protein: [0],
+      carbs: [0],
+      fat: [0],
+      fiber: [0],
+      calories: [0],
+    });
+  }
+
+  videosList() {
+    return this.videoService.videos();
+  }
 
   onVideoFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -104,4 +112,53 @@ constructor(
     calories: 0,
   });
 }
+
+  askDeleteVideo(id: string, title: string): void {
+    this.pendingDelete = { kind: 'VIDEO', id, label: title };
+    this.isDeleteModalOpen = true;
+  }
+
+  askDeleteCategory(id: string, name: string): void {
+    this.pendingDelete = { kind: 'CATEGORY', id, label: name };
+    this.isDeleteModalOpen = true;
+  }
+
+  cancelDelete(): void {
+    this.isDeleteModalOpen = false;
+    this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    const pending = this.pendingDelete;
+    if (!pending) return;
+
+    if (pending.kind === 'VIDEO') {
+      this.videoService.removeVideo(pending.id);
+      this.cancelDelete();
+      return;
+    }
+
+    this.categoriesService.delete(pending.id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter((c) => c.id !== pending.id);
+        this.cancelDelete();
+      },
+      error: () => {
+        this.cancelDelete();
+      },
+    });
+  }
+
+  get deleteTitle(): string {
+    if (this.pendingDelete?.kind === 'CATEGORY') return 'Deletar categoria';
+    return 'Deletar vídeo';
+  }
+
+  get deleteMessage(): string {
+    const label = this.pendingDelete?.label ?? '';
+    if (this.pendingDelete?.kind === 'CATEGORY') {
+      return `Deseja mesmo deletar a categoria “${label}”?`;
+    }
+    return `Deseja mesmo deletar o vídeo “${label}”?`;
+  }
 }

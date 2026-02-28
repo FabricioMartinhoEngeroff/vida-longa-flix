@@ -4,12 +4,14 @@ import { MenuAdminComponent } from './menu-admin.component';
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from '../../../environments/environment';
+import { signal } from '@angular/core';
 
 describe('MenuAdminComponent', () => {
   let component: MenuAdminComponent;
   let fixture: ComponentFixture<MenuAdminComponent>;
   let httpMock: HttpTestingController;
   let addMenuSpy: ReturnType<typeof vi.fn>;
+  let removeMenuSpy: ReturnType<typeof vi.fn>;
 
   const mockCategories = [
     { id: 'uuid-1', name: 'Almoço', type: 'MENU' },
@@ -18,23 +20,30 @@ describe('MenuAdminComponent', () => {
 
   beforeEach(async () => {
     addMenuSpy = vi.fn();
+    removeMenuSpy = vi.fn();
+
+    const menusSignal = signal<any[]>([
+      { id: 'm1', title: 'Menu 1', category: { id: 'uuid-1', name: 'Almoço', type: 'MENU' } },
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [MenuAdminComponent, HttpClientTestingModule],
       providers: [
-        { provide: MenuService, useValue: { addMenu: addMenuSpy } }
+        { provide: MenuService, useValue: { addMenu: addMenuSpy, removeMenu: removeMenuSpy, menus: menusSignal.asReadonly() } }
       ],
     }).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(MenuAdminComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    fixture.detectChanges(false);
 
     // Consome o GET de categorias que o ngOnInit dispara
     httpMock.expectOne(req =>
       req.url.includes('/categories') && req.params.get('type') === 'MENU'
     ).flush(mockCategories);
+
+    fixture.detectChanges(false);
   });
 
   afterEach(() => httpMock.verify());
@@ -131,5 +140,18 @@ describe('MenuAdminComponent', () => {
     const event = { target: { files: [] } } as any;
     component.onCoverFile(event);
     expect(component.form.get('cover')?.value).toBe('');
+  });
+
+  it('should ask confirmation and call removeMenu when confirmed', () => {
+    fixture.detectChanges(false);
+
+    const btn = fixture.nativeElement.querySelector('[aria-label="Deletar cardápio"]') as HTMLButtonElement;
+    btn.click();
+    fixture.detectChanges(false);
+
+    const confirm = fixture.nativeElement.querySelector('.confirm-btn') as HTMLButtonElement;
+    confirm.click();
+
+    expect(removeMenuSpy).toHaveBeenCalledWith('m1');
   });
 });

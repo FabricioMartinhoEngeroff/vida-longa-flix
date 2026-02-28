@@ -63,4 +63,18 @@ describe('CommentsBoxComponent', () => {
 
     expect(favoriteSpy).toHaveBeenCalled();
   });
+
+  it('should render delete button and emit commentDelete when canDeleteComments=true', () => {
+    const delSpy = vi.spyOn(component.commentDelete, 'emit');
+
+    component.commentItems = [{ id: 'c1', text: 'oi', author: 'Ana' }];
+    component.canDeleteComments = true;
+    fixture.detectChanges();
+
+    const btn = fixture.nativeElement.querySelector('.comment-trash') as HTMLButtonElement;
+    expect(btn).toBeTruthy();
+
+    btn.click();
+    expect(delSpy).toHaveBeenCalledWith('c1');
+  });
 });

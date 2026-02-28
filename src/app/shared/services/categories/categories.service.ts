@@ -23,6 +23,10 @@ export class CategoriesService {
     return this.http.post<Category>(this.baseUrl, payload);
   }
 
+  delete(id: string) {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
   async ensureCategoryId(type: CategoryType, rawName: string, known: Category[] = []): Promise<string> {
     const name = (rawName ?? '').trim();
     if (!name) throw new Error('Category name is required');
@@ -44,4 +48,3 @@ export class CategoriesService {
       .replace(/[\u0300-\u036f]/g, '');
   }
 }
-

@@ -6,11 +6,12 @@ import { MenuService } from '../../shared/services/menus/menus-service';
 import { MenuRequest } from '../../shared/types/menu';
 import { Category } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-menu-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, ConfirmationModalComponent],
   templateUrl: './menu-admin.component.html',
   styleUrls: ['./menu-admin.component.css'],
 })
@@ -20,6 +21,9 @@ export class MenuAdminComponent implements OnInit {
 
   // Categorias do tipo MENU carregadas do backend
   categories: Category[] = [];
+
+  isDeleteModalOpen = false;
+  private pendingDelete: { kind: 'MENU' | 'CATEGORY'; id: string; label: string } | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -44,6 +48,10 @@ export class MenuAdminComponent implements OnInit {
   ngOnInit(): void {
     // Busca categorias do tipo MENU igual ao VideoAdminComponent faz para VIDEO
     this.categoriesService.list('MENU').subscribe(cats => this.categories = cats);
+  }
+
+  menusList() {
+    return this.menuService.menus();
   }
 
   onCoverFile(event: Event) {
@@ -96,5 +104,54 @@ export class MenuAdminComponent implements OnInit {
       fiber: 0,
       calories: 0,
     });
+  }
+
+  askDeleteMenu(id: string, title: string): void {
+    this.pendingDelete = { kind: 'MENU', id, label: title };
+    this.isDeleteModalOpen = true;
+  }
+
+  askDeleteCategory(id: string, name: string): void {
+    this.pendingDelete = { kind: 'CATEGORY', id, label: name };
+    this.isDeleteModalOpen = true;
+  }
+
+  cancelDelete(): void {
+    this.isDeleteModalOpen = false;
+    this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    const pending = this.pendingDelete;
+    if (!pending) return;
+
+    if (pending.kind === 'MENU') {
+      this.menuService.removeMenu(pending.id);
+      this.cancelDelete();
+      return;
+    }
+
+    this.categoriesService.delete(pending.id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter((c) => c.id !== pending.id);
+        this.cancelDelete();
+      },
+      error: () => {
+        this.cancelDelete();
+      },
+    });
+  }
+
+  get deleteTitle(): string {
+    if (this.pendingDelete?.kind === 'CATEGORY') return 'Deletar categoria';
+    return 'Deletar cardápio';
+  }
+
+  get deleteMessage(): string {
+    const label = this.pendingDelete?.label ?? '';
+    if (this.pendingDelete?.kind === 'CATEGORY') {
+      return `Deseja mesmo deletar a categoria “${label}”?`;
+    }
+    return `Deseja mesmo deletar o cardápio “${label}”?`;
   }
 }
