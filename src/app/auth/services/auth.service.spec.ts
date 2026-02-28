@@ -92,7 +92,7 @@ describe('AuthService (session persistence)', () => {
     expect(JSON.parse(sessionStorage.getItem('user') || '{}').name).toBe('User Atualizado');
   });
 
-  it('register posts canonical payload (lowercase email + digits-only phone)', async () => {
+  it('register posts canonical payload (lowercase email + formatted phone)', async () => {
     const p = service.register({
       name: '  Fabricio  ',
       email: '  FABRICIO@EMAIL.COM  ',
@@ -106,7 +106,7 @@ describe('AuthService (session persistence)', () => {
       name: 'Fabricio',
       email: 'fabricio@email.com',
       password: 'StrongPass1!',
-      phone: '11987654321',
+      phone: '(11) 98765-4321',
     });
 
     req.flush({

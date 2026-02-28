@@ -63,13 +63,13 @@ describe('VideoAdminComponent', () => {
     expect(addVideoSpy).not.toHaveBeenCalled();
   });
 
-  it('should call addVideo with VideoRequest when form is valid', () => {
+  it('should call addVideo with VideoRequest when form is valid', async () => {
     component.form.patchValue({
       title: 'Bolo de Cenoura',
       description: 'Receita simples e deliciosa',
       url: 'assets/videos/bolo.mp4',
       cover: 'https://example.com/cover.jpg',
-      categoryId: 'cat-uuid-1',
+      categoryName: 'Bolos',
       recipe: 'Receita',
       protein: 3,
       carbs: 20,
@@ -78,7 +78,7 @@ describe('VideoAdminComponent', () => {
       calories: 120,
     });
 
-    component.save();
+    await component.save();
 
     expect(addVideoSpy).toHaveBeenCalledWith({
       title: 'Bolo de Cenoura',
@@ -95,30 +95,62 @@ describe('VideoAdminComponent', () => {
     });
   });
 
-  it('should reset form after successful save', () => {
+  it('should create a new category when typed name does not exist', async () => {
+    component.form.patchValue({
+      title: 'Novo Video',
+      description: 'Descricao',
+      url: 'video.mp4',
+      cover: '',
+      categoryName: 'Doces',
+    });
+
+    const p = component.save();
+
+    const createReq = httpMock.expectOne((r) => r.method === 'POST' && r.url === `${environment.apiUrl}/categories`);
+    expect(createReq.request.body).toEqual({ name: 'Doces', type: 'VIDEO' });
+    createReq.flush({ id: 'cat-new', name: 'Doces', type: 'VIDEO' });
+
+    await p;
+
+    expect(addVideoSpy).toHaveBeenCalledWith({
+      title: 'Novo Video',
+      description: 'Descricao',
+      url: 'video.mp4',
+      cover: 'video.mp4',
+      categoryId: 'cat-new',
+      recipe: '',
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      calories: 0,
+    });
+  });
+
+  it('should reset form after successful save', async () => {
     component.form.patchValue({
       title: 'Test Video',
       description: 'Test Description',
       url: 'test.mp4',
-      categoryId: 'cat-uuid-1',
+      categoryName: 'Bolos',
     });
 
-    component.save();
+    await component.save();
 
     expect(component.form.get('title')?.value).toBe(null);
-    expect(component.form.get('categoryId')?.value).toBe('');
+    expect(component.form.get('categoryName')?.value).toBe('');
   });
 
-  it('should use video url as cover if cover is empty', () => {
+  it('should use video url as cover if cover is empty', async () => {
     component.form.patchValue({
       title: 'Test',
       description: 'Test Description',
       url: 'video.mp4',
       cover: '',
-      categoryId: 'cat-uuid-1',
+      categoryName: 'Bolos',
     });
 
-    component.save();
+    await component.save();
 
     const callArg = addVideoSpy.mock.calls[0][0];
     expect(callArg.cover).toBe('video.mp4');

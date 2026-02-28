@@ -122,6 +122,7 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
   
   private subscription?: Subscription;
   private timeoutId?: ReturnType<typeof setTimeout>;
+  private destroyed = false;
 
   constructor(
     private notificationService: NotificationService,
@@ -133,7 +134,7 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
       if (notification.type === 'success') {
         this.text = notification.text;
         this.visible = true;
-        this.cdr.detectChanges();
+        this.scheduleDetectChanges();
         
         if (this.timeoutId) {
           clearTimeout(this.timeoutId);
@@ -141,7 +142,7 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
         
         this.timeoutId = setTimeout(() => {
           this.visible = false;
-          this.cdr.detectChanges();
+          this.scheduleDetectChanges();
         }, notification.durationMs);
       }
     });
@@ -149,7 +150,7 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
 
   close() {
     this.visible = false;
-    this.cdr.detectChanges();
+    this.scheduleDetectChanges();
     
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
@@ -157,10 +158,22 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.destroyed = true;
     this.subscription?.unsubscribe();
     
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
+  }
+
+  private scheduleDetectChanges(): void {
+    queueMicrotask(() => {
+      if (this.destroyed) return;
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Avoid surfacing ExpressionChangedAfterItHasBeenCheckedError from forced sync checks.
+      }
+    });
   }
 }

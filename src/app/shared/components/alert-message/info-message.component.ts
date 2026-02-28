@@ -146,6 +146,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
   text = '';
   private subscription?: Subscription;
   private timeoutId?: ReturnType<typeof setTimeout>;
+  private destroyed = false;
 
   constructor(
     private notificationService: NotificationService,
@@ -159,7 +160,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
         this.title = notification.title;
         this.text = notification.text;
         this.visible = true;
-        this.cdr.detectChanges();
+        this.scheduleDetectChanges();
         
         // Limpa timeout anterior se existir
         if (this.timeoutId) {
@@ -169,7 +170,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
         // Fecha automaticamente após duração configurada
         this.timeoutId = setTimeout(() => {
           this.visible = false;
-          this.cdr.detectChanges();
+          this.scheduleDetectChanges();
         }, notification.durationMs);
       }
     });
@@ -178,7 +179,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
   // Fecha mensagem manualmente e cancela timeout
   close() {
     this.visible = false;
-    this.cdr.detectChanges();
+    this.scheduleDetectChanges();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
@@ -186,9 +187,21 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
 
   // Cleanup ao destruir componente
   ngOnDestroy() {
+    this.destroyed = true;
     this.subscription?.unsubscribe();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
+  }
+
+  private scheduleDetectChanges(): void {
+    queueMicrotask(() => {
+      if (this.destroyed) return;
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Avoid surfacing ExpressionChangedAfterItHasBeenCheckedError from forced sync checks.
+      }
+    });
   }
 }

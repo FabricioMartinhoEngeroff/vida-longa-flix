@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { User, RegisterData, ProfileData } from '../types/user.types';
-import { removeMask } from '../utils/masks.utils';
+import { applyPhoneMaskAuto } from '../utils/masks.utils';
 import { handleApiError } from '../utils/handle-api-error';
 import { LoggerService } from './logger.service';
 
@@ -231,8 +231,8 @@ export class AuthService {
       name: (data.name ?? '').trim(),
       email: (data.email ?? '').trim().toLowerCase(),
       password: data.password ?? '',
-      // Always send a canonical phone number (digits only) to the API.
-      phone: removeMask(data.phone ?? ''),
+      // Keep backend compatibility: send the formatted phone expected by legacy validation.
+      phone: applyPhoneMaskAuto(data.phone ?? ''),
     };
   }
 

@@ -15,13 +15,16 @@
 
       <label>
         Categoria
-        <!-- select alimentado pelo backend — igual ao VideoAdminComponent -->
-        <select formControlName="categoryId">
-          <option value="" disabled>Selecione uma categoria</option>
-          <option *ngFor="let cat of categories" [value]="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
+        <input
+          class="category-input"
+          type="text"
+          formControlName="categoryName"
+          placeholder="Digite ou selecione uma categoria"
+          list="menu-category-list"
+        />
+        <datalist id="menu-category-list">
+          <option *ngFor="let cat of categories" [value]="cat.name"></option>
+        </datalist>
       </label>
     </div>
 

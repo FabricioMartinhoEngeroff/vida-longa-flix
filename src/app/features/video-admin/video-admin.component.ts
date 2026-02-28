@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { VideoService } from '../../shared/services/video/video.service';
-import { Category, Video, VideoRequest } from '../../shared/types/videos';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { Category, VideoRequest } from '../../shared/types/videos';
+import { CategoriesService } from '../../shared/services/categories/categories.service';
 
 
 @Component({
@@ -23,17 +22,16 @@ export class VideoAdminComponent {
 constructor(
   private fb: FormBuilder,
   private videoService: VideoService,
-  private http: HttpClient
+  private categoriesService: CategoriesService
 ) {
-  this.http.get<Category[]>(`${environment.apiUrl}/categories`, { params: { type: 'VIDEO' } })
-    .subscribe(cats => this.categories = cats);
+  this.categoriesService.list('VIDEO').subscribe(cats => this.categories = cats);
 
   this.form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
     description: ['', [Validators.required, Validators.minLength(5)]],
     url: ['', [Validators.required]],
     cover: [''],
-    categoryId: ['', Validators.required],
+    categoryName: ['', Validators.required],
     recipe: [''],
     protein: [0],
     carbs: [0],
@@ -61,15 +59,32 @@ constructor(
   }
 
  
-  save(): void {
+  async save(): Promise<void> {
   if (this.form.invalid) return;
+
+  let categoryId: string;
+  try {
+    categoryId = await this.categoriesService.ensureCategoryId(
+      'VIDEO',
+      this.form.value.categoryName,
+      this.categories
+    );
+  } catch {
+    return;
+  }
+
+  // Keep local suggestions fresh
+  const typedName = (this.form.value.categoryName ?? '').trim();
+  if (typedName && !this.categories.some(c => c.id === categoryId)) {
+    this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'VIDEO' }];
+  }
 
   const request: VideoRequest = {
     title: this.form.value.title,
     description: this.form.value.description,
     url: this.form.value.url,
     cover: this.form.value.cover || this.form.value.url,
-    categoryId: this.form.value.categoryId,    // ← direto do select, UUID real
+    categoryId,
     recipe: this.form.value.recipe || '',
     protein: Number(this.form.value.protein || 0),
     carbs: Number(this.form.value.carbs || 0),
@@ -81,7 +96,7 @@ constructor(
   this.videoService.addVideo(request);
 
   this.form.reset({
-    categoryId: '',        
+    categoryName: '',
     protein: 0,
     carbs: 0,
     fat: 0,

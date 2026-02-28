@@ -15,12 +15,18 @@
 
       <label>
   Categoria
-  <select formControlName="categoryId">
-    <option value="" disabled>Selecione uma categoria</option>
+  <input
+    class="category-input"
+    type="text"
+    formControlName="categoryName"
+    placeholder="Digite ou selecione uma categoria"
+    list="video-category-list"
+  />
+  <datalist id="video-category-list">
     @for (cat of categories; track cat.id) {
-      <option [value]="cat.id">{{ cat.name }}</option>
+      <option [value]="cat.name"></option>
     }
-  </select>
+  </datalist>
 </label>
     </div>
 

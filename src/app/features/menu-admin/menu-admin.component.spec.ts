@@ -5,8 +5,6 @@ import { MenuService } from '../../shared/services/menus/menus-service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { environment } from '../../../environments/environment';
 
-const categoriesUrl = `${environment.apiUrl}/categories`;
-
 describe('MenuAdminComponent', () => {
   let component: MenuAdminComponent;
   let fixture: ComponentFixture<MenuAdminComponent>;
@@ -56,11 +54,11 @@ describe('MenuAdminComponent', () => {
     expect(addMenuSpy).not.toHaveBeenCalled();
   });
 
- it('should call addMenu when form is valid', () => {
+ it('should call addMenu when form is valid', async () => {
   component.form.patchValue({
     title: 'Cardápio do Dia',
     description: 'Refeição saudável e simples',
-    categoryId: 'uuid-1',
+    categoryName: 'Almoço',
     cover: 'https://example.com/cover.jpg',
     recipe: 'Modo de preparo',
     nutritionistTips: 'Dica da nutri',
@@ -71,7 +69,7 @@ describe('MenuAdminComponent', () => {
     calories: 350,
   });
 
-  component.save();
+  await component.save();
 
   // Verifica campos específicos sem objectContaining
   const called = addMenuSpy.mock.calls[0][0];
@@ -81,17 +79,38 @@ describe('MenuAdminComponent', () => {
   expect(called.calories).toBe(350);
 });
 
-  it('should reset form after save', () => {
+  it('should create a new category when typed name does not exist', async () => {
+    component.form.patchValue({
+      title: 'Cardapio novo',
+      description: 'Descricao longa',
+      categoryName: 'Lanche',
+      cover: 'https://example.com/cover.jpg',
+    });
+
+    const p = component.save();
+
+    const createReq = httpMock.expectOne((r) => r.method === 'POST' && r.url === `${environment.apiUrl}/categories`);
+    expect(createReq.request.body).toEqual({ name: 'Lanche', type: 'MENU' });
+    createReq.flush({ id: 'cat-new', name: 'Lanche', type: 'MENU' });
+
+    await p;
+
+    const called = addMenuSpy.mock.calls[0][0];
+    expect(called.categoryId).toBe('cat-new');
+    expect(called.title).toBe('Cardapio novo');
+  });
+
+  it('should reset form after save', async () => {
     component.form.patchValue({
       title: 'Test Menu',
       description: 'Test Description',
-      categoryId: 'uuid-1',
+      categoryName: 'Almoço',
     });
 
-    component.save();
+    await component.save();
 
     expect(component.form.get('title')?.value).toBeNull();
-    expect(component.form.get('categoryId')?.value).toBe('');
+    expect(component.form.get('categoryName')?.value).toBe('');
   });
 
   it('should process cover file upload', () => {

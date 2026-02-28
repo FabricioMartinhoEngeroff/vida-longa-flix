@@ -35,6 +35,10 @@ input {
   font-size: 14px;
 }
 
+.category-input {
+  border-radius: 999px;
+}
+
 button {
   height: 42px;
   border: none;

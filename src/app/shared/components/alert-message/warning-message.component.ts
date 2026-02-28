@@ -120,6 +120,7 @@ export class WarningMessageComponent implements OnInit, OnDestroy {
   text = '';
   private subscription?: Subscription;
   private timeoutId?: ReturnType<typeof setTimeout>;
+  private destroyed = false;
 
   constructor(
     private notificationService: NotificationService,
@@ -131,7 +132,7 @@ export class WarningMessageComponent implements OnInit, OnDestroy {
       if (notification.type === 'warning') {
         this.text = notification.text;
         this.visible = true;
-        this.cdr.detectChanges();
+        this.scheduleDetectChanges();
         
         if (this.timeoutId) {
           clearTimeout(this.timeoutId);
@@ -139,7 +140,7 @@ export class WarningMessageComponent implements OnInit, OnDestroy {
         
         this.timeoutId = setTimeout(() => {
           this.visible = false;
-          this.cdr.detectChanges();
+          this.scheduleDetectChanges();
         }, notification.durationMs);
       }
     });
@@ -147,16 +148,28 @@ export class WarningMessageComponent implements OnInit, OnDestroy {
 
   close() {
     this.visible = false;
-    this.cdr.detectChanges();
+    this.scheduleDetectChanges();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
   }
 
   ngOnDestroy() {
+    this.destroyed = true;
     this.subscription?.unsubscribe();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
+  }
+
+  private scheduleDetectChanges(): void {
+    queueMicrotask(() => {
+      if (this.destroyed) return;
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Avoid surfacing ExpressionChangedAfterItHasBeenCheckedError from forced sync checks.
+      }
+    });
   }
 }
