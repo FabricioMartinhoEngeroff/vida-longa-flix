@@ -2,13 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { catchError, of } from 'rxjs';
 
-<<<<<<< HEAD
-import { LoggerService } from '../../../auth/services/logger.service';
-import { environment } from '../../../../environments/environment';
-=======
 import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../auth/services/logger.service';
->>>>>>> feat/refactor-frontend-backend-communication
 import { Video } from '../../types/videos';
 
 @Injectable({ providedIn: 'root' })

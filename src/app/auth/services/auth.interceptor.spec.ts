@@ -15,7 +15,7 @@ describe('authInterceptor', () => {
       providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
-        { provide: AuthService, useValue: { getToken: () => 'test-token' } },
+        { provide: AuthService, useValue: { getToken: () => 'header.payload.signature' } },
       ],
     });
 
@@ -32,7 +32,7 @@ describe('authInterceptor', () => {
     http.get(`${environment.apiUrl}/favorites`).subscribe();
 
     const apiReq = httpMock.expectOne(`${environment.apiUrl}/favorites`);
-    expect(apiReq.request.headers.get('Authorization')).toBe('Bearer test-token');
+    expect(apiReq.request.headers.get('Authorization')).toBe('Bearer header.payload.signature');
     apiReq.flush([]);
 
     http.get('https://example.com/anything').subscribe();

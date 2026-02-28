@@ -131,24 +131,6 @@ export class FavoritesComponent implements OnInit {
     this.menuService.toggleFavorite(menu.id);
   }
 
-<<<<<<< HEAD
-  viewAll(): void {}
-
-  playVideo(event: Event): void {
-    const videoEl = event.currentTarget as HTMLVideoElement | null;
-    if (!videoEl) return;
-
-    videoEl.currentTime = 0;
-    videoEl.play().catch(() => {});
-  }
-
-  pauseVideo(event: Event): void {
-    const videoEl = event.currentTarget as HTMLVideoElement | null;
-    if (!videoEl) return;
-
-    videoEl.pause();
-    videoEl.currentTime = 0;
-=======
   toggleMenuFavorite(menuId: string): void {
     this.menuService.toggleFavorite(menuId);
     if (this.selectedMenu?.id === menuId) {
@@ -171,6 +153,5 @@ export class FavoritesComponent implements OnInit {
   viewAll(): void {
     if (typeof window === 'undefined') return;
     window.scrollTo({ top: 0, behavior: 'smooth' });
->>>>>>> feat/refactor-frontend-backend-communication
   }
 }

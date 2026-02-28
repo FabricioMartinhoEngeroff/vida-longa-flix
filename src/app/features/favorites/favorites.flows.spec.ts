@@ -61,7 +61,7 @@ describe('Favorites flows (integration)', () => {
       likesCount: 0,
     };
 
-    httpMock.expectOne('http://localhost:8090/api/menus').flush([mockMenu]);
+    httpMock.expectOne('/api/menus').flush([mockMenu]);
     menusFixture.detectChanges(false);
     await menusFixture.whenStable();
 
@@ -72,7 +72,7 @@ describe('Favorites flows (integration)', () => {
     expect(likeBtn).toBeTruthy();
     likeBtn!.click();
 
-    const toggleReq = httpMock.expectOne('http://localhost:8090/api/favorites/MENU/menu-1');
+    const toggleReq = httpMock.expectOne('/api/favorites/MENU/menu-1');
     expect(toggleReq.request.method).toBe('POST');
     toggleReq.flush({ favorited: true, itemId: 'menu-1', itemType: 'MENU' });
 
@@ -81,10 +81,10 @@ describe('Favorites flows (integration)', () => {
 
     // Open Favorites AFTER liking (simulates real navigation / refresh)
     const favoritesFixture = TestBed.createComponent(FavoritesComponent);
-    httpMock.expectOne('http://localhost:8090/api/videos').flush([]);
+    httpMock.expectOne('/api/videos').flush([]);
 
     favoritesFixture.detectChanges(false);
-    httpMock.expectOne('http://localhost:8090/api/favorites').flush([
+    httpMock.expectOne('/api/favorites').flush([
       { itemId: 'menu-1', itemType: 'MENU', createdAt: new Date().toISOString() },
     ]);
     favoritesFixture.detectChanges(false);
@@ -136,7 +136,7 @@ describe('Favorites flows (integration)', () => {
       likesCount: 0,
     };
 
-    httpMock.expectOne('http://localhost:8090/api/videos').flush([mockVideo]);
+    httpMock.expectOne('/api/videos').flush([mockVideo]);
     homeFixture.detectChanges(false);
     await homeFixture.whenStable();
 
@@ -147,7 +147,7 @@ describe('Favorites flows (integration)', () => {
     expect(likeBtn).toBeTruthy();
     likeBtn!.click();
 
-    const toggleReq = httpMock.expectOne('http://localhost:8090/api/favorites/VIDEO/video-1');
+    const toggleReq = httpMock.expectOne('/api/favorites/VIDEO/video-1');
     expect(toggleReq.request.method).toBe('POST');
     toggleReq.flush({ favorited: true, itemId: 'video-1', itemType: 'VIDEO' });
 
@@ -155,10 +155,10 @@ describe('Favorites flows (integration)', () => {
     await homeFixture.whenStable();
 
     const favoritesFixture = TestBed.createComponent(FavoritesComponent);
-    httpMock.expectOne('http://localhost:8090/api/menus').flush([]);
+    httpMock.expectOne('/api/menus').flush([]);
 
     favoritesFixture.detectChanges(false);
-    httpMock.expectOne('http://localhost:8090/api/favorites').flush([
+    httpMock.expectOne('/api/favorites').flush([
       { itemId: 'video-1', itemType: 'VIDEO', createdAt: new Date().toISOString() },
     ]);
     favoritesFixture.detectChanges(false);
@@ -176,7 +176,7 @@ describe('Favorites flows (integration)', () => {
     expect(openSpy).toHaveBeenCalled();
     expect(openSpy.mock.calls[0][0].id).toBe('video-1');
 
-    const viewReq = httpMock.expectOne('http://localhost:8090/api/videos/video-1/view');
+    const viewReq = httpMock.expectOne('/api/videos/video-1/view');
     expect(viewReq.request.method).toBe('PATCH');
     viewReq.flush({});
   });
