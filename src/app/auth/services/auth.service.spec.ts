@@ -91,4 +91,39 @@ describe('AuthService (session persistence)', () => {
     expect(localStorage.getItem('token')).toBeNull();
     expect(JSON.parse(sessionStorage.getItem('user') || '{}').name).toBe('User Atualizado');
   });
+
+  it('register posts canonical payload (lowercase email + digits-only phone)', async () => {
+    const p = service.register({
+      name: '  Fabricio  ',
+      email: '  FABRICIO@EMAIL.COM  ',
+      password: 'StrongPass1!',
+      phone: '(11) 98765-4321',
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      name: 'Fabricio',
+      email: 'fabricio@email.com',
+      password: 'StrongPass1!',
+      phone: '11987654321',
+    });
+
+    req.flush({
+      token: 't-local',
+      user: {
+        id: 'u1',
+        name: 'Fabricio',
+        email: 'fabricio@email.com',
+        phone: '11987654321',
+        profileComplete: false,
+        roles: ['ROLE_USER'],
+      },
+    });
+
+    await p;
+
+    expect(localStorage.getItem('token')).toBe('t-local');
+    expect(sessionStorage.getItem('token')).toBeNull();
+  });
 });

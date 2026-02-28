@@ -40,6 +40,21 @@ describe('FormFieldComponent', () => {
     expect(onChange).toHaveBeenCalledWith('test@email.com');
   });
 
+  it('mask=phone should display masked value and emit digits only', () => {
+    component.mask = 'phone';
+    fixture.detectChanges();
+
+    const onChange = vi.fn();
+    component.registerOnChange(onChange);
+
+    const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    input.value = '11987654321';
+    input.dispatchEvent(new Event('input'));
+
+    expect(input.value).toBe('(11) 98765-4321');
+    expect(onChange).toHaveBeenCalledWith('11987654321');
+  });
+
   it('should show error message when error exists', () => {
     component.error = 'Required field';
     fixture.detectChanges();
