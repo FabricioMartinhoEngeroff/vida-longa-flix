@@ -7,6 +7,8 @@ import { signal } from '@angular/core';
 import { ModalService } from '../../services/modal/modal.service';
 import { VideoService } from '../../services/video/video.service';
 import { CommentsService } from '../../services/comments/comments.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { of } from 'rxjs';
 
 describe('VideoZoomModalComponent', () => {
   let component: VideoZoomModalComponent;
@@ -25,9 +27,14 @@ describe('VideoZoomModalComponent', () => {
     toggleFavorite: vi.fn(),
   };
 
+  const commentsStateSignal = signal<Record<string, any[]>>({});
+
   const commentsServiceMock = {
     get: vi.fn().mockReturnValue([]),
     add: vi.fn(),
+    loadByVideo: vi.fn(),
+    delete: vi.fn(),
+    comments: commentsStateSignal.asReadonly(),
   };
 
   beforeEach(async () => {
@@ -37,6 +44,7 @@ describe('VideoZoomModalComponent', () => {
         { provide: ModalService, useValue: modalServiceMock },
         { provide: VideoService, useValue: videoServiceMock },
         { provide: CommentsService, useValue: commentsServiceMock },
+        { provide: AuthService, useValue: { user$: of({ roles: ['ROLE_ADMIN'] }) } },
       ],
     }).compileComponents();
 
@@ -54,7 +62,7 @@ describe('VideoZoomModalComponent', () => {
 
     component.addComment('test comment');
 
-    expect(commentsServiceMock.add).toHaveBeenCalledWith('video', '5', 'test comment');
+    expect(commentsServiceMock.add).toHaveBeenCalledWith('5', 'test comment');
   });
 
   it('should toggle favorite', () => {

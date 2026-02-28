@@ -1,14 +1,86 @@
 <button
   class="btn-notifications"
   type="button"
-  (click)="openNotifications()"
-  [attr.aria-label]="'Notificações' + (unreadCount > 0 ? ', ' + unreadCount + ' não lidas' : '')"
+  (click)="openNotifications($event)"
+  [attr.aria-label]="'Notificações' + (unreadCount() > 0 ? ', ' + unreadCount() + ' não lidas' : '')"
 >
   <mat-icon>notifications</mat-icon>
 
-  @if (unreadCount > 0) {
+  @if (unreadCount() > 0) {
     <span class="badge">
-      {{ unreadCount > 9 ? '9+' : unreadCount }}
+      {{ unreadCount() > 9 ? '9+' : unreadCount() }}
     </span>
   }
 </button>
+
+@if (isOpen) {
+  <div class="overlay" (click)="close()">
+    <div class="panel" role="dialog" aria-label="Minhas notificações" (click)="$event.stopPropagation()">
+      <header class="panel-header">
+        <div class="title">
+          <span>Minhas notificações</span>
+        </div>
+
+        <button class="close-btn" type="button" (click)="close()" aria-label="Fechar">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+
+      <nav class="tabs" aria-label="Filtro de notificações">
+        <button type="button" class="tab" [class.active]="activeTab() === 'all'" (click)="setTab('all')">
+          Todas
+        </button>
+        <button type="button" class="tab" [class.active]="activeTab() === 'unread'" (click)="setTab('unread')">
+          Não lidas
+        </button>
+        <button type="button" class="tab" [class.active]="activeTab() === 'read'" (click)="setTab('read')">
+          Lidas
+        </button>
+      </nav>
+
+      <section class="list" aria-label="Lista de notificações">
+        @if (visible().length === 0) {
+          <div class="empty">
+            Nenhuma notificação aqui ainda.
+          </div>
+        } @else {
+          @for (item of visible(); track item.id) {
+            <button
+              type="button"
+              class="item"
+              [class.unread]="!item.read"
+              (click)="openItem(item)"
+              [attr.aria-label]="label(item) + ': ' + item.title"
+            >
+              <div class="item-meta">
+                <span class="pill">{{ label(item) }}</span>
+                <span class="date">{{ formatDate(item.createdAt) }}</span>
+              </div>
+              <div class="item-title">{{ item.title }}</div>
+            </button>
+          }
+        }
+      </section>
+
+      <footer class="panel-footer">
+        <button
+          class="action-btn outline"
+          type="button"
+          (click)="markAllRead()"
+          [disabled]="unreadCount() === 0"
+        >
+          Marcar todas como lidas
+        </button>
+
+        <button
+          class="action-btn primary"
+          type="button"
+          (click)="loadMore()"
+          [disabled]="!canLoadMore()"
+        >
+          Carregar mais
+        </button>
+      </footer>
+    </div>
+  </div>
+}

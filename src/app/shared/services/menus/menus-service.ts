@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { Menu, MenuRequest } from '../../types/menu';
 import { FavoritesService } from '../favorites/favorites.service.';
 import { LoggerService } from '../../../auth/services/logger.service';
+import { ContentNotificationsService } from '../notifications/content-notifications.service';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
@@ -23,7 +24,8 @@ export class MenuService {
   constructor(
     private http: HttpClient,
     private favoritesService: FavoritesService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private notifications: ContentNotificationsService
   ) {
     this.loadMenus();
   }
@@ -63,7 +65,10 @@ export class MenuService {
 
   addMenu(request: MenuRequest): void {
     this.http.post<void>(this.adminUrl, request).pipe(
-      tap(() => this.loadMenus()),
+      tap(() => {
+        this.notifications.add('MENU', request.title);
+        this.loadMenus();
+      }),
       catchError(err => {
         this.logger.error('Erro ao criar menu', err);
         return of(null);

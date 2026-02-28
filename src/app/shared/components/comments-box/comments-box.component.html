@@ -9,7 +9,29 @@
 
   </div>
 
-  @if (comments.length > 0) {
+  @if (commentItems && commentItems.length > 0) {
+    @for (c of commentItems; track c.id) {
+      <div class="comment-item row">
+        <div class="comment-content">
+          @if (c.author) {
+            <div class="comment-author">{{ c.author }}</div>
+          }
+          <div class="comment-text">{{ c.text }}</div>
+        </div>
+
+        @if (canDeleteComments) {
+          <button
+            type="button"
+            class="comment-trash"
+            aria-label="Deletar comentário"
+            (click)="commentDelete.emit(c.id)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  } @else if (comments.length > 0) {
     @for (c of comments; track c) {
       <div class="comment-item">{{ c }}</div>
     }

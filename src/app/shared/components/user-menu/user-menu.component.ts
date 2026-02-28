@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 import { ChangePasswordModalComponent } from '../change-password-modal/change-password-modal.component';
-import { UserAuthenticationService } from '../../../auth/services/user-authentication.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { UserProfileModalComponent } from '../user-profile-modal/user-profile-modal.component';
 import { DEFAULT_MESSAGES } from '../../services/alert-message/default-messages.constants';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
+import type { ProfileData, User } from '../../../auth/types/user.types';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-user-menu',
@@ -21,23 +23,60 @@ import { NotificationService } from '../../services/alert-message/alert-message.
   styleUrls: ['./user-menu.component.css'],
 })
 export class UserMenuComponent {
+  private readonly destroyRef = inject(DestroyRef);
   isMenuOpen = false;
   isLogoutModalOpen = false;
   isDraggingPhoto = false;
   isChangePasswordModalOpen = false;
   isProfileModalOpen = false;
 
-  user = {
-    name: 'Fabricio Engeroff',
-    email: 'fa.engeroff@gmail.com',
-    photo: null as string | null,
+  user: {
+    name: string;
+    email: string;
+    photo: string | null;
+    taxId?: string;
+    phone?: string;
+    address?: User['address'];
+  } = {
+    name: '',
+    email: '',
+    photo: null,
+    taxId: '',
+    phone: '',
+    address: undefined,
   };
 
   constructor(
     private router: Router,
     private notificationService: NotificationService,
-    private authService: UserAuthenticationService
-  ) {}
+    private authService: AuthService
+  ) {
+    const current = this.authService.user;
+    if (current) {
+      this.user = {
+        name: current.name,
+        email: current.email,
+        photo: current.photo ?? null,
+        taxId: current.taxId ?? '',
+        phone: current.phone ?? '',
+        address: current.address,
+      };
+    }
+
+    this.authService.user$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((u) => {
+        if (!u) return;
+        this.user = {
+          name: u.name,
+          email: u.email,
+          photo: u.photo ?? null,
+          taxId: u.taxId ?? '',
+          phone: u.phone ?? '',
+          address: u.address,
+        };
+      });
+  }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
@@ -76,6 +115,9 @@ export class UserMenuComponent {
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.user.photo = e.target.result;
+      this.authService.updatePhoto(this.user.photo).catch(() => {
+        this.notificationService.showDefault(DEFAULT_MESSAGES.GENERIC_ERROR);
+      });
       this.notificationService.showDefault(DEFAULT_MESSAGES.PHOTO_UPDATED);
     };
     reader.readAsDataURL(file);
@@ -111,8 +153,10 @@ export class UserMenuComponent {
   }
 
   saveProfile(data: any): void {
-    // TODO: salvar perfil
-    // TODO: Enviar para backend
+    const payload: ProfileData = data;
+    this.authService.updateProfile(payload).catch(() => {
+      this.notificationService.showDefault(DEFAULT_MESSAGES.GENERIC_ERROR);
+    });
     this.isProfileModalOpen = false;
     this.notificationService.showDefault(DEFAULT_MESSAGES.PROFILE_UPDATED);
   }

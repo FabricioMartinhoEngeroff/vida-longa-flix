@@ -7,7 +7,7 @@ import { FavoritesService } from '../../shared/services/favorites/favorites.serv
 import { ModalService } from '../../shared/services/modal/modal.service';
 import { VideoService } from '../../shared/services/video/video.service';
 import { MenuService } from '../../shared/services/menus/menus-service';
-import { MenuFavoritesService } from '../../shared/services/menus/menu-favorites.sevice';
+import { MenuCommentsService } from '../../shared/services/menus/menu-comments-service';
 
 describe('FavoritesComponent', () => {
   let component: FavoritesComponent;
@@ -18,11 +18,18 @@ describe('FavoritesComponent', () => {
       imports: [FavoritesComponent],
       providers: [
         { provide: Router, useValue: { navigate: vi.fn() } },
-        { provide: FavoritesService, useValue: { favorites: () => [] } },
-        { provide: MenuFavoritesService, useValue: { favorites: () => [] } },
+        {
+          provide: FavoritesService,
+          useValue: {
+            load: vi.fn(),
+            videoFavorites: () => [],
+            menuFavorites: () => [],
+          },
+        },
         { provide: ModalService, useValue: { open: vi.fn() } },
-        { provide: VideoService, useValue: { toggleFavorite: vi.fn() } },
-        { provide: MenuService, useValue: { toggleFavorite: vi.fn() } },
+        { provide: VideoService, useValue: { videos: () => [], toggleFavorite: vi.fn() } },
+        { provide: MenuService, useValue: { menus: () => [], toggleFavorite: vi.fn() } },
+        { provide: MenuCommentsService, useValue: { comments: () => ({}), add: vi.fn() } },
       ],
     }).compileComponents();
 

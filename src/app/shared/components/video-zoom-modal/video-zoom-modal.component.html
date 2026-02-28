@@ -29,12 +29,25 @@
         </ul>
 
         <app-comments-box
-  [comments]="commentTexts"
-  [favorited]="updatedVideo.favorited"
-  (favoriteClick)="toggleFavorite()"
-  (commentSubmit)="addComment($event)"
-></app-comments-box>
+          [commentItems]="commentItems"
+          [canDeleteComments]="isAdmin"
+          [favorited]="updatedVideo.favorited"
+          (favoriteClick)="toggleFavorite()"
+          (commentSubmit)="addComment($event)"
+          (commentDelete)="askDeleteComment($event)"
+        ></app-comments-box>
       </div>
     </div>
   </div>
+
+  <app-confirmation-modal
+    [open]="isDeleteCommentModalOpen"
+    title="Deletar comentário"
+    message="Deseja mesmo deletar este comentário?"
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    [isDanger]="true"
+    (confirm)="confirmDeleteComment()"
+    (cancel)="cancelDeleteComment()"
+  ></app-confirmation-modal>
 }

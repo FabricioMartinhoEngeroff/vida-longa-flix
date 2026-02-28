@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { NavItemComponent } from '../nav-item/nav-item.component';
-import { UserAuthenticationService } from '../../../auth/services/user-authentication.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface MenuItem {
   name: string;
@@ -19,6 +20,7 @@ interface MenuItem {
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent {
+  private readonly destroyRef = inject(DestroyRef);
 
   items: MenuItem[] = [
     { name: 'Início', icon: 'home', path: '/app' },
@@ -37,7 +39,7 @@ export class NavbarComponent {
   
   constructor(
     private router: Router, 
-    private auth: UserAuthenticationService
+    private auth: AuthService
   ) {
    
     this.router.events
@@ -46,8 +48,15 @@ export class NavbarComponent {
 
     this.updateActiveFromRoute();
 
-    const user = this.auth.user;
-    this.isAdmin = !!user && user.email === 'fa.engeroff@gmail.com';
+    this.syncAdminState(this.auth.user);
+
+    this.auth.user$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((user) => this.syncAdminState(user));
+  }
+
+  private syncAdminState(user: { roles?: string[] } | null): void {
+    this.isAdmin = !!user && (user.roles?.includes('ROLE_ADMIN') ?? false);
     this.visibleItems = this.items.filter(i => !i.adminOnly || this.isAdmin);
   }
 

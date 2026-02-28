@@ -43,8 +43,14 @@ export class AuthService {
   }
 
   private loadSession() {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    const userData = localStorage.getItem(this.USER_KEY);
+    // Prefer localStorage, fallback to sessionStorage (when user didn't choose "keep logged in").
+    const localToken = localStorage.getItem(this.TOKEN_KEY);
+    const localUser = localStorage.getItem(this.USER_KEY);
+    const sessionToken = sessionStorage.getItem(this.TOKEN_KEY);
+    const sessionUser = sessionStorage.getItem(this.USER_KEY);
+
+    const token = localToken ?? sessionToken;
+    const userData = localUser ?? sessionUser;
 
     if (token && userData) {
       try {
@@ -55,7 +61,7 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string): Promise<TokenResponse> {
+  async login(email: string, password: string, keepLoggedIn = true): Promise<TokenResponse> {
     try {
       const payload = this.mapLoginToApi(email, password);
 
@@ -78,7 +84,7 @@ export class AuthService {
         profileComplete: true,
       };
 
-      this.saveSession(response.token, user);
+      this.saveSession(response.token, user, keepLoggedIn ? 'local' : 'session');
       return response;
     } catch (error) {
       throw handleApiError(error, 'Erro ao fazer login');
@@ -109,7 +115,7 @@ export class AuthService {
       roles: []
     };
 
-    this.saveSession(response.token, user);
+    this.saveSession(response.token, user, 'local');
 
     // WhatsApp removido daqui — backend já envia no /auth/register
     return response;
@@ -132,7 +138,9 @@ export class AuthService {
       );
 
       if (response) {
-        this.userSubject.next(response);
+        // Keep the same storage type already used by the session.
+        const inLocal = !!localStorage.getItem(this.TOKEN_KEY);
+        this.saveSession(token, response, inLocal ? 'local' : 'session');
       }
 
       return response ?? null;
@@ -161,7 +169,8 @@ export class AuthService {
 
     const token = this.getToken();
     if (!token) throw new Error('User not authenticated');
-    this.saveSession(token, updatedUser);
+    const inLocal = !!localStorage.getItem(this.TOKEN_KEY);
+    this.saveSession(token, updatedUser, inLocal ? 'local' : 'session');
 
     return updatedUser;
   }
@@ -180,7 +189,8 @@ export class AuthService {
 
     const token = this.getToken();
     if (!token) throw new Error('User not authenticated');
-    this.saveSession(token, updatedUser);
+    const inLocal = !!localStorage.getItem(this.TOKEN_KEY);
+    this.saveSession(token, updatedUser, inLocal ? 'local' : 'session');
   }
 
   logout() {
@@ -188,9 +198,16 @@ export class AuthService {
     this.router.navigate(['/authorization']);
   }
 
-  private saveSession(token: string, user: User) {
-    localStorage.setItem(this.TOKEN_KEY, token);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  private saveSession(token: string, user: User, storage: 'local' | 'session') {
+    const primary = storage === 'local' ? localStorage : sessionStorage;
+    const secondary = storage === 'local' ? sessionStorage : localStorage;
+
+    primary.setItem(this.TOKEN_KEY, token);
+    primary.setItem(this.USER_KEY, JSON.stringify(user));
+
+    // Ensure there's a single source of truth.
+    secondary.removeItem(this.TOKEN_KEY);
+    secondary.removeItem(this.USER_KEY);
     this.userSubject.next(user);
   }
 
@@ -214,12 +231,13 @@ export class AuthService {
       name: (data.name ?? '').trim(),
       email: (data.email ?? '').trim().toLowerCase(),
       password: data.password ?? '',
+      // Keep backend compatibility: send the formatted phone expected by legacy validation.
       phone: applyPhoneMaskAuto(data.phone ?? ''),
     };
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.TOKEN_KEY) ?? sessionStorage.getItem(this.TOKEN_KEY);
   }
 
   get user(): User | null {

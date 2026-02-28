@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { MenuRequest } from '../../shared/types/menu';
 import { Category } from '../../shared/types/videos';
-import { environment } from '../../../environments/environment';
+import { CategoriesService } from '../../shared/services/categories/categories.service';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-menu-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, ConfirmationModalComponent],
   templateUrl: './menu-admin.component.html',
   styleUrls: ['./menu-admin.component.css'],
 })
@@ -22,15 +22,18 @@ export class MenuAdminComponent implements OnInit {
   // Categorias do tipo MENU carregadas do backend
   categories: Category[] = [];
 
+  isDeleteModalOpen = false;
+  private pendingDelete: { kind: 'MENU' | 'CATEGORY'; id: string; label: string } | null = null;
+
   constructor(
     private fb: FormBuilder,
     private menuService: MenuService,
-    private http: HttpClient
+    private categoriesService: CategoriesService
   ) {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(5)]],
-      categoryId: ['', Validators.required], // UUID real
+      categoryName: ['', Validators.required],
       cover: [''],
       recipe: [''],
       nutritionistTips: [''],
@@ -44,9 +47,11 @@ export class MenuAdminComponent implements OnInit {
 
   ngOnInit(): void {
     // Busca categorias do tipo MENU igual ao VideoAdminComponent faz para VIDEO
-    this.http.get<Category[]>(`${environment.apiUrl}/categories`, {
-      params: { type: 'MENU' }
-    }).subscribe(cats => this.categories = cats);
+    this.categoriesService.list('MENU').subscribe(cats => this.categories = cats);
+  }
+
+  menusList() {
+    return this.menuService.menus();
   }
 
   onCoverFile(event: Event) {
@@ -56,14 +61,30 @@ export class MenuAdminComponent implements OnInit {
     this.form.patchValue({ cover: previewUrl });
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (this.form.invalid) return;
+
+    let categoryId: string;
+    try {
+      categoryId = await this.categoriesService.ensureCategoryId(
+        'MENU',
+        this.form.value.categoryName,
+        this.categories
+      );
+    } catch {
+      return;
+    }
+
+    const typedName = (this.form.value.categoryName ?? '').trim();
+    if (typedName && !this.categories.some(c => c.id === categoryId)) {
+      this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'MENU' }];
+    }
 
     const request: MenuRequest = {
       title: this.form.value.title,
       description: this.form.value.description,
       cover: this.form.value.cover || '',
-      categoryId: this.form.value.categoryId,
+      categoryId,
       recipe: this.form.value.recipe || '',
       nutritionistTips: this.form.value.nutritionistTips || '',
       protein: Number(this.form.value.protein || 0),
@@ -76,12 +97,61 @@ export class MenuAdminComponent implements OnInit {
     this.menuService.addMenu(request);
 
     this.form.reset({
-      categoryId: '',
+      categoryName: '',
       protein: 0,
       carbs: 0,
       fat: 0,
       fiber: 0,
       calories: 0,
     });
+  }
+
+  askDeleteMenu(id: string, title: string): void {
+    this.pendingDelete = { kind: 'MENU', id, label: title };
+    this.isDeleteModalOpen = true;
+  }
+
+  askDeleteCategory(id: string, name: string): void {
+    this.pendingDelete = { kind: 'CATEGORY', id, label: name };
+    this.isDeleteModalOpen = true;
+  }
+
+  cancelDelete(): void {
+    this.isDeleteModalOpen = false;
+    this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    const pending = this.pendingDelete;
+    if (!pending) return;
+
+    if (pending.kind === 'MENU') {
+      this.menuService.removeMenu(pending.id);
+      this.cancelDelete();
+      return;
+    }
+
+    this.categoriesService.delete(pending.id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter((c) => c.id !== pending.id);
+        this.cancelDelete();
+      },
+      error: () => {
+        this.cancelDelete();
+      },
+    });
+  }
+
+  get deleteTitle(): string {
+    if (this.pendingDelete?.kind === 'CATEGORY') return 'Deletar categoria';
+    return 'Deletar cardápio';
+  }
+
+  get deleteMessage(): string {
+    const label = this.pendingDelete?.label ?? '';
+    if (this.pendingDelete?.kind === 'CATEGORY') {
+      return `Deseja mesmo deletar a categoria “${label}”?`;
+    }
+    return `Deseja mesmo deletar o cardápio “${label}”?`;
   }
 }

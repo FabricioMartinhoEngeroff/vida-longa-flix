@@ -61,6 +61,14 @@
   color: #2f6b3a;
 }
 
+.warning-icon.danger {
+  background: #fef2f2;
+}
+
+.warning-icon.danger mat-icon {
+  color: #dc2626;
+}
+
 .title {
   font-size: 22px;
   font-weight: 600;
@@ -146,11 +154,11 @@
 }
 
 .confirm-btn.danger {
-  background: #2f6b3a;
+  background: #dc2626;
 }
 
 .confirm-btn.danger:hover {
-  background: #2f6b3a;
+  background: #b91c1c;
 }
 
 @media (max-width: 768px) {

@@ -15,18 +15,18 @@ describe('handleApiError', () => {
       error: { message: 'Backend error' },
     });
 
-    expect(() => handleApiError(httpError, 'Default')).toThrowError('Backend error');
+    expect(handleApiError(httpError, 'Default').message).toBe('Backend error');
   });
 
   it('should use generic JS error message', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    expect(() => handleApiError(new Error('Network failure'), 'Default')).toThrowError('Network failure');
+    expect(handleApiError(new Error('Network failure'), 'Default').message).toBe('Network failure');
   });
 
   it('should fall back to default message when error is not mapped', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    expect(() => handleApiError({ any: true }, 'Default message')).toThrowError('Default message');
+    expect(handleApiError({ any: true }, 'Default message').message).toBe('Default message');
   });
 });

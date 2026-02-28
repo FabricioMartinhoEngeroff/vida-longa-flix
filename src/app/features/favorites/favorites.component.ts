@@ -2,7 +2,8 @@ import { Component, OnInit, HostListener, effect } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
+import { CategoryCarouselComponent } from '../../shared/components/category-carousel/category-carousel.component';
+import { EngagementSummaryComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
 import { TitleComponent } from '../../shared/components/title/title.component';
 import { Video } from '../../shared/types/videos';
 import { Menu } from '../../shared/types/menu';
@@ -11,21 +12,39 @@ import { VideoService } from '../../shared/services/video/video.service';
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { ModalService } from '../../shared/services/modal/modal.service';
 import { FavoritesService } from '../../shared/services/favorites/favorites.service.';
+import { agruparPor as groupBy, Grupo as Group } from '../../shared/utils/agrupar-por';
+import { MenuModalComponent } from '../../shared/components/menu-modal/menu-modal.component';
+import { MenuCommentsService } from '../../shared/services/menus/menu-comments-service';
+
+type VideoGroup = Group<Video>;
+type MenuGroup = Group<Menu>;
 
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [NgIf, NgFor, MatIconModule, CarouselComponent, TitleComponent],
+  imports: [
+    NgIf,
+    NgFor,
+    MatIconModule,
+    CategoryCarouselComponent,
+    EngagementSummaryComponent,
+    MenuModalComponent,
+    TitleComponent,
+  ],
   templateUrl: './favorites.component.html',
   styleUrls: ['./favorites.component.css'],
 })
 export class FavoritesComponent implements OnInit {
 
   favoriteVideos: Video[] = [];
+  videosByCategory: VideoGroup[] = [];
+
   favoriteMenus: Menu[] = [];
+  menusByCategory: MenuGroup[] = [];
   selectedMenu: Menu | null = null;
   isMobile = window.innerWidth <= 768;
 
+  private commentsState: Record<string, string[]> = {};
   private menuModalInHistory = false;
 
   constructor(
@@ -33,7 +52,8 @@ export class FavoritesComponent implements OnInit {
     private favoritesService: FavoritesService,
     private videoService: VideoService,
     private menuService: MenuService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private menuCommentsService: MenuCommentsService
   ) {
     // Sincroniza videos favoritados com o estado do FavoritesService
     effect(() => {
@@ -42,15 +62,27 @@ export class FavoritesComponent implements OnInit {
       );
       this.favoriteVideos = this.videoService.videos()
         .filter(v => favoriteIds.has(v.id));
+
+      this.videosByCategory = groupBy(
+        this.favoriteVideos,
+        (v) => v.category?.name || 'Sem categoria'
+      );
     });
 
     // Sincroniza menus favoritados com o estado do FavoritesService
     effect(() => {
+      this.commentsState = this.menuCommentsService.comments();
+
       const favoriteIds = new Set(
         this.favoritesService.menuFavorites().map(f => f.itemId)
       );
       this.favoriteMenus = this.menuService.menus()
         .filter(m => favoriteIds.has(m.id));
+
+      this.menusByCategory = groupBy(
+        this.favoriteMenus,
+        (m) => m.category?.name || 'Sem categoria'
+      );
     });
   }
 
@@ -99,6 +131,7 @@ export class FavoritesComponent implements OnInit {
     this.menuService.toggleFavorite(menu.id);
   }
 
+<<<<<<< HEAD
   viewAll(): void {}
 
   playVideo(event: Event): void {
@@ -115,5 +148,29 @@ export class FavoritesComponent implements OnInit {
 
     videoEl.pause();
     videoEl.currentTime = 0;
+=======
+  toggleMenuFavorite(menuId: string): void {
+    this.menuService.toggleFavorite(menuId);
+    if (this.selectedMenu?.id === menuId) {
+      this.closeMenuModal();
+    }
+  }
+
+  addMenuComment(menuId: string, text: string): void {
+    this.menuCommentsService.add(menuId, text);
+  }
+
+  getTotalMenuComments(menuId: string): number {
+    return this.commentsState[menuId]?.length ?? 0;
+  }
+
+  getMenuComments(menuId: string): string[] {
+    return this.commentsState[menuId] ?? [];
+  }
+
+  viewAll(): void {
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+>>>>>>> feat/refactor-frontend-backend-communication
   }
 }

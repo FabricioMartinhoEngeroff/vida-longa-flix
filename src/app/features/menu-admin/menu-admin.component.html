@@ -15,13 +15,16 @@
 
       <label>
         Categoria
-        <!-- select alimentado pelo backend — igual ao VideoAdminComponent -->
-        <select formControlName="categoryId">
-          <option value="" disabled>Selecione uma categoria</option>
-          <option *ngFor="let cat of categories" [value]="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
+        <input
+          class="category-input"
+          type="text"
+          formControlName="categoryName"
+          placeholder="Digite ou selecione uma categoria"
+          list="menu-category-list"
+        />
+        <datalist id="menu-category-list">
+          <option *ngFor="let cat of categories" [value]="cat.name"></option>
+        </datalist>
       </label>
     </div>
 
@@ -79,4 +82,64 @@
 
     <button type="submit" [disabled]="form.invalid">Salvar</button>
   </form>
+
+  <h3 class="section-title">Cardápios cadastrados</h3>
+  @if (menusList().length > 0) {
+    <div class="resource-list">
+      @for (m of menusList(); track m.id) {
+        <div class="resource-item">
+          <div class="resource-main">
+            <div class="resource-name">{{ m.title }}</div>
+            <div class="resource-meta">Categoria: {{ m.category?.name || 'Sem categoria' }}</div>
+          </div>
+
+          <button
+            type="button"
+            class="trash-btn"
+            aria-label="Deletar cardápio"
+            (click)="askDeleteMenu(m.id, m.title)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="resource-empty">Nenhum cardápio cadastrado.</div>
+  }
+
+  <h3 class="section-title">Categorias</h3>
+  @if (categories.length > 0) {
+    <div class="resource-list">
+      @for (c of categories; track c.id) {
+        <div class="resource-item">
+          <div class="resource-main">
+            <div class="resource-name">{{ c.name }}</div>
+          </div>
+
+          <button
+            type="button"
+            class="trash-btn"
+            aria-label="Deletar categoria"
+            (click)="askDeleteCategory(c.id, c.name)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="resource-empty">Nenhuma categoria cadastrada.</div>
+  }
+
+  <app-confirmation-modal
+    [open]="isDeleteModalOpen"
+    [title]="deleteTitle"
+    [message]="deleteMessage"
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    [isDanger]="true"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  ></app-confirmation-modal>
 </section>

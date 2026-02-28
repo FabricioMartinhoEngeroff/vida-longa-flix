@@ -2,15 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { vi } from 'vitest';
 import { UserMenuComponent } from './user-menu.component';
-import { UserAuthenticationService } from '../../../auth/services/user-authentication.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('UserMenuComponent', () => {
   let component: UserMenuComponent;
   let fixture: ComponentFixture<UserMenuComponent>;
   
   const routerMock = { navigate: vi.fn() };
-  const authMock = { logout: vi.fn() };
+  const user$ = new BehaviorSubject<any>(null);
+  const authMock = {
+    user: null,
+    user$: user$.asObservable(),
+    logout: vi.fn(),
+    updatePhoto: vi.fn().mockResolvedValue(undefined),
+    updateProfile: vi.fn().mockResolvedValue({}),
+  };
   const notificationMock = { showDefault: vi.fn() };
 
   beforeEach(async () => {
@@ -18,7 +26,7 @@ describe('UserMenuComponent', () => {
       imports: [UserMenuComponent],
       providers: [
         { provide: Router, useValue: routerMock },
-        { provide: UserAuthenticationService, useValue: authMock },
+        { provide: AuthService, useValue: authMock },
         { provide: NotificationService, useValue: notificationMock }
       ]
     }).compileComponents();
