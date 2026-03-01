@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostListener, OnDestroy, effect, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, HostListener, OnDestroy, effect, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { CommentsBoxComponent, CommentItem } from '../comments-box/comments-box.component';
@@ -8,6 +8,7 @@ import { VideoService } from '../../services/video/video.service';
 import { CommentResponse, CommentsService } from '../../services/comments/comments.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
+import { EditableFieldComponent } from '../editable-field/editable-field.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
@@ -15,7 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-video-zoom-modal',
   standalone: true,
-  imports: [MatIconModule, CommentsBoxComponent, ConfirmationModalComponent],
+  imports: [MatIconModule, CommentsBoxComponent, ConfirmationModalComponent, EditableFieldComponent],
   templateUrl:'./video-zoom-modal.component.html',
   styleUrls: ['./video-zoom-modal.component.css'],
 })
@@ -32,6 +33,8 @@ export class VideoZoomModalComponent implements OnDestroy {
   private hasHistoryEntry = false;
   private subscriptions = new Subscription();
 
+  private readonly cdr = inject(ChangeDetectorRef);
+
   constructor(
     private modalService: ModalService,
     private videoService: VideoService,
@@ -41,6 +44,7 @@ export class VideoZoomModalComponent implements OnDestroy {
     effect(() => {
       const video = this.modalService.selectedVideo();
       this.handleSelectedVideo(video as Video | null);
+      this.cdr.markForCheck();
     });
 
     effect(() => {
@@ -48,9 +52,11 @@ export class VideoZoomModalComponent implements OnDestroy {
       this.commentsService.comments(); // depend on signal updates
       if (!video?.id) {
         this.comments = [];
+        this.cdr.markForCheck();
         return;
       }
       this.comments = this.commentsService.get(video.id);
+      this.cdr.markForCheck();
     });
 
     this.authService.user$
@@ -142,6 +148,14 @@ export class VideoZoomModalComponent implements OnDestroy {
   preventClose(event: MouseEvent): void {
     event.stopPropagation();
   }
+
+  onFieldSave(field: string, value: string | number): void { 
+    if (!this.updatedVideo) return;                          
+    this.videoService.updateVideo(
+      this.updatedVideo.id,
+      ({ [field]: value } as Partial<Video>)
+    );
+  }                                                          
 
   toggleFavorite(): void {
     if (!this.updatedVideo) return;

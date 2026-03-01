@@ -80,6 +80,21 @@ export class MenuService {
     ).subscribe();
   }
 
+  // Rota admin — PUT /admin/menus/{id}
+  updateMenu(id: string, changes: Partial<Menu>): void {
+    this.http.put<void>(`${this.adminUrl}/${id}`, changes).pipe(
+      tap(() => {
+        this.alert.success('Cardápio atualizado com sucesso!');
+        this.loadMenus();
+      }),
+      catchError(err => {
+        this.logger.error('Erro ao atualizar menu', err);
+        this.alert.error('Erro ao atualizar cardápio. Tente novamente.');
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   removeMenu(id: string): void {
     this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
       tap(() => {

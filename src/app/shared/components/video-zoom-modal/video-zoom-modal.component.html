@@ -12,20 +12,88 @@
       </div>
 
       <div class="content">
-        <h3 class="title">{{ updatedVideo.title }}</h3>
-        <p class="description">{{ updatedVideo.description }}</p>
+        <h3 class="title">
+          <app-editable-field
+            [value]="updatedVideo.title"
+            fieldType="text"
+            [canEdit]="isAdmin"
+            placeholder="Título"
+            (save)="onFieldSave('title', $event)"
+          ></app-editable-field>
+        </h3>
+        <p class="description">
+          <app-editable-field
+            [value]="updatedVideo.description"
+            fieldType="textarea"
+            [canEdit]="isAdmin"
+            placeholder="Descrição"
+            (save)="onFieldSave('description', $event)"
+          ></app-editable-field>
+        </p>
 
         <div class="recipe-box">
           <strong>Receita:</strong><br />
-          {{ updatedVideo.recipe }}
+          <app-editable-field                                 
+            [value]="updatedVideo.recipe"                     
+            emptyText="Sem receita cadastrada."               
+            fieldType="textarea"                              
+            [canEdit]="isAdmin"                               
+            placeholder="Receita"                             
+            (save)="onFieldSave('recipe', $event)"            
+          ></app-editable-field>                              
         </div>
 
         <ul class="nutrients">
-          <li><span><strong>Proteínas:</strong></span><span>{{ updatedVideo.protein }}g</span></li>
-          <li><span><strong>Carboidratos:</strong></span><span>{{ updatedVideo.carbs }}g</span></li>
-          <li><span><strong>Gorduras:</strong></span><span>{{ updatedVideo.fat }}g</span></li>
-          <li><span><strong>Fibras:</strong></span><span>{{ updatedVideo.fiber }}g</span></li>
-          <li><span><strong>Calorias:</strong></span><span>{{ updatedVideo.calories }} kcal</span></li>
+          <li>
+            <app-editable-field
+              [value]="updatedVideo.protein"
+              fieldType="number"
+              [canEdit]="isAdmin"
+              label="Proteínas"
+              suffix="g"
+              (save)="onFieldSave('protein', $event)"
+            ></app-editable-field>
+          </li>
+          <li>
+            <app-editable-field
+              [value]="updatedVideo.carbs"
+              fieldType="number"
+              [canEdit]="isAdmin"
+              label="Carboidratos"
+              suffix="g"
+              (save)="onFieldSave('carbs', $event)"
+            ></app-editable-field>
+          </li>
+          <li>
+            <app-editable-field
+              [value]="updatedVideo.fat"
+              fieldType="number"
+              [canEdit]="isAdmin"
+              label="Gorduras"
+              suffix="g"
+              (save)="onFieldSave('fat', $event)"
+            ></app-editable-field>
+          </li>
+          <li>
+            <app-editable-field
+              [value]="updatedVideo.fiber"
+              fieldType="number"
+              [canEdit]="isAdmin"
+              label="Fibras"
+              suffix="g"
+              (save)="onFieldSave('fiber', $event)"
+            ></app-editable-field>
+          </li>
+          <li>
+            <app-editable-field
+              [value]="updatedVideo.calories"                 
+              fieldType="number"                              
+              [canEdit]="isAdmin"                             
+              label="Calorias"                                
+              suffix=" kcal"                                  
+              (save)="onFieldSave('calories', $event)"        
+            ></app-editable-field>                            
+          </li>                                               
         </ul>
 
         <app-comments-box

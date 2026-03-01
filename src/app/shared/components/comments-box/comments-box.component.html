@@ -33,7 +33,22 @@
     }
   } @else if (comments.length > 0) {
     @for (c of comments; track c) {
-      <div class="comment-item">{{ c }}</div>
+      <div class="comment-item row">
+        <div class="comment-content">
+          <div class="comment-text">{{ c }}</div>
+        </div>
+
+        @if (canDeleteComments) {
+          <button
+            type="button"
+            class="comment-trash"
+            aria-label="Deletar comentário"
+            (click)="commentDelete.emit(c)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </div>
     }
   } @else {
     <div class="comment-item empty">Seja o primeiro a comentar.</div>

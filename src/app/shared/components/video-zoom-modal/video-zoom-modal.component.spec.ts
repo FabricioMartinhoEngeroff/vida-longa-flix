@@ -25,6 +25,7 @@ describe('VideoZoomModalComponent', () => {
   const videoServiceMock = {
     videos: videosSignal.asReadonly(),
     toggleFavorite: vi.fn(),
+    updateVideo: vi.fn(),
   };
 
   const commentsStateSignal = signal<Record<string, any[]>>({});
@@ -38,6 +39,7 @@ describe('VideoZoomModalComponent', () => {
   };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     await TestBed.configureTestingModule({
       imports: [VideoZoomModalComponent],
       providers: [
@@ -71,5 +73,21 @@ describe('VideoZoomModalComponent', () => {
     component.toggleFavorite();
 
     expect(videoServiceMock.toggleFavorite).toHaveBeenCalledWith('5');
+  });
+
+  it('should call updateVideo on field save', () => {
+    component.updatedVideo = { id: '5' } as any;
+
+    component.onFieldSave('title', 'Novo Título');
+
+    expect(videoServiceMock.updateVideo).toHaveBeenCalledWith('5', { title: 'Novo Título' });
+  });
+
+  it('should not call updateVideo when no video selected', () => {
+    component.updatedVideo = null;
+
+    component.onFieldSave('title', 'Novo Título');
+
+    expect(videoServiceMock.updateVideo).not.toHaveBeenCalled();
   });
 });

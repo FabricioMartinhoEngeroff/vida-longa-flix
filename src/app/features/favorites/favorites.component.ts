@@ -1,7 +1,8 @@
-import { Component, OnInit, HostListener, effect } from '@angular/core';
+import { Component, DestroyRef, OnInit, HostListener, effect, inject } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CategoryCarouselComponent } from '../../shared/components/category-carousel/category-carousel.component';
 import { EngagementSummaryComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
 import { TitleComponent } from '../../shared/components/title/title.component';
@@ -12,6 +13,7 @@ import { VideoService } from '../../shared/services/video/video.service';
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { ModalService } from '../../shared/services/modal/modal.service';
 import { FavoritesService } from '../../shared/services/favorites/favorites.service.';
+import { AuthService } from '../../auth/services/auth.service';
 import { agruparPor as groupBy, Grupo as Group } from '../../shared/utils/agrupar-por';
 import { MenuModalComponent } from '../../shared/components/menu-modal/menu-modal.component';
 import { MenuCommentsService } from '../../shared/services/menus/menu-comments-service';
@@ -43,7 +45,9 @@ export class FavoritesComponent implements OnInit {
   menusByCategory: MenuGroup[] = [];
   selectedMenu: Menu | null = null;
   isMobile = window.innerWidth <= 768;
+  isAdmin = false;
 
+  private readonly destroyRef = inject(DestroyRef);
   private commentsState: Record<string, string[]> = {};
   private menuModalInHistory = false;
 
@@ -53,8 +57,14 @@ export class FavoritesComponent implements OnInit {
     private videoService: VideoService,
     private menuService: MenuService,
     private modalService: ModalService,
-    private menuCommentsService: MenuCommentsService
+    private menuCommentsService: MenuCommentsService,
+    private authService: AuthService
   ) {
+    this.authService.user$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((u) => {
+        this.isAdmin = !!u?.roles?.some((r) => r === 'ROLE_ADMIN');
+      });
     // Sincroniza videos favoritados com o estado do FavoritesService
     effect(() => {
       const favoriteIds = new Set(
@@ -83,6 +93,8 @@ export class FavoritesComponent implements OnInit {
         this.favoriteMenus,
         (m) => m.category?.name || 'Sem categoria'
       );
+
+      this.syncSelectedMenu();
     });
   }
 
@@ -138,8 +150,16 @@ export class FavoritesComponent implements OnInit {
     }
   }
 
+  onMenuFieldSave(menuId: string, event: { field: string; value: string | number }): void {
+    this.menuService.updateMenu(menuId, ({ [event.field]: event.value } as Partial<Menu>));
+  }
+
   addMenuComment(menuId: string, text: string): void {
     this.menuCommentsService.add(menuId, text);
+  }
+
+  deleteMenuComment(menuId: string, commentText: string): void {
+    this.menuCommentsService.delete(menuId, commentText);
   }
 
   getTotalMenuComments(menuId: string): number {
@@ -153,5 +173,15 @@ export class FavoritesComponent implements OnInit {
   viewAll(): void {
     if (typeof window === 'undefined') return;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  private syncSelectedMenu(): void {
+    if (!this.selectedMenu) return;
+    const updated = this.favoriteMenus.find((m) => m.id === this.selectedMenu?.id) ?? null;
+    if (!updated) {
+      this.closeMenuModal();
+      return;
+    }
+    this.selectedMenu = updated;
   }
 }

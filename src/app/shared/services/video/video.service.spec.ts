@@ -109,6 +109,22 @@ describe('VideoService', () => {
     expect(service.totalVideos()).toBe(3);
   });
 
+  it('should update video and reload list', () => {
+    service.updateVideo('1', { title: 'Bolo Fit Editado' });
+
+    const putReq = httpMock.expectOne(`${adminUrl}/1`);
+    expect(putReq.request.method).toBe('PUT');
+    expect(putReq.request.body).toEqual({ title: 'Bolo Fit Editado' });
+    putReq.flush(null);
+
+    httpMock.expectOne(baseUrl).flush([
+      { ...mockVideos[0], title: 'Bolo Fit Editado' },
+      mockVideos[1],
+    ]);
+
+    expect(service.getVideoById('1')?.title).toBe('Bolo Fit Editado');
+  });
+
   it('should delete video and reload list', () => {
     service.removeVideo('1');
 
