@@ -55,6 +55,42 @@
   font-weight: 600;
 }
 
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.trash-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.12s ease;
+  flex-shrink: 0;
+}
+
+.trash-btn:hover {
+  background: #fef2f2;
+}
+
+.trash-btn:active {
+  transform: scale(0.95);
+}
+
+.trash-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
 .vazio {
   text-align: center;
   color: #666;
