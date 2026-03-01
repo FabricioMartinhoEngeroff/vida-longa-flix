@@ -14,27 +14,102 @@
       </div>
 
       <div class="content">
-        <h3 class="title">{{ m.title }}</h3>
-        <p class="description">{{ m.description }}</p>
+        <h3 class="title">
+          <app-editable-field
+            [value]="m.title"
+            fieldType="text"
+            [canEdit]="canEdit"
+            placeholder="Título"
+            (save)="onFieldSave('title', $event)"
+          ></app-editable-field>
+        </h3>
+        <p class="description">
+          <app-editable-field
+            [value]="m.description"
+            fieldType="textarea"
+            [canEdit]="canEdit"
+            placeholder="Descrição"
+            (save)="onFieldSave('description', $event)"
+          ></app-editable-field>
+        </p>
 
         <div class="block">
           <h4>Receita</h4>
-          <p>{{ m.recipe || 'Sem receita cadastrada.' }}</p>
+          <app-editable-field                                
+            [value]="m.recipe"                               
+            emptyText="Sem receita cadastrada."              
+            fieldType="textarea"                             
+            [canEdit]="canEdit"                              
+            placeholder="Receita"                            
+            (save)="onFieldSave('recipe', $event)"           
+          ></app-editable-field>                             
         </div>
 
         <div class="block">
           <h4>Dicas da Nutri</h4>
-          <p>{{ m.nutritionistTips || 'Sem dicas cadastradas.' }}</p>
+          <app-editable-field                                
+            [value]="m.nutritionistTips"                     
+            emptyText="Sem dicas cadastradas."               
+            fieldType="textarea"                             
+            [canEdit]="canEdit"                              
+            placeholder="Dicas da Nutri"                     
+            (save)="onFieldSave('nutritionistTips', $event)" 
+          ></app-editable-field>                             
         </div>
 
         <div class="block">
           <h4>Informações Nutricionais</h4>
           <div class="macros">
-            <div>Proteínas: {{ m.protein || 0 }}g</div>
-            <div>Carboidratos: {{ m.carbs || 0 }}g</div>
-            <div>Gorduras: {{ m.fat || 0 }}g</div>
-            <div>Fibras: {{ m.fiber || 0 }}g</div>
-            <div>Calorias: {{ m.calories || 0 }} kcal</div>
+            <div>
+              <app-editable-field
+                [value]="m.protein || 0"                     
+                fieldType="number"                           
+                [canEdit]="canEdit"                          
+                label="Proteínas"                            
+                suffix="g"                                   
+                (save)="onFieldSave('protein', $event)"      
+              ></app-editable-field>                         
+            </div>                                           
+            <div>                                            
+              <app-editable-field                            
+                [value]="m.carbs || 0"                       
+                fieldType="number"                           
+                [canEdit]="canEdit"                          
+                label="Carboidratos"                         
+                suffix="g"                                   
+                (save)="onFieldSave('carbs', $event)"        
+              ></app-editable-field>                         
+            </div>                                           
+            <div>                                            
+              <app-editable-field                            
+                [value]="m.fat || 0"                         
+                fieldType="number"                           
+                [canEdit]="canEdit"                          
+                label="Gorduras"                             
+                suffix="g"                                   
+                (save)="onFieldSave('fat', $event)"          
+              ></app-editable-field>                         
+            </div>                                           
+            <div>                                            
+              <app-editable-field                            
+                [value]="m.fiber || 0"                       
+                fieldType="number"                           
+                [canEdit]="canEdit"                          
+                label="Fibras"                               
+                suffix="g"                                   
+                (save)="onFieldSave('fiber', $event)"        
+              ></app-editable-field>                         
+            </div>                                           
+            <div>                                            
+              <app-editable-field                            
+                [value]="m.calories || 0"                    
+                fieldType="number"                           
+                [canEdit]="canEdit"                          
+                label="Calorias"                             
+                suffix=" kcal"                               
+                (save)="onFieldSave('calories', $event)"     
+              ></app-editable-field>                         
+            </div>                                           
           </div>
         </div>
 

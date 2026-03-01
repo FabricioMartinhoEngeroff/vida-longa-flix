@@ -1,0 +1,55 @@
+@if (editing) {
+  <div class="edit-mode">
+    <span class="label" [hidden]="!label"><strong>{{ label }}:</strong></span>
+
+    <textarea
+      class="edit-input"
+      [hidden]="fieldType !== 'textarea'"
+      [value]="draft"
+      [placeholder]="placeholder"
+      rows="3"
+      (input)="updateDraft($event)"
+    ></textarea>
+
+    <input
+      class="edit-input"
+      [hidden]="fieldType !== 'number'"
+      type="number"
+      [value]="draft"
+      [placeholder]="placeholder"
+      (input)="updateDraft($event)"
+    />
+
+    <input
+      class="edit-input"
+      [hidden]="fieldType !== 'text'"
+      type="text"
+      [value]="draft"
+      [placeholder]="placeholder"
+      (input)="updateDraft($event)"
+    />
+
+    <div class="edit-actions">
+      <button class="btn-confirm" type="button" (click)="confirmEdit()" aria-label="Confirmar">
+        <mat-icon>check</mat-icon>
+      </button>
+      <button class="btn-cancel" type="button" (click)="cancelEdit()" aria-label="Cancelar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+} @else {
+  <span class="display-mode">
+    <strong [hidden]="!label">{{ label }}:</strong>
+    <span class="display-value">{{ displayText }}</span>
+    <button
+      class="btn-edit"
+      type="button"
+      [hidden]="!canEdit"
+      (click)="startEdit()"
+      aria-label="Editar"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+  </span>
+}

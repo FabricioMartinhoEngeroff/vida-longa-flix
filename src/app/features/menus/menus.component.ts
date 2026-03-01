@@ -126,6 +126,10 @@ getMenuComments(id: string): string[] {
     this.syncSelected();
   }
 
+  onMenuFieldSave(menuId: string, event: { field: string; value: string | number }): void {
+    this.menuService.updateMenu(menuId, ({ [event.field]: event.value } as Partial<Menu>));
+  }
+
   askDeleteMenu(id: string, title: string): void {
     this.pendingDelete = { id, label: title };
     this.isDeleteModalOpen = true;

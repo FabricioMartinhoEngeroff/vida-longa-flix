@@ -111,6 +111,22 @@ describe('MenuService', () => {
     expect(service.totalMenus()).toBe(3);
   });
 
+  it('should update menu and reload list', () => {
+    service.updateMenu('1', { title: 'Frango Editado' });
+
+    const putReq = httpMock.expectOne(`${adminUrl}/1`);
+    expect(putReq.request.method).toBe('PUT');
+    expect(putReq.request.body).toEqual({ title: 'Frango Editado' });
+    putReq.flush(null);
+
+    httpMock.expectOne(baseUrl).flush([
+      { ...mockMenus[0], title: 'Frango Editado' },
+      mockMenus[1],
+    ]);
+
+    expect(service.getMenuById('1')?.title).toBe('Frango Editado');
+  });
+
   it('should delete menu and reload list', () => {
     service.removeMenu('1');
 

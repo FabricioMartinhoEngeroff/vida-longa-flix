@@ -1,0 +1,104 @@
+.display-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.display-value {
+  color: #ddd;
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  color: #4f8a58;
+  cursor: pointer;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-edit mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.btn-edit:hover {
+  color: #2f6b3a;
+}
+
+.edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: #ccc;
+  font-size: 14px;
+}
+
+.edit-input {
+  background: #1c1c1c;
+  color: #fff;
+  border: 1px solid #4f8a58;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 14px;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #2f6b3a;
+}
+
+textarea.edit-input {
+  resize: vertical;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-confirm,
+.btn-cancel {
+  background: none;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-confirm {
+  color: #4f8a58;
+  border-color: #4f8a58;
+}
+
+.btn-confirm:hover {
+  background: #4f8a58;
+  color: #fff;
+}
+
+.btn-cancel {
+  color: #999;
+  border-color: #999;
+}
+
+.btn-cancel:hover {
+  background: #999;
+  color: #fff;
+}
+
+.btn-confirm mat-icon,
+.btn-cancel mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

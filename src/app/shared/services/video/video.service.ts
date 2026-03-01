@@ -84,6 +84,21 @@ export class VideoService {
     ).subscribe();
   }
 
+  // Rota admin — PUT /admin/videos/{id}
+  updateVideo(id: string, changes: Partial<Video>): void {
+    this.http.put<void>(`${this.adminUrl}/${id}`, changes).pipe(
+      tap(() => {
+        this.alert.success('Vídeo atualizado com sucesso!');
+        this.loadVideos();
+      }),
+      catchError(err => {
+        this.logger.error('Erro ao atualizar vídeo', err);
+        this.alert.error('Erro ao atualizar vídeo. Tente novamente.');
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   // Rota admin — DELETE /admin/videos/{id}
   removeVideo(id: string): void {
     this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(

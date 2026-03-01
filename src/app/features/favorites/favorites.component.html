@@ -128,8 +128,12 @@
   <app-menu-modal
     [menu]="m"
     [comments]="getMenuComments(m.id)"
+    [canDeleteComments]="isAdmin"
+    [canEdit]="isAdmin"
     (close)="closeMenuModal()"
     (favorite)="toggleMenuFavorite(m.id)"
     (comment)="addMenuComment(m.id, $event)"
+    (commentDelete)="deleteMenuComment(m.id, $event)"
+    (fieldSave)="onMenuFieldSave(m.id, $event)"
   ></app-menu-modal>
 }
