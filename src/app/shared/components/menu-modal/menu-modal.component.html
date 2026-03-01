@@ -41,8 +41,10 @@
         <app-comments-box
           [comments]="comments"
           [favorited]="!!m.favorited"
+          [canDeleteComments]="canDeleteComments"
           (favoriteClick)="favorite.emit()"
           (commentSubmit)="comment.emit($event)"
+          (commentDelete)="commentDelete.emit($event)"
         ></app-comments-box>
       </div>
     </div>

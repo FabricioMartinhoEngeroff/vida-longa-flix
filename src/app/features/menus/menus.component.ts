@@ -1,9 +1,13 @@
-import { Component, HostListener, Inject, OnInit, effect } from '@angular/core';
+import { Component, DestroyRef, HostListener, Inject, OnInit, effect, inject } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Params } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AuthService } from '../../auth/services/auth.service';
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { Menu } from '../../shared/types/menu';
 import { MenuModalComponent } from '../../shared/components/menu-modal/menu-modal.component';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 import { CategoryCarouselComponent } from '../../shared/components/category-carousel/category-carousel.component';
 import { EngagementSummaryComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
 import { agruparPor as groupBy, Grupo as Group } from '../../shared/utils/agrupar-por';
@@ -14,15 +18,21 @@ type MenuGroup = Group<Menu>;
 @Component({
   selector: 'app-menus', 
   standalone: true,
-  imports: [CategoryCarouselComponent, MenuModalComponent, EngagementSummaryComponent],
+  imports: [MatIconModule, CategoryCarouselComponent, MenuModalComponent, EngagementSummaryComponent, ConfirmationModalComponent],
   templateUrl: './menus.component.html',
   styleUrls: ['./menus.component.css'],
 })
 export class MenusComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   menusByCategory: MenuGroup[] = [];
   selected: Menu | null = null;
 
   commentsState: Record<string, string[]> = {};
+
+  isAdmin = false;
+  isDeleteModalOpen = false;
+  private pendingDelete: { id: string; label: string } | null = null;
 
   private menusList: Menu[] = [];
   private searchType = '';
@@ -35,8 +45,14 @@ export class MenusComponent implements OnInit {
   constructor(
   private menuService: MenuService,
   @Inject(MenuCommentsService) private commentsService: MenuCommentsService,
-  private route: ActivatedRoute
+  private route: ActivatedRoute,
+  private authService: AuthService
 ) {
+    this.authService.user$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((u) => {
+        this.isAdmin = !!u?.roles?.some((r) => r === 'ROLE_ADMIN');
+      });
     effect(() => {
       this.commentsState = this.commentsService.comments();
       const list = this.menuService.menus();
@@ -66,6 +82,10 @@ export class MenusComponent implements OnInit {
  addComment(id: string, text: string): void {
   this.commentsService.add(id, text);
 }
+
+  deleteComment(menuId: string, commentText: string): void {
+    this.commentsService.delete(menuId, commentText);
+  }
 
   getTotalComments(id: string): number {
   return this.commentsState[id]?.length ?? 0;
@@ -104,6 +124,30 @@ getMenuComments(id: string): string[] {
   toggleFavorite(id: string): void {
     this.menuService.toggleFavorite(id);
     this.syncSelected();
+  }
+
+  askDeleteMenu(id: string, title: string): void {
+    this.pendingDelete = { id, label: title };
+    this.isDeleteModalOpen = true;
+  }
+
+  cancelDelete(): void {
+    this.isDeleteModalOpen = false;
+    this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.pendingDelete) return;
+    this.menuService.removeMenu(this.pendingDelete.id);
+    this.cancelDelete();
+  }
+
+  get deleteTitle(): string {
+    return 'Deletar cardápio';
+  }
+
+  get deleteMessage(): string {
+    return `Deseja mesmo deletar o cardápio "${this.pendingDelete?.label ?? ''}"?`;
   }
 
   private syncSelected(): void {

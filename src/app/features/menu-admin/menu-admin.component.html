@@ -29,13 +29,23 @@
     </div>
 
     <p class="upload-hint">Arraste e solte a capa aqui ou clique para selecionar</p>
-    <label class="upload-area">
+    <label class="upload-area"
+      [class.drag-active]="isDraggingCover"
+      [class.file-selected]="coverFileName"
+      (dragover)="onDragOver($event)"
+      (dragenter)="isDraggingCover = true"
+      (dragleave)="isDraggingCover = false"
+      (drop)="onDropCover($event)">
       <input type="file" accept="image/*" (change)="onCoverFile($event)" />
       <span class="upload-icon">
-        <mat-icon>{{ uploadIcon }}</mat-icon>
+        <mat-icon>{{ coverFileName ? 'check_circle' : uploadIcon }}</mat-icon>
       </span>
       <span class="upload-text">
-        Arraste e solte a capa aqui ou clique para selecionar
+        @if (coverFileName) {
+          {{ coverFileName }}
+        } @else {
+          Arraste e solte a capa aqui ou clique para selecionar
+        }
       </span>
     </label>
 

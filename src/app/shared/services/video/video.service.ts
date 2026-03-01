@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../auth/services/logger.service';
 import { FavoritesService } from '../favorites/favorites.service.';
 import { ContentNotificationsService } from '../notifications/content-notifications.service';
+import { NotificationService } from '../alert-message/alert-message.service';
 
 @Injectable({ providedIn: 'root' })
 export class VideoService {
@@ -26,7 +27,8 @@ export class VideoService {
     private http: HttpClient,
     private favoritesService: FavoritesService,
     private logger: LoggerService,
-    private notifications: ContentNotificationsService
+    private notifications: ContentNotificationsService,
+    private alert: NotificationService
   ) {
     this.loadVideos();
   }
@@ -71,10 +73,12 @@ export class VideoService {
     this.http.post<void>(this.adminUrl, request).pipe(
       tap(() => {
         this.notifications.add('VIDEO', request.title);
+        this.alert.success(`Vídeo "${request.title}" salvo com sucesso!`);
         this.loadVideos();
       }),
       catchError(err => {
         this.logger.error('Erro ao criar vídeo', err);
+        this.alert.error('Erro ao salvar vídeo. Tente novamente.');
         return of(null);
       })
     ).subscribe();
@@ -83,9 +87,13 @@ export class VideoService {
   // Rota admin — DELETE /admin/videos/{id}
   removeVideo(id: string): void {
     this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
-      tap(() => this.loadVideos()),
+      tap(() => {
+        this.alert.success('Vídeo removido com sucesso!');
+        this.loadVideos();
+      }),
       catchError(err => {
         this.logger.error('Erro ao deletar vídeo', err);
+        this.alert.error('Erro ao remover vídeo. Tente novamente.');
         return of(null);
       })
     ).subscribe();

@@ -12,8 +12,10 @@ import { Menu } from '../../types/menu';
 export class MenuModalComponent {
   @Input() menu: Menu | null = null;
   @Input() comments: string[] = [];
+  @Input() canDeleteComments = false;
 
   @Output() close = new EventEmitter<void>();
   @Output() favorite = new EventEmitter<void>();
   @Output() comment = new EventEmitter<string>();
+  @Output() commentDelete = new EventEmitter<string>();
 }

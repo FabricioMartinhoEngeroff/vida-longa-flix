@@ -18,13 +18,26 @@
         <span class="categoria">{{ item.category?.name }}</span>
         <p>{{ item.description }}</p>
 
-        <app-engagement-summary
-          [likesCount]="item.likesCount ?? 0"
-          [commentsCount]="getTotalComments(item.id)"
-          [liked]="item.favorited ?? false"
-          (likeClick)="toggleFavorite(item.id)"
-          (commentsClick)="open(item)"
-        ></app-engagement-summary>
+        <div class="card-actions">
+          <app-engagement-summary
+            [likesCount]="item.likesCount ?? 0"
+            [commentsCount]="getTotalComments(item.id)"
+            [liked]="item.favorited ?? false"
+            (likeClick)="toggleFavorite(item.id)"
+            (commentsClick)="open(item)"
+          ></app-engagement-summary>
+
+          @if (isAdmin) {
+            <button
+              class="trash-btn"
+              type="button"
+              (click)="askDeleteMenu(item.id, item.title); $event.stopPropagation()"
+              title="Deletar cardápio"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
+        </div>
       </div>
     </div>
   </ng-template>
@@ -48,8 +61,19 @@
   <app-menu-modal
     [menu]="s"
     [comments]="getMenuComments(s.id)"
+    [canDeleteComments]="isAdmin"
     (close)="close()"
     (favorite)="toggleFavorite(s.id)"
     (comment)="addComment(s.id, $event)"
+    (commentDelete)="deleteComment(s.id, $event)"
   ></app-menu-modal>
 }
+
+<app-confirmation-modal
+  [open]="isDeleteModalOpen"
+  [title]="deleteTitle"
+  [message]="deleteMessage"
+  [isDanger]="true"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+></app-confirmation-modal>

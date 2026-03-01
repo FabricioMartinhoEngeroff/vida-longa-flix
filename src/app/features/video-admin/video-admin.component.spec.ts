@@ -107,7 +107,7 @@ describe('VideoAdminComponent', () => {
     });
   });
 
-  it('should create a new category when typed name does not exist', async () => {
+  it('should find category from fresh API list when not in local list', async () => {
     component.form.patchValue({
       title: 'Novo Video',
       description: 'Descricao',
@@ -118,9 +118,13 @@ describe('VideoAdminComponent', () => {
 
     const p = component.save();
 
-    const createReq = httpMock.expectOne((r) => r.method === 'POST' && r.url === `${environment.apiUrl}/categories`);
-    expect(createReq.request.body).toEqual({ name: 'Doces', type: 'VIDEO' });
-    createReq.flush({ id: 'cat-new', name: 'Doces', type: 'VIDEO' });
+    // ensureCategoryId busca lista atualizada da API quando nao acha localmente
+    const listReq = httpMock.expectOne((r) =>
+      r.method === 'GET' &&
+      r.url === `${environment.apiUrl}/categories` &&
+      r.params.get('type') === 'VIDEO'
+    );
+    listReq.flush([...mockCategories, { id: 'cat-new', name: 'Doces', type: 'VIDEO' }]);
 
     await p;
 

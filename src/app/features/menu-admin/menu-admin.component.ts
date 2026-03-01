@@ -7,6 +7,7 @@ import { MenuRequest } from '../../shared/types/menu';
 import { Category } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
+import { NotificationService } from '../../shared/services/alert-message/alert-message.service';
 
 @Component({
   selector: 'app-menu-admin',
@@ -22,13 +23,17 @@ export class MenuAdminComponent implements OnInit {
   // Categorias do tipo MENU carregadas do backend
   categories: Category[] = [];
 
+  coverFileName = '';
+  isDraggingCover = false;
+
   isDeleteModalOpen = false;
   private pendingDelete: { kind: 'MENU' | 'CATEGORY'; id: string; label: string } | null = null;
 
   constructor(
     private fb: FormBuilder,
     private menuService: MenuService,
-    private categoriesService: CategoriesService
+    private categoriesService: CategoriesService,
+    private alert: NotificationService
   ) {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
@@ -57,6 +62,21 @@ export class MenuAdminComponent implements OnInit {
   onCoverFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    this.coverFileName = file.name;
+    const previewUrl = URL.createObjectURL(file);
+    this.form.patchValue({ cover: previewUrl });
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onDropCover(event: DragEvent): void {
+    event.preventDefault();
+    this.isDraggingCover = false;
+    const file = event.dataTransfer?.files[0];
+    if (!file) return;
+    this.coverFileName = file.name;
     const previewUrl = URL.createObjectURL(file);
     this.form.patchValue({ cover: previewUrl });
   }
@@ -71,7 +91,8 @@ export class MenuAdminComponent implements OnInit {
         this.form.value.categoryName,
         this.categories
       );
-    } catch {
+    } catch (e: any) {
+      this.alert.error(e?.message || 'Categoria não encontrada.');
       return;
     }
 
@@ -104,6 +125,7 @@ export class MenuAdminComponent implements OnInit {
       fiber: 0,
       calories: 0,
     });
+    this.coverFileName = '';
   }
 
   askDeleteMenu(id: string, title: string): void {

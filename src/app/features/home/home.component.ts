@@ -1,10 +1,13 @@
 import { NgFor } from '@angular/common';
-import { Component, HostListener, OnInit, effect } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, effect, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Params } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CategoryCarouselComponent } from '../../shared/components/category-carousel/category-carousel.component';
+import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 import { EngagementSummaryComponent } from '../../shared/components/engagement-summary/engagement-summary.component';
+import { AuthService } from '../../auth/services/auth.service';
 import { CommentsService } from '../../shared/services/comments/comments.service';
 import { ModalService } from '../../shared/services/modal/modal.service';
 import { VideoService } from '../../shared/services/video/video.service';
@@ -16,16 +19,22 @@ type VideoGroup = Group<Video>;
 @Component({
   selector: 'app-inicio', // pode trocar pra 'app-home' se quiser, mas ai ajuste onde usar
   standalone: true,
-  imports: [NgFor, MatIconModule, CategoryCarouselComponent, EngagementSummaryComponent],
+  imports: [NgFor, MatIconModule, CategoryCarouselComponent, EngagementSummaryComponent, ConfirmationModalComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   reelVideos: Video[] = [];
   videosByCategory: VideoGroup[] = [];
   isMobile = false;
 
   isPreviewVisible: Record<string, boolean> = {};
+
+  isAdmin = false;
+  isDeleteModalOpen = false;
+  private pendingDelete: { id: string; label: string } | null = null;
 
   private hoverTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
   private readonly HOVER_DELAY_MS = 2000;
@@ -39,8 +48,14 @@ export class HomeComponent implements OnInit {
     private videoService: VideoService,
     private modalService: ModalService,
     private commentsService: CommentsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {
+    this.authService.user$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((u) => {
+        this.isAdmin = !!u?.roles?.some((r) => r === 'ROLE_ADMIN');
+      });
 
     effect(() => {
       const videos = this.videoService.videos();
@@ -118,6 +133,30 @@ export class HomeComponent implements OnInit {
 
   viewAll(): void {
     // TODO: ver tudo
+  }
+
+  askDeleteVideo(id: string, title: string): void {
+    this.pendingDelete = { id, label: title };
+    this.isDeleteModalOpen = true;
+  }
+
+  cancelDelete(): void {
+    this.isDeleteModalOpen = false;
+    this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.pendingDelete) return;
+    this.videoService.removeVideo(this.pendingDelete.id);
+    this.cancelDelete();
+  }
+
+  get deleteTitle(): string {
+    return 'Deletar vídeo';
+  }
+
+  get deleteMessage(): string {
+    return `Deseja mesmo deletar o vídeo "${this.pendingDelete?.label ?? ''}"?`;
   }
 
   private tryScrollToSearchTarget(): void {

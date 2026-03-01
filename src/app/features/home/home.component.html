@@ -32,14 +32,26 @@
       <p class="description">{{ video.description }}</p>
     </div>
 
-    <app-engagement-summary
-  [likesCount]="video.likesCount ?? 0"
-  [commentsCount]="getTotalComments(video.id)"
-  [liked]="video.favorited ?? false"
-  (likeClick)="toggleFavorite(video.id)"
-  (commentsClick)="openModal(video)"
-></app-engagement-summary>
+    <div class="card-actions">
+      <app-engagement-summary
+        [likesCount]="video.likesCount ?? 0"
+        [commentsCount]="getTotalComments(video.id)"
+        [liked]="video.favorited ?? false"
+        (likeClick)="toggleFavorite(video.id)"
+        (commentsClick)="openModal(video)"
+      ></app-engagement-summary>
 
+      @if (isAdmin) {
+        <button
+          class="trash-btn"
+          type="button"
+          (click)="askDeleteVideo(video.id, video.title); $event.stopPropagation()"
+          title="Deletar vídeo"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
+    </div>
   </div>
 </ng-template>
 
@@ -52,4 +64,13 @@
     [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\s+/g,'-')"
   ></app-category-carousel>
 </div>
+
+<app-confirmation-modal
+  [open]="isDeleteModalOpen"
+  [title]="deleteTitle"
+  [message]="deleteMessage"
+  [isDanger]="true"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+></app-confirmation-modal>
 

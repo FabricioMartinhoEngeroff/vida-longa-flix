@@ -29,15 +29,29 @@ export class CategoriesService {
 
   async ensureCategoryId(type: CategoryType, rawName: string, known: Category[] = []): Promise<string> {
     const name = (rawName ?? '').trim();
-    if (!name) throw new Error('Category name is required');
+    if (!name) throw new Error('Nome da categoria é obrigatório');
 
     const normalized = this.normalizeForComparison(name);
+
+    // 1. Tenta achar na lista local
     const found = known.find((c) => this.normalizeForComparison(c.name) === normalized);
     if (found?.id) return found.id;
 
+    // 2. Tenta achar na lista atualizada da API
+    const fresh = await firstValueFrom(this.list(type));
+    const freshFound = fresh.find((c) => this.normalizeForComparison(c.name) === normalized);
+    if (freshFound?.id) return freshFound.id;
+
+    // 3. Nao existe — cria automaticamente
     const created = await firstValueFrom(this.create({ name, type }));
-    if (!created?.id) throw new Error('Category id not returned by API');
-    return created.id;
+    if (created?.id) return created.id;
+
+    // 4. Backend pode retornar sem id — busca a lista de novo para pegar o id
+    const afterCreate = await firstValueFrom(this.list(type));
+    const justCreated = afterCreate.find((c) => this.normalizeForComparison(c.name) === normalized);
+    if (justCreated?.id) return justCreated.id;
+
+    throw new Error(`Erro ao criar categoria "${name}". Verifique o backend.`);
   }
 
   private normalizeForComparison(value: string): string {

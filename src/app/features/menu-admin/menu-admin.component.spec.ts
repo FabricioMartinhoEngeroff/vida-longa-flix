@@ -88,7 +88,7 @@ describe('MenuAdminComponent', () => {
   expect(called.calories).toBe(350);
 });
 
-  it('should create a new category when typed name does not exist', async () => {
+  it('should find category from fresh API list when not in local list', async () => {
     component.form.patchValue({
       title: 'Cardapio novo',
       description: 'Descricao longa',
@@ -98,9 +98,13 @@ describe('MenuAdminComponent', () => {
 
     const p = component.save();
 
-    const createReq = httpMock.expectOne((r) => r.method === 'POST' && r.url === `${environment.apiUrl}/categories`);
-    expect(createReq.request.body).toEqual({ name: 'Lanche', type: 'MENU' });
-    createReq.flush({ id: 'cat-new', name: 'Lanche', type: 'MENU' });
+    // ensureCategoryId busca lista atualizada da API quando nao acha localmente
+    const listReq = httpMock.expectOne((r) =>
+      r.method === 'GET' &&
+      r.url === `${environment.apiUrl}/categories` &&
+      r.params.get('type') === 'MENU'
+    );
+    listReq.flush([...mockCategories, { id: 'cat-new', name: 'Lanche', type: 'MENU' }]);
 
     await p;
 

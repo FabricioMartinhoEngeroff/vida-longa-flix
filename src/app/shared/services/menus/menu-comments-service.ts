@@ -20,6 +20,13 @@ export class MenuCommentsService {
     }));
   }
 
+  delete(menuId: string, commentText: string): void {
+    this.state.update(current => ({
+      ...current,
+      [menuId]: (current[menuId] ?? []).filter(c => c !== commentText)
+    }));
+  }
+
   readonly totalComments = computed(() =>
     Object.values(this.state()).reduce((total, list) => total + list.length, 0)
   );

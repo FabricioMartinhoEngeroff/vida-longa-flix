@@ -6,6 +6,7 @@ import { Menu, MenuRequest } from '../../types/menu';
 import { FavoritesService } from '../favorites/favorites.service.';
 import { LoggerService } from '../../../auth/services/logger.service';
 import { ContentNotificationsService } from '../notifications/content-notifications.service';
+import { NotificationService } from '../alert-message/alert-message.service';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
@@ -25,7 +26,8 @@ export class MenuService {
     private http: HttpClient,
     private favoritesService: FavoritesService,
     private logger: LoggerService,
-    private notifications: ContentNotificationsService
+    private notifications: ContentNotificationsService,
+    private alert: NotificationService
   ) {
     this.loadMenus();
   }
@@ -67,10 +69,12 @@ export class MenuService {
     this.http.post<void>(this.adminUrl, request).pipe(
       tap(() => {
         this.notifications.add('MENU', request.title);
+        this.alert.success(`Cardápio "${request.title}" salvo com sucesso!`);
         this.loadMenus();
       }),
       catchError(err => {
         this.logger.error('Erro ao criar menu', err);
+        this.alert.error('Erro ao salvar cardápio. Tente novamente.');
         return of(null);
       })
     ).subscribe();
@@ -78,9 +82,13 @@ export class MenuService {
 
   removeMenu(id: string): void {
     this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
-      tap(() => this.loadMenus()),
+      tap(() => {
+        this.alert.success('Cardápio removido com sucesso!');
+        this.loadMenus();
+      }),
       catchError(err => {
         this.logger.error('Erro ao deletar menu', err);
+        this.alert.error('Erro ao remover cardápio. Tente novamente.');
         return of(null);
       })
     ).subscribe();

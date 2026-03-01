@@ -5,6 +5,7 @@ import { VideoService } from '../../shared/services/video/video.service';
 import { Category, VideoRequest } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
+import { NotificationService } from '../../shared/services/alert-message/alert-message.service';
 
 
 @Component({
@@ -20,13 +21,19 @@ export class VideoAdminComponent {
 
   categories: Category[] = [];
 
+  videoFileName = '';
+  coverFileName = '';
+  isDraggingVideo = false;
+  isDraggingCover = false;
+
   isDeleteModalOpen = false;
   private pendingDelete: { kind: 'VIDEO' | 'CATEGORY'; id: string; label: string } | null = null;
 
   constructor(
     private fb: FormBuilder,
     private videoService: VideoService,
-    private categoriesService: CategoriesService
+    private categoriesService: CategoriesService,
+    private alert: NotificationService
   ) {
     this.categoriesService.list('VIDEO').subscribe((cats) => (this.categories = cats));
 
@@ -52,16 +59,39 @@ export class VideoAdminComponent {
   onVideoFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-
+    this.videoFileName = file.name;
     const previewUrl = URL.createObjectURL(file);
     this.form.patchValue({ url: previewUrl });
   }
 
- 
   onCoverFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    this.coverFileName = file.name;
+    const previewUrl = URL.createObjectURL(file);
+    this.form.patchValue({ cover: previewUrl });
+  }
 
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onDropVideo(event: DragEvent): void {
+    event.preventDefault();
+    this.isDraggingVideo = false;
+    const file = event.dataTransfer?.files[0];
+    if (!file) return;
+    this.videoFileName = file.name;
+    const previewUrl = URL.createObjectURL(file);
+    this.form.patchValue({ url: previewUrl });
+  }
+
+  onDropCover(event: DragEvent): void {
+    event.preventDefault();
+    this.isDraggingCover = false;
+    const file = event.dataTransfer?.files[0];
+    if (!file) return;
+    this.coverFileName = file.name;
     const previewUrl = URL.createObjectURL(file);
     this.form.patchValue({ cover: previewUrl });
   }
@@ -77,7 +107,8 @@ export class VideoAdminComponent {
       this.form.value.categoryName,
       this.categories
     );
-  } catch {
+  } catch (e: any) {
+    this.alert.error(e?.message || 'Categoria não encontrada.');
     return;
   }
 
@@ -111,6 +142,8 @@ export class VideoAdminComponent {
     fiber: 0,
     calories: 0,
   });
+  this.videoFileName = '';
+  this.coverFileName = '';
 }
 
   askDeleteVideo(id: string, title: string): void {
