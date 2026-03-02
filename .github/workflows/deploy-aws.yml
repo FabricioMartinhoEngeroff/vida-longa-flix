@@ -17,6 +17,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
 
     steps:
       - name: Checkout
@@ -60,4 +61,3 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id "${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}" \
             --paths "/*"
-
