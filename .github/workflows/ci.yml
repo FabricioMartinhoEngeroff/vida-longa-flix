@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches-ignore: [gh-pages]
   pull_request:
-    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -35,4 +34,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
