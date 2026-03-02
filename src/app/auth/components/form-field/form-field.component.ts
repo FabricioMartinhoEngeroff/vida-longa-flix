@@ -25,7 +25,7 @@ export class FormFieldComponent implements ControlValueAccessor {
   @Input() label?: string;
   @Input() placeholder = '';
   @Input() type: 'text' | 'email' | 'password' | 'tel' = 'text';
-  @Input() autocomplete: string = 'off';
+  @Input() autocomplete = 'off';
   @Input() icon: AuthIconName = 'mail';
   @Input() error: string | null = null;
   @Input() maxlength?: number;
@@ -36,8 +36,8 @@ export class FormFieldComponent implements ControlValueAccessor {
   value = '';
   passwordVisible = false;
 
-  private onChange: (v: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (v: string) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   get dynamicPlaceholder(): string {
     if (this.value) {

@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { FavoriteButtonComponent } from '../favorite-button/favorite-button.component';
 
-export type CommentItem = {
+export interface CommentItem {
   id: string;
   text: string;
   author?: string;
   date?: string;
-};
+}
 
 @Component({
   selector: 'app-comments-box',

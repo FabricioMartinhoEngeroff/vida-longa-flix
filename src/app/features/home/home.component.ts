@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit {
       this.isPreviewVisible[videoId] = true;
       videoEl.currentTime = 0;
       videoEl.muted = true;
-      videoEl.play().catch(() => {});
+      videoEl.play().catch(() => { /* noop */ });
     }, this.HOVER_DELAY_MS);
   }
 
@@ -151,9 +151,7 @@ export class HomeComponent implements OnInit {
     this.cancelDelete();
   }
 
-  get deleteTitle(): string {
-    return 'Deletar vídeo';
-  }
+  readonly deleteTitle = 'Deletar vídeo';
 
   get deleteMessage(): string {
     return `Deseja mesmo deletar o vídeo "${this.pendingDelete?.label ?? ''}"?`;

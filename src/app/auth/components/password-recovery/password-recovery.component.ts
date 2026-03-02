@@ -20,6 +20,7 @@ type RecoveryForm = FormGroup<{
 })
 export class PasswordRecoveryComponent {
   @Input() open = false;
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() close = new EventEmitter<void>();
 
   recoveryForm: RecoveryForm;

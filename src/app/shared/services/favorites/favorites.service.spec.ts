@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { FavoriteDTO, ItemType } from '../../types/favorite';
+import { FavoriteDTO } from '../../types/favorite';
 import { environment } from '../../../../environments/environment';
 import { FavoritesService } from './favorites.service.';
 

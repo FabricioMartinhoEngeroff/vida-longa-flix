@@ -61,20 +61,20 @@ export const MASK_CONFIGURATIONS: Record<MaskType, MaskConfiguration> = {
   }
 };
 
-export type LoginForm = {
+export interface LoginForm {
   email: FormControl<string>;
   password: FormControl<string>;
   keepLoggedIn: FormControl<boolean>;
-};
+}
 
-export type RegisterForm = {
+export interface RegisterForm {
   name: FormControl<string>;
   email: FormControl<string>;
   password: FormControl<string>;
   phone: FormControl<string>;
-};
+}
 
-export type ProfileForm = {
+export interface ProfileForm {
   name: FormControl<string>;
   email: FormControl<string>;
   taxId: FormControl<string>;
@@ -87,12 +87,12 @@ export type ProfileForm = {
     state: FormControl<string>;
     zipCode: FormControl<string>;
   };
-};
+}
 
-export type ChangePasswordForm = {
+export interface ChangePasswordForm {
   currentPassword: FormControl<string>;
   newPassword: FormControl<string>;
-};
+}
 
 export type EmailErrorType = 'temporary' | 'suspicious' | 'invalid' | 'suggestion' | null;
 

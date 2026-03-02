@@ -32,7 +32,7 @@ export class NotificationService {
 
   success(
     text: string,
-    title: string = 'Sucesso',
+    title = 'Sucesso',
     durationMs: number = SUCCESS_NOTIFICATION_DURATION_MS
   ) {
     this.notificationSubject.next({ type: 'success', title, text, durationMs });
@@ -40,7 +40,7 @@ export class NotificationService {
 
   error(
     text: string,
-    title: string = 'Erro',
+    title = 'Erro',
     durationMs: number = ERROR_ALERT_NOTIFICATION_DURATION_MS
   ) {
     this.notificationSubject.next({ type: 'error', title, text, durationMs });
@@ -48,7 +48,7 @@ export class NotificationService {
 
   warning(
     text: string,
-    title: string = 'Atenção',
+    title = 'Atenção',
     durationMs: number = ERROR_ALERT_NOTIFICATION_DURATION_MS
   ) {
     this.notificationSubject.next({ type: 'warning', title, text, durationMs });
@@ -56,7 +56,7 @@ export class NotificationService {
 
   info(
     text: string,
-    title: string = 'Informação',
+    title = 'Informação',
     durationMs: number = INFO_NOTIFICATION_DURATION_MS
   ) {
     this.notificationSubject.next({ type: 'info', title, text, durationMs });

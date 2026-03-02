@@ -73,7 +73,7 @@ export class PasswordChangeComponent implements OnInit {
         this.notificationService.showDefault(DEFAULT_MESSAGES.INVALID_TOKEN);
         setTimeout(() => this.router.navigate(['/login']), getDefaultNotificationDuration('error'));
       }
-    } catch (e) {
+    } catch {
       this.notificationService.showDefault(DEFAULT_MESSAGES.ERROR_VALIDATING_TOKEN);
       this.tokenValid = false;
     } finally {

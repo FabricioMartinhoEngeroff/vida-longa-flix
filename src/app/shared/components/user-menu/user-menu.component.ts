@@ -188,7 +188,7 @@ export class UserMenuComponent {
     this.isChangePasswordModalOpen = false;
   }
 
-  confirmPasswordChange(data: { currentPassword: string; newPassword: string }): void {
+  confirmPasswordChange(_data: { currentPassword: string; newPassword: string }): void {
     // TODO: mudar senha
 
     this.isChangePasswordModalOpen = false;

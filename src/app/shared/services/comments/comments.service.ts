@@ -28,7 +28,7 @@ export class CommentsService {
           ...current,
           [`video:${videoId}`]: list
         })),
-        error: () => {} // silencia 404 quando não há comentários
+        error: () => { /* noop: silencia 404 quando não há comentários */ }
       });
   }
 

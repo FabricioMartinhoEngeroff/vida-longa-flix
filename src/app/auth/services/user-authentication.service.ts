@@ -50,7 +50,7 @@ export class UserAuthenticationService {
     return user;
   }
 
-  async login(email: string, password: string): Promise<User> {
+  async login(email: string, _password: string): Promise<User> {
   
     const token = 'fake_token_' + Date.now();
     
