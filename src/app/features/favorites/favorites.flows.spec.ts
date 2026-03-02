@@ -8,10 +8,7 @@ import { FavoritesComponent } from './favorites.component';
 import { HomeComponent } from '../home/home.component';
 import { MenusComponent } from '../menus/menus.component';
 
-import { FavoritesService } from '../../shared/services/favorites/favorites.service.';
-import { MenuService } from '../../shared/services/menus/menus-service';
 import { ModalService } from '../../shared/services/modal/modal.service';
-import { VideoService } from '../../shared/services/video/video.service';
 import { LoggerService } from '../../auth/services/logger.service';
 import { Video } from '../../shared/types/videos';
 import { Menu } from '../../shared/types/menu';

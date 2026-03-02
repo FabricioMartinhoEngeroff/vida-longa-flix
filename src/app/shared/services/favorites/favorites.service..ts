@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, catchError, of } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
   FavoriteDTO,

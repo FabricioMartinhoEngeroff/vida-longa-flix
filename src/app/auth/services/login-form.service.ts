@@ -39,14 +39,14 @@ export interface FormErrors {
   };
 }
 
-type RegisterForm = {
+interface RegisterForm {
   email: FormControl<string>;
   password: FormControl<string>;
   name: FormControl<string>;
   taxId: FormControl<string>;
   phone: FormControl<string>;
   address: any;
-};
+}
 
 @Injectable({ providedIn: 'root' })
 export class LoginFormService {
@@ -169,7 +169,7 @@ export class LoginFormService {
       throw new Error('Invalid form');
     }
 
-    const data = this.form.getRawValue() as FormData;
+    this.form.getRawValue();
 
     const responseFake = { token: 'fake_token_123' };
 

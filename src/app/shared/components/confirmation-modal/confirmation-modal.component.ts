@@ -18,6 +18,7 @@ export class ConfirmationModalComponent {
   @Input() isDanger = false;
 
   @Output() confirm = new EventEmitter<void>();
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() cancel = new EventEmitter<void>();
 
   onConfirm() {

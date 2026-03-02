@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class FavoriteButtonComponent {
   @Input() favorited = false;
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() toggle = new EventEmitter<void>();
 
   onClick(): void {

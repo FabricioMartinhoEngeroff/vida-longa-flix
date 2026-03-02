@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class LogoComponent {
  
-  @Input() src: string = 'assets/images/logo.png';
-  @Input() alt: string = 'Logo';
-  @Input() width: number = 180;
+  @Input() src = 'assets/images/logo.png';
+  @Input() alt = 'Logo';
+  @Input() width = 180;
 }

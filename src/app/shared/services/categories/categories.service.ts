@@ -4,10 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Category, CategoryType } from '../../types/videos';
 
-type CreateCategoryPayload = {
+interface CreateCategoryPayload {
   name: string;
   type: CategoryType;
-};
+}
 
 @Injectable({ providedIn: 'root' })
 export class CategoriesService {

@@ -8,10 +8,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class StandardInputComponent {
   
-  @Input() type: string = 'text';
-  @Input() placeholder: string = '';
-  @Input() name: string = '';
-  @Input() value: string = '';
+  @Input() type = 'text';
+  @Input() placeholder = '';
+  @Input() name = '';
+  @Input() value = '';
 
   @Output() valueChange = new EventEmitter<string>();
 

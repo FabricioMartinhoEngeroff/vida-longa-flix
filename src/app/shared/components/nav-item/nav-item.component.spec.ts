@@ -68,7 +68,7 @@ describe('NavItemComponent', () => {
     const emitSpy = vi.spyOn(component.itemClick, 'emit');
 
     const button = fixture.debugElement.query(By.css('.item'));
-    button.triggerEventHandler('keydown', { key: 'Enter', preventDefault: () => {} });
+    button.triggerEventHandler('keydown', { key: 'Enter', preventDefault: () => { /* noop */ } });
 
     expect(emitSpy).toHaveBeenCalled();
   });
@@ -81,7 +81,7 @@ describe('NavItemComponent', () => {
     const emitSpy = vi.spyOn(component.itemClick, 'emit');
 
     const button = fixture.debugElement.query(By.css('.item'));
-    button.triggerEventHandler('keydown', { key: ' ', preventDefault: () => {} });
+    button.triggerEventHandler('keydown', { key: ' ', preventDefault: () => { /* noop */ } });
 
     expect(emitSpy).toHaveBeenCalled();
   });

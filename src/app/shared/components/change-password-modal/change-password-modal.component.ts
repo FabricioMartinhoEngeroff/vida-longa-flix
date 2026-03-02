@@ -15,6 +15,7 @@ import { PasswordStrengthIndicatorComponent } from '../../../auth/components/pas
 })
 export class ChangePasswordModalComponent {
   @Input() open = false;
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<{ currentPassword: string; newPassword: string }>();
 

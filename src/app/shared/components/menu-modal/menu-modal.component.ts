@@ -16,6 +16,7 @@ export class MenuModalComponent {
   @Input() canDeleteComments = false;
   @Input() canEdit = false;
 
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() close = new EventEmitter<void>();
   @Output() favorite = new EventEmitter<void>();
   @Output() comment = new EventEmitter<string>();

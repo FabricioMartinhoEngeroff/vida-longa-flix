@@ -1,4 +1,4 @@
-export type Grupo<T> = { nome: string; itens: T[] };
+export interface Grupo<T> { nome: string; itens: T[] }
 
 export function agruparPor<T>(
   list: T[],

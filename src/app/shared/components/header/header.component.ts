@@ -10,10 +10,10 @@ import { UserMenuComponent } from '../user-menu/user-menu.component';
 import { MenuService } from '../../services/menus/menus-service';
 import { NotificationsComponent } from '../notifications/notifications.component';
 
-type IndexedItem = { id: string; title: string; categoryName: string };
+interface IndexedItem { id: string; title: string; categoryName: string }
 
-type VideoLike = { id: string; title: string; category?: { name?: string } | null };
-type MenuLike = { id: string; title: string; category?: { name?: string } | null };
+interface VideoLike { id: string; title: string; category?: { name?: string } | null }
+interface MenuLike { id: string; title: string; category?: { name?: string } | null }
 
 @Component({
   selector: 'app-header',

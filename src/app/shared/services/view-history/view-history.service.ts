@@ -42,7 +42,7 @@ export class ViewHistoryService {
   }
 
 
-  getMostWatchedVideos(email: string, limit: number = 10): string[] {
+  getMostWatchedVideos(email: string, limit = 10): string[] {
     const data = this.getViews(email);
     
     return Object.entries(data)

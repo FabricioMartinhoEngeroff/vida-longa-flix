@@ -11,7 +11,7 @@ export interface ContentNotification {
   readAt?: number | null;
 }
 
-type StoredPayload = { version: 1; items: ContentNotification[] };
+interface StoredPayload { version: 1; items: ContentNotification[] }
 
 @Injectable({ providedIn: 'root' })
 export class ContentNotificationsService {

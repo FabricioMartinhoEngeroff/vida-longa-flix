@@ -16,6 +16,7 @@ import { FormFieldComponent } from '../../../auth/components/form-field/form-fie
 export class UserProfileModalComponent implements OnInit {
   @Input() open = false;
   @Input() user: any;
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
   @Output() openChangePassword = new EventEmitter<void>();

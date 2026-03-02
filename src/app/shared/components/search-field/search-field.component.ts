@@ -19,6 +19,7 @@ export class SearchFieldComponent {
 
  
   @Output() valueChange = new EventEmitter<string>();
+  // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() search = new EventEmitter<string>();
 
   @ViewChild('inputEl') inputEl?: ElementRef<HTMLInputElement>;

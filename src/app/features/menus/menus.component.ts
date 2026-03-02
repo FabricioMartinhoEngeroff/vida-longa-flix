@@ -146,9 +146,7 @@ getMenuComments(id: string): string[] {
     this.cancelDelete();
   }
 
-  get deleteTitle(): string {
-    return 'Deletar cardápio';
-  }
+  readonly deleteTitle = 'Deletar cardápio';
 
   get deleteMessage(): string {
     return `Deseja mesmo deletar o cardápio "${this.pendingDelete?.label ?? ''}"?`;
