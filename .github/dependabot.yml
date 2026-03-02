@@ -7,7 +7,7 @@ updates:
       day: saturday
       time: "09:00"
       timezone: America/Sao_Paulo
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     labels:
       - dependencies
     groups:
@@ -28,7 +28,7 @@ updates:
       day: saturday
       time: "09:00"
       timezone: America/Sao_Paulo
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     labels:
       - dependencies
 
