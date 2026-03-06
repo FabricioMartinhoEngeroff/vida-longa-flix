@@ -5,13 +5,14 @@ import { VideoService } from '../../shared/services/video/video.service';
 import { Category, VideoRequest } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
+import { CsvUploadComponent } from '../../shared/components/csv-upload/csv-upload.component';
 import { NotificationService } from '../../shared/services/alert-message/alert-message.service';
 
 
 @Component({
   selector: 'app-video-admin',
   standalone: true,
-  imports: [ReactiveFormsModule, MatIconModule, ConfirmationModalComponent],
+  imports: [ReactiveFormsModule, MatIconModule, ConfirmationModalComponent, CsvUploadComponent],
   templateUrl: './video-admin.component.html',
   styleUrls: ['./video-admin.component.css'],
 })

@@ -1,0 +1,56 @@
+<div class="csv-upload-section">
+  <h3 class="csv-title">Importação via CSV</h3>
+
+  <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -->
+  <label class="csv-upload-area"
+    [class.drag-active]="isDragging"
+    [class.file-selected]="fileName"
+    [class.disabled]="uploading"
+    (dragover)="onDragOver($event)"
+    (dragenter)="onDragEnter()"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)">
+
+    @if (!uploading) {
+      <input type="file" accept=".csv" (change)="onFileSelect($event)" [disabled]="uploading" />
+    }
+
+    <span class="csv-upload-icon">
+      @if (uploading) {
+        <mat-icon class="csv-spinner">sync</mat-icon>
+      } @else {
+        <mat-icon>{{ fileName ? 'check_circle' : 'cloud_upload' }}</mat-icon>
+      }
+    </span>
+
+    <span class="csv-upload-text">
+      @if (uploading) {
+        Importando...
+      } @else if (fileName) {
+        {{ fileName }}
+      } @else {
+        Arraste e solte o arquivo CSV aqui ou clique para selecionar
+      }
+    </span>
+
+    @if (fileName && !uploading) {
+      <button type="button" class="csv-clear-btn" (click)="clearFile(); $event.preventDefault()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </label>
+
+  @if (fileName && !uploading) {
+    <button type="button" class="csv-import-btn" (click)="importCsv()">Importar</button>
+  }
+
+  @if (errors.length > 0) {
+    <div class="csv-error-list">
+      @for (err of errors; track err.line) {
+        <div class="csv-error-item">
+          <strong>Linha {{ err.line }}:</strong> {{ err.message }}
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -146,6 +146,31 @@ describe('MenuAdminComponent', () => {
     expect(component.form.get('cover')?.value).toBe('');
   });
 
+  // ─── A2. Renderização — tela menu-admin ────────────────
+
+  it('#4 titulo Importação via CSV aparece no topo', () => {
+    const title = fixture.nativeElement.querySelector('.csv-title');
+    expect(title).toBeTruthy();
+    expect(title.textContent).toContain('Importação via CSV');
+  });
+
+  it('#5 campo de upload CSV existe abaixo do titulo', () => {
+    const area = fixture.nativeElement.querySelector('.csv-upload-area');
+    expect(area).toBeTruthy();
+    const text = area.textContent;
+    expect(text).toContain('Arraste e solte o arquivo CSV aqui ou clique para selecionar');
+  });
+
+  it('#6 formulario individual de cadastro continua abaixo', () => {
+    const csvSection = fixture.nativeElement.querySelector('app-csv-upload');
+    const h2 = fixture.nativeElement.querySelector('h2');
+    expect(csvSection).toBeTruthy();
+    expect(h2.textContent).toContain('Adicionar Cardápio');
+    const parent = csvSection.parentElement;
+    const children = Array.from(parent!.children);
+    expect(children.indexOf(csvSection)).toBeLessThan(children.indexOf(h2));
+  });
+
   it('should ask confirmation and call removeMenu when confirmed', () => {
     fixture.detectChanges(false);
 

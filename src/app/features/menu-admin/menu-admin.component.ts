@@ -7,12 +7,13 @@ import { MenuRequest } from '../../shared/types/menu';
 import { Category } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
+import { CsvUploadComponent } from '../../shared/components/csv-upload/csv-upload.component';
 import { NotificationService } from '../../shared/services/alert-message/alert-message.service';
 
 @Component({
   selector: 'app-menu-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, ConfirmationModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, ConfirmationModalComponent, CsvUploadComponent],
   templateUrl: './menu-admin.component.html',
   styleUrls: ['./menu-admin.component.css'],
 })

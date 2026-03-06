@@ -1,4 +1,6 @@
 <section class="video-admin">
+  <app-csv-upload endpoint="/admin/import/videos"></app-csv-upload>
+
   <h2>Adicionar Vídeo</h2>
 
   <form [formGroup]="form" (ngSubmit)="save()">

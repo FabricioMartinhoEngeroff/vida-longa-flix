@@ -172,6 +172,32 @@ describe('VideoAdminComponent', () => {
     expect(callArg.cover).toBe('video.mp4');
   });
 
+  // ─── A1. Renderização — tela video-admin ────────────────
+
+  it('#1 titulo Importação via CSV aparece no topo', () => {
+    const title = fixture.nativeElement.querySelector('.csv-title');
+    expect(title).toBeTruthy();
+    expect(title.textContent).toContain('Importação via CSV');
+  });
+
+  it('#2 campo de upload CSV existe abaixo do titulo', () => {
+    const area = fixture.nativeElement.querySelector('.csv-upload-area');
+    expect(area).toBeTruthy();
+    const text = area.textContent;
+    expect(text).toContain('Arraste e solte o arquivo CSV aqui ou clique para selecionar');
+  });
+
+  it('#3 formulario individual de cadastro continua abaixo', () => {
+    const csvSection = fixture.nativeElement.querySelector('app-csv-upload');
+    const h2 = fixture.nativeElement.querySelector('h2');
+    expect(csvSection).toBeTruthy();
+    expect(h2.textContent).toContain('Adicionar Vídeo');
+    // CSV section vem antes do h2 no DOM
+    const parent = csvSection.parentElement;
+    const children = Array.from(parent!.children);
+    expect(children.indexOf(csvSection)).toBeLessThan(children.indexOf(h2));
+  });
+
   it('should ask confirmation and call removeVideo when confirmed', () => {
     fixture.detectChanges();
 
