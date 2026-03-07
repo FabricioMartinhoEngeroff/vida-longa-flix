@@ -125,15 +125,27 @@ describe('VideoService', () => {
     expect(service.getVideoById('1')?.title).toBe('Bolo Fit Editado');
   });
 
-  it('should delete video and reload list', () => {
+  it('should optimistically remove video and keep removed on success', () => {
     service.removeVideo('1');
+    expect(service.totalVideos()).toBe(1);
 
     const deleteReq = httpMock.expectOne(`${adminUrl}/1`);
     expect(deleteReq.request.method).toBe('DELETE');
     deleteReq.flush(null);
 
-    httpMock.expectOne(baseUrl).flush([mockVideos[1]]);
     expect(service.totalVideos()).toBe(1);
+  });
+
+  it('should rollback optimistic removal when backend delete fails', () => {
+    service.removeVideo('1');
+    expect(service.totalVideos()).toBe(1);
+
+    const deleteReq = httpMock.expectOne(`${adminUrl}/1`);
+    expect(deleteReq.request.method).toBe('DELETE');
+    deleteReq.error(new ProgressEvent('error'), { status: 500, statusText: 'Server Error' });
+
+    expect(service.totalVideos()).toBe(2);
+    expect(service.getVideoById('1')).toBeTruthy();
   });
 
   it('should toggle favorite — call FavoritesService and update local state', () => {

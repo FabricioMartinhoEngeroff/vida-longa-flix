@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, catchError, of } from 'rxjs';
+import { tap, catchError, of, EMPTY } from 'rxjs';
 import { Video, VideoRequest } from '../../types/videos';
 import { environment } from '../../../../environments/environment';
 import { LoggerService } from '../../../auth/services/logger.service';
@@ -101,15 +101,26 @@ export class VideoService {
 
   // Rota admin — DELETE /admin/videos/{id}
   removeVideo(id: string): void {
+    const current = this.videosSignal();
+    const removedIndex = current.findIndex(v => v.id === id);
+    const removed = removedIndex >= 0 ? current[removedIndex] : undefined;
+
+    this.videosSignal.update(list => list.filter(v => v.id !== id));
+
     this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
-      tap(() => {
-        this.alert.success('Vídeo removido com sucesso!');
-        this.loadVideos();
-      }),
+      tap(() => this.alert.success('Vídeo removido com sucesso!')),
       catchError(err => {
         this.logger.error('Erro ao deletar vídeo', err);
         this.alert.error('Erro ao remover vídeo. Tente novamente.');
-        return of(null);
+        if (removed) {
+          this.videosSignal.update(list => {
+            if (list.some(v => v.id === id)) return list;
+            const next = [...list];
+            next.splice(Math.min(removedIndex, next.length), 0, removed);
+            return next;
+          });
+        }
+        return EMPTY;
       })
     ).subscribe();
   }

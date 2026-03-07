@@ -25,7 +25,7 @@
 
     <span class="csv-upload-text">
       @if (uploading) {
-        Importando...
+        Importando... ({{ elapsedSeconds }}s)
       } @else if (fileName) {
         {{ fileName }}
       } @else {
@@ -42,6 +42,20 @@
 
   @if (fileName && !uploading) {
     <button type="button" class="csv-import-btn" (click)="importCsv()">Importar</button>
+  }
+
+  @if (logs.length > 0) {
+    <div class="csv-log-panel">
+      <div class="csv-log-header">
+        <mat-icon>terminal</mat-icon>
+        <span>Log de importação</span>
+      </div>
+      <div class="csv-log-entries">
+        @for (entry of logs; track $index) {
+          <div class="csv-log-entry">{{ entry }}</div>
+        }
+      </div>
+    </div>
   }
 
   @if (errors.length > 0) {
