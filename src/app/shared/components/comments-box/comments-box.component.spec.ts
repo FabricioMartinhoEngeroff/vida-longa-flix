@@ -44,6 +44,54 @@ describe('CommentsBoxComponent', () => {
     expect(component.newComment).toBe('');
   });
 
+  it('should submit on Enter keydown and clear input in the template', async () => {
+    const submitSpy = vi.spyOn(component.commentSubmit, 'emit');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('.comment-form input') as HTMLInputElement;
+    expect(input).toBeTruthy();
+
+    input.value = 'hello';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(submitSpy).toHaveBeenCalledWith('hello');
+    expect(component.newComment).toBe('');
+  });
+
+  it('should allow multiple sequential submissions via button click', async () => {
+    const submitSpy = vi.spyOn(component.commentSubmit, 'emit');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const input = el.querySelector('.comment-form input') as HTMLInputElement;
+    const button = el.querySelector('.comment-form button') as HTMLButtonElement;
+    expect(input).toBeTruthy();
+    expect(button).toBeTruthy();
+
+    for (let i = 1; i <= 5; i++) {
+      input.value = `c${i}`;
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      button.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+
+    expect(submitSpy).toHaveBeenCalledTimes(5);
+    expect((submitSpy as any).mock.calls[0][0]).toBe('c1');
+    expect((submitSpy as any).mock.calls[4][0]).toBe('c5');
+  });
+
   it('should not emit commentSubmit when input is empty/whitespace', () => {
     const submitSpy = vi.spyOn(component.commentSubmit, 'emit');
 

@@ -27,6 +27,13 @@
   gap: 10px;
 }
 
+.comment-list {
+  max-height: min(280px, 32vh);
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 8px;
+}
+
 .comment-content {
   min-width: 0;
   flex: 1;
@@ -75,6 +82,10 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  position: sticky;
+  bottom: 0;
+  background: #080808;
+  padding-top: 6px;
 }
 
 .comment-form input {

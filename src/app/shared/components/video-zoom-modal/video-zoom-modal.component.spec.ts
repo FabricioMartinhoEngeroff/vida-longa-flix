@@ -40,6 +40,9 @@ describe('VideoZoomModalComponent', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    selectedVideoSignal.set(null);
+    videosSignal.set([]);
+    commentsStateSignal.set({});
     await TestBed.configureTestingModule({
       imports: [VideoZoomModalComponent],
       providers: [
@@ -89,5 +92,133 @@ describe('VideoZoomModalComponent', () => {
     component.onFieldSave('title', 'Novo Título');
 
     expect(videoServiceMock.updateVideo).not.toHaveBeenCalled();
+  });
+
+  it('should allow submitting 5 comments on a mobile-sized viewport', async () => {
+    const originalInnerWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { value: 375, configurable: true });
+    window.dispatchEvent(new Event('resize'));
+
+    const video = {
+      id: 'video-1',
+      url: 'http://test/video.mp4',
+      title: 't',
+      description: 'd',
+      recipe: 'r',
+      protein: 1,
+      carbs: 1,
+      fat: 1,
+      fiber: 1,
+      calories: 1,
+      favorited: false,
+    } as any;
+
+    videosSignal.set([video]);
+    selectedVideoSignal.set(video);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const input = el.querySelector('.comment-form input') as HTMLInputElement;
+    const button = el.querySelector('.comment-form button') as HTMLButtonElement;
+
+    expect(input).toBeTruthy();
+    expect(button).toBeTruthy();
+
+    for (let i = 1; i <= 5; i++) {
+      input.value = `comment ${i}`;
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      button.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+
+    expect(commentsServiceMock.add).toHaveBeenCalledTimes(5);
+    const calls = (commentsServiceMock.add as any).mock.calls as unknown[][];
+    expect(calls[0]).toEqual(['video-1', 'comment 1']);
+    expect(calls[4]).toEqual(['video-1', 'comment 5']);
+
+    Object.defineProperty(window, 'innerWidth', { value: originalInnerWidth, configurable: true });
+    window.dispatchEvent(new Event('resize'));
+  });
+
+  it('should submit comment on Enter keypress (comment input)', async () => {
+    const video = {
+      id: 'video-1',
+      url: 'http://test/video.mp4',
+      title: 't',
+      description: 'd',
+      recipe: 'r',
+      protein: 1,
+      carbs: 1,
+      fat: 1,
+      fiber: 1,
+      calories: 1,
+      favorited: false,
+    } as any;
+
+    videosSignal.set([video]);
+    selectedVideoSignal.set(video);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const input = el.querySelector('.comment-form input') as HTMLInputElement;
+    expect(input).toBeTruthy();
+
+    input.value = 'via enter';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(commentsServiceMock.add).toHaveBeenCalledWith('video-1', 'via enter');
+  });
+
+  it('should not close modal when publishing a comment', async () => {
+    const video = {
+      id: 'video-1',
+      url: 'http://test/video.mp4',
+      title: 't',
+      description: 'd',
+      recipe: 'r',
+      protein: 1,
+      carbs: 1,
+      fat: 1,
+      fiber: 1,
+      calories: 1,
+      favorited: false,
+    } as any;
+
+    videosSignal.set([video]);
+    selectedVideoSignal.set(video);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const input = el.querySelector('.comment-form input') as HTMLInputElement;
+    const button = el.querySelector('.comment-form button') as HTMLButtonElement;
+    expect(input).toBeTruthy();
+    expect(button).toBeTruthy();
+
+    input.value = 'should not close';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    button.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(modalServiceMock.close).not.toHaveBeenCalled();
   });
 });
