@@ -19,7 +19,7 @@ export class CsvUploadComponent {
   file: File | null = null;
   isDragging = false;
   uploading = false;
-  errors: { line: number; message: string }[] = [];
+  errors: string[] = [];
 
   constructor(
     private csvImportService: CsvImportService,

@@ -5,7 +5,8 @@ import { environment } from '../../../../environments/environment';
 
 export interface CsvImportResult {
   imported: number;
-  errors: { line: number; message: string }[];
+  skipped: number;
+  errors: string[];
 }
 
 @Injectable({ providedIn: 'root' })

@@ -46,10 +46,8 @@
 
   @if (errors.length > 0) {
     <div class="csv-error-list">
-      @for (err of errors; track err.line) {
-        <div class="csv-error-item">
-          <strong>Linha {{ err.line }}:</strong> {{ err.message }}
-        </div>
+      @for (err of errors; track $index) {
+        <div class="csv-error-item">{{ err }}</div>
       }
     </div>
   }

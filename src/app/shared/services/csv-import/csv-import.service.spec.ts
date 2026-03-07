@@ -31,7 +31,7 @@ describe('CsvImportService', () => {
 
   it('should return CsvImportResult on success', () => {
     const file = new File(['data'], 'menus.csv', { type: 'text/csv' });
-    const expected: CsvImportResult = { imported: 5, errors: [{ line: 3, message: 'err' }] };
+    const expected: CsvImportResult = { imported: 5, skipped: 1, errors: ["Linha 3: err"] };
 
     let result: CsvImportResult | undefined;
     service.upload('/admin/import/menus', file).subscribe((r) => (result = r));

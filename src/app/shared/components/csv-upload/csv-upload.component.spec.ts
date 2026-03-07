@@ -244,9 +244,10 @@ describe('CsvUploadComponent', () => {
   describe('A8. Sucesso parcial', () => {
     const partialResponse = {
       imported: 10,
+      skipped: 2,
       errors: [
-        { line: 3, message: "categoryName 'Yoga' não encontrada." },
-        { line: 7, message: 'title é obrigatório' },
+        "Linha 3: categoryName 'Yoga' não encontrada.",
+        "Linha 7: 'title' é obrigatório",
       ],
     };
 
@@ -260,18 +261,17 @@ describe('CsvUploadComponent', () => {
       selectAndUpload(partialResponse);
 
       expect(component.errors.length).toBe(2);
-      expect(component.errors[0].line).toBe(3);
-      expect(component.errors[0].message).toContain('Yoga');
-      expect(component.errors[1].line).toBe(7);
+      expect(component.errors[0]).toContain('Linha 3');
+      expect(component.errors[0]).toContain('Yoga');
+      expect(component.errors[1]).toContain('Linha 7');
     });
 
     it('#25 muitos erros exibem lista com scroll', () => {
-      const manyErrors = Array.from({ length: 20 }, (_, i) => ({
-        line: i + 1,
-        message: `erro na linha ${i + 1}`,
-      }));
+      const manyErrors = Array.from({ length: 20 }, (_, i) =>
+        `Linha ${i + 1}: erro na linha ${i + 1}`
+      );
 
-      selectAndUpload({ imported: 5, errors: manyErrors });
+      selectAndUpload({ imported: 5, skipped: 20, errors: manyErrors });
 
       expect(component.errors.length).toBe(20);
     });
@@ -283,7 +283,8 @@ describe('CsvUploadComponent', () => {
     it('#26 nenhuma linha valida mostra erro', () => {
       selectAndUpload({
         imported: 0,
-        errors: [{ line: 1, message: 'titulo vazio' }, { line: 2, message: 'url invalida' }],
+        skipped: 2,
+        errors: ["Linha 1: 'title' é obrigatório", "Linha 2: 'url' é obrigatório"],
       });
 
       expect(alertSpy.error).toHaveBeenCalledWith(
