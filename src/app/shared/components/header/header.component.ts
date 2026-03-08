@@ -1,7 +1,6 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 import { VideoService } from '../../services/video/video.service';
 import { SearchFieldComponent } from '../search-field/search-field.component';
@@ -22,9 +21,11 @@ interface MenuLike { id: string; title: string; category?: { name?: string } | n
   standalone: true,
   imports: [SearchFieldComponent, UserMenuComponent, LogoutButtonComponent, NotificationsComponent],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent {
   private router = inject(Router);
-  private subscriptions = new Subscription();
+  private scroller = inject(ViewportScroller);
+  private videoService = inject(VideoService);
+  private menuService = inject(MenuService);
 
   searchCategories: string[] = [];
   searchSuggestions: string[] = [];
@@ -32,43 +33,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private videosIndex: IndexedItem[] = [];
   private menusIndex: IndexedItem[] = [];
 
-  constructor(
-    private scroller: ViewportScroller,
-    private videoService: VideoService,
-    private menuService: MenuService
-  ) {}
+  constructor() {
+    effect(() => {
+      const videos = this.videoService.videos();
+      this.videosIndex = videos.map((v: VideoLike) => ({
+        id: v.id,
+        title: v.title,
+        categoryName: v.category?.name || '',
+      }));
+    });
 
-  
-  ngOnInit(): void {
-    this.subscriptions.add(
-      this.updateVideosIndex()
-    );
-
-    this.subscriptions.add(
-      this.updateMenusIndex()
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
-  private updateVideosIndex(): void {
-    const videos = this.videoService.videos();
-    this.videosIndex = videos.map((v: VideoLike) => ({
-      id: v.id,
-      title: v.title,
-      categoryName: v.category?.name || '',
-    }));
-  }
-
-  private updateMenusIndex(): void {
-    const menus = this.menuService.menus();
-    this.menusIndex = menus.map((m: MenuLike) => ({
-      id: m.id,
-      title: m.title,
-      categoryName: m.category?.name || '',
-    }));
+    effect(() => {
+      const menus = this.menuService.menus();
+      this.menusIndex = menus.map((m: MenuLike) => ({
+        id: m.id,
+        title: m.title,
+        categoryName: m.category?.name || '',
+      }));
+    });
   }
 
 
