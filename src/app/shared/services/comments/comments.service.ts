@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface CommentResponse {
@@ -17,16 +18,22 @@ export class CommentsService {
   // estado local por videoId
   private state = signal<Record<string, CommentResponse[]>>({});
 
+  // cancela GET anterior para evitar resposta stale sobrescrever dados frescos
+  private loadSub: Record<string, Subscription> = {};
+
   readonly comments = this.state.asReadonly();
 
   constructor(private http: HttpClient) {}
 
   loadByVideo(videoId: string): void {
-    this.http.get<CommentResponse[]>(`${this.baseUrl}/video/${videoId}`)
+    const key = `video:${videoId}`;
+    this.loadSub[key]?.unsubscribe();
+
+    this.loadSub[key] = this.http.get<CommentResponse[]>(`${this.baseUrl}/video/${videoId}`)
       .subscribe({
         next: (list) => this.state.update(current => ({
           ...current,
-          [`video:${videoId}`]: list
+          [key]: list
         })),
         error: () => { /* noop: silencia 404 quando não há comentários */ }
       });
@@ -41,12 +48,18 @@ export class CommentsService {
     if (!txt) return;
 
     this.http.post<void>(this.baseUrl, { text, videoId })
-      .subscribe(() => this.loadByVideo(videoId));
+      .subscribe({
+        next: () => this.loadByVideo(videoId),
+        error: () => { /* silencia erro de POST */ }
+      });
   }
 
   delete(commentId: string, videoId: string): void {
     this.http.delete<void>(`${this.baseUrl}/${commentId}`)
-      .subscribe(() => this.loadByVideo(videoId));
+      .subscribe({
+        next: () => this.loadByVideo(videoId),
+        error: () => { /* silencia erro de DELETE */ }
+      });
   }
 
   readonly totalComments = computed(() =>

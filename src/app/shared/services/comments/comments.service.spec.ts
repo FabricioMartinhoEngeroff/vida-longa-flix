@@ -78,4 +78,128 @@ describe('CommentsService', () => {
 
     expect(service.totalComments()).toBe(1);
   });
+
+  // ── Race-condition tests (mobile second-comment bug) ──
+
+  it('should cancel previous loadByVideo so stale data never overwrites fresh data', () => {
+    const comment1: CommentResponse = { id: '1', text: 'primeiro', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
+    const comment2: CommentResponse = { id: '2', text: 'segundo', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
+
+    // First comment POST + reload
+    service.add('video-1', 'primeiro');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+    // GET request A starts (would return stale data)
+
+    // Second comment POST + reload BEFORE getA returns
+    // This should CANCEL GET A so stale data can never win
+    service.add('video-1', 'segundo');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+
+    // Both GETs were created, but first was cancelled by unsubscribe()
+    const gets = http.match(`${environment.apiUrl}/comments/video/video-1`);
+    expect(gets.length).toBe(2);
+    expect(gets[0].cancelled).toBe(true);   // GET A was cancelled
+    expect(gets[1].cancelled).toBe(false);  // GET B is active
+
+    // Only flush the active request
+    gets[1].flush([comment1, comment2]);
+
+    // Must have 2 comments — stale response was cancelled, can never overwrite
+    expect(service.get('video-1').length).toBe(2);
+  });
+
+  it('should keep both comments when two sequential adds complete in order', () => {
+    const c1: CommentResponse = { id: '1', text: 'c1', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
+    const c2: CommentResponse = { id: '2', text: 'c2', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
+
+    // Add first comment — wait for full round-trip before second
+    service.add('video-1', 'c1');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush([c1]);
+    expect(service.get('video-1').length).toBe(1);
+
+    // Add second comment
+    service.add('video-1', 'c2');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush([c1, c2]);
+    expect(service.get('video-1').length).toBe(2);
+    expect(service.get('video-1').map(c => c.text)).toEqual(['c1', 'c2']);
+  });
+
+  it('should still work after a failed POST (second comment should publish)', () => {
+    // First comment POST fails
+    service.add('video-1', 'falhou');
+    http.expectOne(`${environment.apiUrl}/comments`)
+      .flush('Server Error', { status: 500, statusText: 'Internal Server Error' });
+    // No GET expected since POST failed
+
+    // Second comment should still work
+    service.add('video-1', 'funcionou');
+    const post2 = http.expectOne(`${environment.apiUrl}/comments`);
+    expect(post2.request.body).toEqual({ text: 'funcionou', videoId: 'video-1' });
+    post2.flush(null);
+
+    const getReq = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    getReq.flush([{ id: '1', text: 'funcionou', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } }]);
+
+    expect(service.get('video-1').length).toBe(1);
+    expect(service.get('video-1')[0].text).toBe('funcionou');
+  });
+
+  it('should cancel stale loadByVideo when a new loadByVideo is triggered', () => {
+    const stale: CommentResponse = { id: '1', text: 'stale', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
+    const fresh: CommentResponse = { id: '2', text: 'fresh', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
+
+    // Rapid-fire three loads for the same video
+    service.loadByVideo('video-1');
+    service.loadByVideo('video-1');
+    service.loadByVideo('video-1');
+
+    const reqs = http.match(`${environment.apiUrl}/comments/video/video-1`);
+    expect(reqs.length).toBe(3);
+
+    // First two should be cancelled, only last is active
+    expect(reqs[0].cancelled).toBe(true);
+    expect(reqs[1].cancelled).toBe(true);
+    expect(reqs[2].cancelled).toBe(false);
+
+    // Only flush the active one with fresh data
+    reqs[2].flush([stale, fresh]);
+
+    // The latest (active) response should win
+    expect(service.get('video-1').length).toBe(2);
+  });
+
+  it('should not break when DELETE is followed by rapid add', () => {
+    const c1: CommentResponse = { id: '1', text: 'c1', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
+    const c2: CommentResponse = { id: '2', text: 'c2', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
+    const c3: CommentResponse = { id: '3', text: 'c3', date: '2024-01-03', user: { id: 'u1', name: 'Ana' } };
+
+    // Load initial comments
+    service.loadByVideo('video-1');
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush([c1, c2]);
+    expect(service.get('video-1').length).toBe(2);
+
+    // Delete comment 1 (triggers reload)
+    service.delete('1', 'video-1');
+    http.expectOne(`${environment.apiUrl}/comments/1`).flush(null);
+    // GET from delete starts
+
+    // Immediately add a new comment before delete's reload finishes
+    service.add('video-1', 'c3');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+
+    // Both GETs exist, but delete's GET was cancelled by add's loadByVideo
+    const gets = http.match(`${environment.apiUrl}/comments/video/video-1`);
+    expect(gets.length).toBe(2);
+    expect(gets[0].cancelled).toBe(true);   // delete's reload was cancelled
+    expect(gets[1].cancelled).toBe(false);  // add's reload is active
+
+    // Only flush active request
+    gets[1].flush([c2, c3]);
+
+    // Should have the latest data (c2 + c3)
+    expect(service.get('video-1').length).toBe(2);
+    expect(service.get('video-1').map(c => c.text)).toEqual(['c2', 'c3']);
+  });
 });
