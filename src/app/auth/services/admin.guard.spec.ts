@@ -50,4 +50,17 @@ describe('adminGuard', () => {
     expect(result).toBe(true);
     expect(routerMock.navigateByUrl).not.toHaveBeenCalled();
   });
+
+  it('#185 user com roles undefined — redireciona para /app', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Router, useValue: routerMock },
+        { provide: AuthService, useValue: { user: { roles: undefined } } },
+      ],
+    });
+
+    const result = TestBed.runInInjectionContext(() => adminGuard({} as any, {} as any));
+    expect(result).toBe(false);
+    expect(routerMock.navigateByUrl).toHaveBeenCalledWith('/app');
+  });
 });

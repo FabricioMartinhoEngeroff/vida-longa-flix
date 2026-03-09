@@ -40,4 +40,26 @@ describe('handleApiError', () => {
 
     expect(handleApiError({ any: true }, 'Default message').message).toBe('Default message');
   });
+
+  it('#195 HttpErrorResponse com body string — usa string como mensagem', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const httpError = new HttpErrorResponse({
+      status: 400,
+      error: 'String body error',
+    });
+
+    expect(handleApiError(httpError, 'Default').message).toBe('String body error');
+  });
+
+  it('#196 HttpErrorResponse com body vazio — usa contexto', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const httpError = new HttpErrorResponse({
+      status: 500,
+      error: {},
+    });
+
+    expect(handleApiError(httpError, 'Erro ao fazer login').message).toBe('Erro ao fazer login');
+  });
 });
