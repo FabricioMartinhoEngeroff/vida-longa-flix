@@ -26,7 +26,7 @@ export class CommentsService {
   constructor(private http: HttpClient) {}
 
   loadByVideo(videoId: string): void {
-    const key = `video:${videoId}`;
+    const key = this.getKey(videoId);
     this.loadSub[key]?.unsubscribe();
 
     this.loadSub[key] = this.http.get<CommentResponse[]>(`${this.baseUrl}/video/${videoId}`)
@@ -40,16 +40,21 @@ export class CommentsService {
   }
 
   get(videoId: string): CommentResponse[] {
-    return this.state()[`video:${videoId}`] ?? [];
+    return this.state()[this.getKey(videoId)] ?? [];
   }
 
   add(videoId: string, text: string): void {
     const txt = (text ?? '').trim();
     if (!txt) return;
 
-    this.http.post<void>(this.baseUrl, { text, videoId })
+    this.http.post<CommentResponse | null>(this.baseUrl, { text: txt, videoId })
       .subscribe({
-        next: () => this.loadByVideo(videoId),
+        next: (created) => {
+          this.state.update(current => ({
+            ...current,
+            [this.getKey(videoId)]: [...(current[this.getKey(videoId)] ?? []), this.toLocalComment(txt, created)]
+          }));
+        },
         error: () => { /* silencia erro de POST */ }
       });
   }
@@ -57,9 +62,31 @@ export class CommentsService {
   delete(commentId: string, videoId: string): void {
     this.http.delete<void>(`${this.baseUrl}/${commentId}`)
       .subscribe({
-        next: () => this.loadByVideo(videoId),
+        next: () => {
+          this.state.update(current => ({
+            ...current,
+            [this.getKey(videoId)]: (current[this.getKey(videoId)] ?? []).filter((comment) => comment.id !== commentId)
+          }));
+        },
         error: () => { /* silencia erro de DELETE */ }
       });
+  }
+
+  private getKey(videoId: string): string {
+    return `video:${videoId}`;
+  }
+
+  private toLocalComment(text: string, created: CommentResponse | null): CommentResponse {
+    if (created?.id) {
+      return created;
+    }
+
+    return {
+      id: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      text,
+      date: new Date().toISOString(),
+      user: { id: 'local', name: 'Você' },
+    };
   }
 
   readonly totalComments = computed(() =>
