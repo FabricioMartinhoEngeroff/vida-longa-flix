@@ -18,6 +18,17 @@ describe('handleApiError', () => {
     expect(handleApiError(httpError, 'Default').message).toBe('Backend error');
   });
 
+  it('should read HttpErrorResponse error field when message is absent', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const httpError = new HttpErrorResponse({
+      status: 400,
+      error: { error: 'Backend error field' },
+    });
+
+    expect(handleApiError(httpError, 'Default').message).toBe('Backend error field');
+  });
+
   it('should use generic JS error message', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 

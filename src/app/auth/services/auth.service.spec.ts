@@ -342,6 +342,7 @@ describe('AuthService — WhatsApp Welcome', () => {
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       expect(req.request.body).not.toBeInstanceOf(FormData);
+      expect(req.request.detectContentTypeHeader()).toBe('application/json');
       // Angular HttpClient envia JSON por padrao
       req.flush(successResponse);
       await p;
@@ -389,6 +390,17 @@ describe('AuthService — WhatsApp Welcome', () => {
       let error: any;
       try { await p; } catch (e) { error = e; }
       expect(error.message).toBe('Erro especifico');
+    });
+
+    it('#74.1 response de erro contem error — propagado como Error', async () => {
+      const p = service.register(registerData);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
+      req.flush({ error: 'Erro especifico via error' }, { status: 400, statusText: 'Bad Request' });
+
+      let error: any;
+      try { await p; } catch (e) { error = e; }
+      expect(error.message).toBe('Erro especifico via error');
     });
   });
 

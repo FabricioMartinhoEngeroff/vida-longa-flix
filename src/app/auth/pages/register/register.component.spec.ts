@@ -113,6 +113,16 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(ctrl.invalid).toBe(true);
     });
 
+    it('#5.1 input com mais de 11 digitos limita mascara ao telefone valido', () => {
+      const telInput = fixture.nativeElement.querySelector('input[type="tel"]') as HTMLInputElement;
+      telInput.value = '11987654321099';
+      telInput.dispatchEvent(new Event('input'));
+      cd();
+
+      expect(telInput.value).toBe('(11) 98765-4321');
+      expect(component.form.get('phone')!.value).toBe('11987654321');
+    });
+
     it('#6 campo telefone vazio e submeter — Campo obrigatorio', () => {
       const ctrl = component.form.get('phone')!;
       ctrl.setValue('');
@@ -521,6 +531,17 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(telInput.value).toBe('(11) 98765-4321');
     });
 
+    it('#67 autocomplete do navegador preenche telefone com mascara aplicada', () => {
+      const telInput = fixture.nativeElement.querySelector('input[type="tel"]') as HTMLInputElement;
+
+      telInput.value = '21987654321';
+      telInput.dispatchEvent(new Event('input'));
+      cd();
+
+      expect(telInput.value).toBe('(21) 98765-4321');
+      expect(component.form.get('phone')!.value).toBe('21987654321');
+    });
+
     it('#68 submeter formulario no celular — mesmo comportamento do desktop', async () => {
       fillValidForm();
       await component.register();
@@ -596,6 +617,30 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       await p;
 
       expect(component.loading).toBe(false);
+    });
+
+    it('#82 componente destruido durante loading nao causa erro ao concluir request', async () => {
+      let resolveRegister!: (v: any) => void;
+      authMock.register.mockReturnValueOnce(
+        new Promise((r) => { resolveRegister = r; })
+      );
+
+      fillValidForm();
+      const pendingRegister = component.register();
+
+      expect(component.loading).toBe(true);
+
+      fixture.destroy();
+      resolveRegister(successResponse);
+
+      let thrown: unknown;
+      try {
+        await pendingRegister;
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(thrown).toBeUndefined();
     });
   });
 });
