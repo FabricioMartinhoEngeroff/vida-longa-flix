@@ -66,7 +66,9 @@ describe('PasswordChangeComponent — Login & Register Scenarios', () => {
 
     it('#151 estado inicial — validatingToken=true', async () => {
       // Use a never-resolving promise so ngOnInit stays in validating state
-      recoveryMock.validateToken.mockImplementation(() => new Promise(() => {}));
+      recoveryMock.validateToken.mockImplementation(
+        () => new Promise(() => undefined)
+      );
 
       await TestBed.configureTestingModule({
         imports: [PasswordChangeComponent],

@@ -217,7 +217,7 @@ describe('AuthService — WhatsApp Welcome', () => {
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       req.flush({ message: 'Erro' }, { status: 500, statusText: 'Server Error' });
 
-      try { await p; } catch {}
+      await p.catch(() => undefined);
 
       expect(localStorage.getItem('token')).toBeNull();
     });
@@ -336,7 +336,7 @@ describe('AuthService — WhatsApp Welcome', () => {
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       req.flush({ message: 'Email já cadastrado' }, { status: 409, statusText: 'Conflict' });
 
-      try { await p; } catch {}
+      await p.catch(() => undefined);
 
       expect(localStorage.getItem('token')).toBeNull();
     });
@@ -681,16 +681,7 @@ describe('AuthService — WhatsApp Welcome', () => {
       localStorage.setItem('token', 'saved-token');
       localStorage.setItem('user', JSON.stringify({ id: 'u1', name: 'Ana' }));
 
-      // Re-create service so loadSession runs
-      const freshService = new (service.constructor as any)(
-        TestBed.inject(HttpTestingController as any),
-        TestBed.inject(ApiService),
-        routerMock,
-        loggerMock,
-      );
-
-      // The user should be loaded from our manual constructor workaround
-      // Instead, test via the public API
+      // Existing instance can read the persisted token through the public API.
       expect(service.getToken()).toBe('saved-token');
     });
 
