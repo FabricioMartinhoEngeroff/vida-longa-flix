@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
@@ -147,7 +147,10 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
   private timeoutId?: ReturnType<typeof setTimeout>;
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     // Inscreve no stream e filtra apenas notificações tipo 'info'
@@ -156,6 +159,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
         this.title = notification.title;
         this.text = notification.text;
         this.visible = true;
+        this.cdr.markForCheck();
         
         // Limpa timeout anterior se existir
         if (this.timeoutId) {
@@ -165,6 +169,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
         // Fecha automaticamente após duração configurada
         this.timeoutId = setTimeout(() => {
           this.visible = false;
+          this.cdr.markForCheck();
         }, notification.durationMs);
       }
     });
@@ -173,6 +178,7 @@ export class InfoMessageComponent implements OnInit, OnDestroy {
   // Fecha mensagem manualmente e cancela timeout
   close() {
     this.visible = false;
+    this.cdr.markForCheck();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

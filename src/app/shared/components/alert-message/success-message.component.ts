@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
@@ -123,13 +123,17 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
   private timeoutId?: ReturnType<typeof setTimeout>;
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.subscription = this.notificationService.notification$.subscribe(notification => {
       if (notification.type === 'success') {
         this.text = notification.text;
         this.visible = true;
+        this.cdr.markForCheck();
         
         if (this.timeoutId) {
           clearTimeout(this.timeoutId);
@@ -137,6 +141,7 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
         
         this.timeoutId = setTimeout(() => {
           this.visible = false;
+          this.cdr.markForCheck();
         }, notification.durationMs);
       }
     });
@@ -144,6 +149,7 @@ export class SuccessMessageComponent implements OnInit, OnDestroy {
 
   close() {
     this.visible = false;
+    this.cdr.markForCheck();
     
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);

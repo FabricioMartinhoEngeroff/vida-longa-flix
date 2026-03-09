@@ -237,6 +237,46 @@ describe('CsvUploadComponent', () => {
 
       expect(alertSpy.success).toHaveBeenCalledWith('10 registros importados com sucesso!');
     });
+
+    it('#22.1 ao concluir migracao com sucesso exibe mensagem e limpa campo do arquivo', () => {
+      selectFile(createFile('dados.csv', 100));
+
+      expect(component.fileName).toBe('dados.csv');
+      expect(component.file).not.toBeNull();
+
+      triggerImport();
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/admin/import/videos`);
+      req.flush({ imported: 10, errors: [] });
+      cd();
+
+      expect(alertSpy.success).toHaveBeenCalledWith('10 registros importados com sucesso!');
+      expect(component.uploading).toBe(false);
+      expect(component.fileName).toBe('');
+      expect(component.file).toBeNull();
+    });
+
+    it('#22.2 atualiza a interface apos sucesso sem detectChanges manual extra', async () => {
+      selectFile(createFile('dados.csv', 100));
+      triggerImport();
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/admin/import/videos`);
+      req.flush({ imported: 10, errors: [] });
+
+      await fixture.whenStable();
+
+      const uploadText = fixture.nativeElement
+        .querySelector('.csv-upload-text')
+        ?.textContent?.trim();
+      const logEntries = Array.from(
+        fixture.nativeElement.querySelectorAll('.csv-log-entry'),
+        (entry: Element) => entry.textContent?.trim() ?? ''
+      );
+
+      expect(component.uploading).toBe(false);
+      expect(uploadText).toContain('Arraste e solte o arquivo CSV aqui ou clique para selecionar');
+      expect(logEntries.at(-1)).toContain('Sucesso! 10 registros importados.');
+    });
   });
 
   // ─── A8. Sucesso parcial ─────────────────────────────────

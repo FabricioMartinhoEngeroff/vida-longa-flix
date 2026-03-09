@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CsvImportService, CsvImportResult } from '../../services/csv-import/csv-import.service';
 import { NotificationService } from '../../services/alert-message/alert-message.service';
@@ -26,7 +26,8 @@ export class CsvUploadComponent {
 
   constructor(
     private csvImportService: CsvImportService,
-    private alert: NotificationService
+    private alert: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   onFileSelect(event: Event): void {
@@ -83,6 +84,7 @@ export class CsvUploadComponent {
         this.log(`Importados: ${result.imported} | Erros: ${result.errors?.length ?? 0}`);
         console.log('[CSV Import] Response:', result);
         this.handleSuccess(result);
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.stopTimer();
@@ -90,6 +92,7 @@ export class CsvUploadComponent {
         this.log(`Detalhe: ${err.message || err.statusText || 'Sem detalhes'}`);
         console.error('[CSV Import] Error:', err);
         this.handleError(err);
+        this.cdr.markForCheck();
       },
     });
   }
@@ -107,6 +110,7 @@ export class CsvUploadComponent {
       if (this.elapsedSeconds % 5 === 0) {
         this.log(`Aguardando resposta... (${this.elapsedSeconds}s)`);
       }
+      this.cdr.markForCheck();
     }, 1000);
   }
 
