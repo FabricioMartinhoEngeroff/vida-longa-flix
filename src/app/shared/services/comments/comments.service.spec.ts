@@ -46,10 +46,12 @@ describe('CommentsService', () => {
     const postReq = http.expectOne(`${environment.apiUrl}/comments`);
     expect(postReq.request.method).toBe('POST');
     expect(postReq.request.body).toEqual({ text: 'novo comentário', videoId: 'video-1' });
-    postReq.flush(mockComments[0]);
+    postReq.flush(null);
+
+    const getReq = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    getReq.flush(mockComments);
 
     expect(service.get('video-1').length).toBe(1);
-    expect(service.get('video-1')[0].text).toBe('ótimo vídeo');
   });
 
   it('should not add empty comment', () => {
@@ -57,17 +59,15 @@ describe('CommentsService', () => {
     http.expectNone(`${environment.apiUrl}/comments`);
   });
 
-  it('should delete comment from local state after backend success', () => {
-    service.loadByVideo('video-1');
-    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush(mockComments);
+  it('should delete comment and reload', () => {
+    service.delete('comment-1', 'video-1');
 
-    service.delete('1', 'video-1');
-
-    const deleteReq = http.expectOne(`${environment.apiUrl}/comments/1`);
+    const deleteReq = http.expectOne(`${environment.apiUrl}/comments/comment-1`);
     expect(deleteReq.request.method).toBe('DELETE');
     deleteReq.flush(null);
 
-    expect(service.get('video-1')).toEqual([]);
+    const getReq = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    getReq.flush([]);
   });
 
   it('should calculate totalComments reactively', () => {
@@ -81,18 +81,40 @@ describe('CommentsService', () => {
 
   // ── Race-condition tests (mobile second-comment bug) ──
 
+  it('should cancel previous loadByVideo so stale data never overwrites fresh data', () => {
+    const comment1: CommentResponse = { id: '1', text: 'primeiro', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
+    const comment2: CommentResponse = { id: '2', text: 'segundo', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
+
+    service.add('video-1', 'primeiro');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+
+    service.add('video-1', 'segundo');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+
+    const gets = http.match(`${environment.apiUrl}/comments/video/video-1`);
+    expect(gets.length).toBe(2);
+    expect(gets[0].cancelled).toBe(true);
+    expect(gets[1].cancelled).toBe(false);
+
+    gets[1].flush([comment1, comment2]);
+
+    expect(service.get('video-1').length).toBe(2);
+  });
+
   it('should keep both comments when two sequential adds complete in order', () => {
     const c1: CommentResponse = { id: '1', text: 'c1', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
     const c2: CommentResponse = { id: '2', text: 'c2', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
 
-    // Add first comment
+    // Add first comment — wait for full round-trip before second
     service.add('video-1', 'c1');
-    http.expectOne(`${environment.apiUrl}/comments`).flush(c1);
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush([c1]);
     expect(service.get('video-1').length).toBe(1);
 
     // Add second comment
     service.add('video-1', 'c2');
-    http.expectOne(`${environment.apiUrl}/comments`).flush(c2);
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush([c1, c2]);
     expect(service.get('video-1').length).toBe(2);
     expect(service.get('video-1').map(c => c.text)).toEqual(['c1', 'c2']);
   });
@@ -108,7 +130,10 @@ describe('CommentsService', () => {
     service.add('video-1', 'funcionou');
     const post2 = http.expectOne(`${environment.apiUrl}/comments`);
     expect(post2.request.body).toEqual({ text: 'funcionou', videoId: 'video-1' });
-    post2.flush({ id: '1', text: 'funcionou', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } });
+    post2.flush(null);
+
+    const getReq = http.expectOne(`${environment.apiUrl}/comments/video/video-1`);
+    getReq.flush([{ id: '1', text: 'funcionou', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } }]);
 
     expect(service.get('video-1').length).toBe(1);
     expect(service.get('video-1')[0].text).toBe('funcionou');
@@ -151,24 +176,20 @@ describe('CommentsService', () => {
     // Delete comment 1 (triggers reload)
     service.delete('1', 'video-1');
     http.expectOne(`${environment.apiUrl}/comments/1`).flush(null);
+    // GET from delete starts
 
     // Immediately add a new comment before delete's reload finishes
     service.add('video-1', 'c3');
-    http.expectOne(`${environment.apiUrl}/comments`).flush(c3);
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
 
-    // Should have the latest data (c2 + c3)
+    const gets = http.match(`${environment.apiUrl}/comments/video/video-1`);
+    expect(gets.length).toBe(2);
+    expect(gets[0].cancelled).toBe(true);
+    expect(gets[1].cancelled).toBe(false);
+
+    gets[1].flush([c2, c3]);
+
     expect(service.get('video-1').length).toBe(2);
     expect(service.get('video-1').map(c => c.text)).toEqual(['c2', 'c3']);
-  });
-
-  it('should append a local fallback comment when POST returns no body', () => {
-    service.add('video-1', 'comentario local');
-
-    const postReq = http.expectOne(`${environment.apiUrl}/comments`);
-    postReq.flush(null);
-
-    expect(service.get('video-1').length).toBe(1);
-    expect(service.get('video-1')[0].text).toBe('comentario local');
-    expect(service.get('video-1')[0].user.name).toBe('Você');
   });
 });

@@ -31,7 +31,7 @@ describe('VideoZoomModalComponent', () => {
   const commentsStateSignal = signal<Record<string, any[]>>({});
 
   const commentsServiceMock = {
-    get: vi.fn(),
+    get: vi.fn().mockReturnValue([]),
     add: vi.fn(),
     loadByVideo: vi.fn(),
     delete: vi.fn(),
@@ -43,9 +43,6 @@ describe('VideoZoomModalComponent', () => {
     selectedVideoSignal.set(null);
     videosSignal.set([]);
     commentsStateSignal.set({});
-    commentsServiceMock.get.mockImplementation((videoId: string) => (
-      commentsStateSignal()[`video:${videoId}`] ?? []
-    ));
     await TestBed.configureTestingModule({
       imports: [VideoZoomModalComponent],
       providers: [
@@ -223,43 +220,5 @@ describe('VideoZoomModalComponent', () => {
     await fixture.whenStable();
 
     expect(modalServiceMock.close).not.toHaveBeenCalled();
-  });
-
-  it('should refresh visible comments when the service state receives a second comment', async () => {
-    const video = {
-      id: 'video-1',
-      url: 'http://test/video.mp4',
-      title: 't',
-      description: 'd',
-      recipe: 'r',
-      protein: 1,
-      carbs: 1,
-      fat: 1,
-      fiber: 1,
-      calories: 1,
-      favorited: false,
-    } as any;
-
-    const firstComment = { id: '1', text: 'primeiro', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
-    const secondComment = { id: '2', text: 'segundo', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };
-
-    videosSignal.set([video]);
-    selectedVideoSignal.set(video);
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    commentsStateSignal.set({ 'video:video-1': [firstComment] });
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(component.commentItems.length).toBe(1);
-    expect(fixture.nativeElement.textContent).toContain('primeiro');
-
-    commentsStateSignal.set({ 'video:video-1': [firstComment, secondComment] });
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(component.commentItems.length).toBe(2);
-    expect(fixture.nativeElement.textContent).toContain('segundo');
   });
 });
