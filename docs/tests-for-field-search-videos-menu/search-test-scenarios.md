@@ -59,15 +59,6 @@
 
 ---
 
-## B5. Header — Index reativo (bug corrigido)
-
-> **Bug original:** o index de videos/menus era construido uma unica vez no
-> `ngOnInit()`. Como os dados vem do servidor (async), o index ficava vazio
-> e a pesquisa nunca encontrava nada.
->
-> **Correcao:** usar `effect()` para reconstruir o index sempre que os
-> signals de videos/menus mudam.
-
 | # | Cenario | Esperado |
 |---|---------|----------|
 | 21 | Dados ja carregados antes do usuario pesquisar | Digitar 3+ chars retorna sugestoes normalmente |
