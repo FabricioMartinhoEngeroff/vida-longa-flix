@@ -27,6 +27,23 @@ describe('AuthService — WhatsApp Welcome', () => {
     },
   };
 
+  const queuedRegisterResponse = {
+    token: null,
+    queued: true,
+    queuePosition: 5,
+    message: 'Limite de usuarios atingido. Voce foi adicionado a fila de espera na posicao #5.',
+    user: {
+      id: 'u-queued',
+      name: 'Fabricio',
+      email: 'fabricio@email.com',
+      phone: '(11) 98765-4321',
+      status: 'QUEUED',
+      queuePosition: 5,
+      profileComplete: false,
+      roles: [],
+    },
+  };
+
   const registerData = {
     name: '  Fabricio  ',
     email: '  FABRICIO@EMAIL.COM  ',
@@ -508,6 +525,103 @@ describe('AuthService — WhatsApp Welcome', () => {
 
       expect(localStorage.getItem('token')).toBe('t-local');
       expect(sessionStorage.getItem('token')).toBeNull();
+    });
+  });
+
+  // ─── B44-B49. Waitlist / limite de registros ───────────────
+
+  describe('B44-B49. Waitlist contracts', () => {
+    it('#248 register lotado retorna queued response sem salvar sessao', async () => {
+      const p = (service as any).register(registerData);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
+      req.flush(queuedRegisterResponse, { status: 202, statusText: 'Accepted' });
+
+      const result = await p;
+
+      expect(result.queued).toBe(true);
+      expect(result.token).toBeNull();
+      expect(result.queuePosition).toBe(5);
+      expect(result.user.status).toBe('QUEUED');
+      expect(localStorage.getItem('token')).toBeNull();
+      expect(localStorage.getItem('user')).toBeNull();
+    });
+
+    it('#249 register lotado preserva a mensagem e a posicao da fila', async () => {
+      const p = (service as any).register(registerData);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
+      req.flush(queuedRegisterResponse, { status: 202, statusText: 'Accepted' });
+
+      const result = await p;
+
+      expect(result.message).toContain('fila de espera');
+      expect(result.message).toContain('#5');
+      expect(result.user.queuePosition).toBe(5);
+    });
+
+    it('#254 login de usuario queued propaga code e queuePosition do backend', async () => {
+      const p = service.login('fila@email.com', '123456', true);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      req.flush(
+        {
+          error: 'ACCOUNT_QUEUED',
+          message: 'Sua conta esta na fila de espera. Voce sera notificado quando sua vaga for liberada.',
+          queuePosition: 5,
+        },
+        { status: 403, statusText: 'Forbidden' },
+      );
+
+      let error: any;
+      try { await p; } catch (e) { error = e; }
+
+      expect(error.message).toContain('fila de espera');
+      expect(error.code).toBe('ACCOUNT_QUEUED');
+      expect(error.queuePosition).toBe(5);
+    });
+
+    it('#257 login de usuario disabled propaga code de conta desativada', async () => {
+      const p = service.login('desativado@email.com', '123456', true);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      req.flush(
+        {
+          error: 'ACCOUNT_DISABLED',
+          message: 'Sua conta foi desativada.',
+        },
+        { status: 403, statusText: 'Forbidden' },
+      );
+
+      let error: any;
+      try { await p; } catch (e) { error = e; }
+
+      expect(error.message).toBe('Sua conta foi desativada.');
+      expect(error.code).toBe('ACCOUNT_DISABLED');
+    });
+
+    it('#264 registration-status consulta lotacao publica do cadastro', async () => {
+      const p = (service as any).getRegistrationStatus();
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/registration-status`);
+      expect(req.request.method).toBe('GET');
+      req.flush({ open: false, activeUsers: 100, limit: 100, queueSize: 12 });
+
+      const result = await p;
+      expect(result).toEqual({ open: false, activeUsers: 100, limit: 100, queueSize: 12 });
+    });
+
+    it('#281 leaveWaitlist cancela a fila usando query param email', async () => {
+      const p = (service as any).leaveWaitlist('fila@email.com');
+
+      const req = httpMock.expectOne(
+        `${environment.apiUrl}/auth/waitlist/me?email=${encodeURIComponent('fila@email.com')}`
+      );
+      expect(req.request.method).toBe('DELETE');
+      req.flush({ message: 'Voce foi removido da fila de espera.' });
+
+      const result = await p;
+      expect(result.message).toContain('removido da fila');
     });
   });
 

@@ -43,6 +43,8 @@ export interface User {
   email: string;
   taxId?: string;
   phone?: string;
+  status?: 'ACTIVE' | 'QUEUED' | 'DISABLED';
+  queuePosition?: number | null;
   address?: Address;
   photo?: string | null;
   profileComplete: boolean;
@@ -52,13 +54,32 @@ export interface User {
 }
 
 export interface AuthResponse {
-  token: string;
+  token: string | null;
   user: User;
 }
 
 export interface LoginResponse {
   token: string;
   user: User;
+}
+
+export interface RegistrationResponse {
+  token: string | null;
+  user?: User;
+  queued?: boolean;
+  queuePosition?: number;
+  message?: string;
+}
+
+export interface RegistrationStatusResponse {
+  open: boolean;
+  activeUsers: number;
+  limit: number;
+  queueSize: number;
+}
+
+export interface WaitlistRemovalResponse {
+  message: string;
 }
 
 export interface ChangePassword {

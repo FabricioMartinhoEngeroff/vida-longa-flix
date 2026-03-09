@@ -1,6 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-export function handleApiError(error: any, context: string): Error {
+export type HandledApiError = Error & {
+  code?: string;
+  queuePosition?: number;
+  status?: number;
+};
+
+export function handleApiError(error: any, context: string): HandledApiError {
   if (error instanceof HttpErrorResponse) {
     const payload = error.error;
     const message = payload?.message
@@ -8,8 +14,16 @@ export function handleApiError(error: any, context: string): Error {
       || (typeof payload === 'string' ? payload : undefined)
       || context;
 
-    return new Error(message);
+    return Object.assign(new Error(message), {
+      code: payload?.error,
+      queuePosition: payload?.queuePosition,
+      status: error.status,
+    });
   }
 
-  return new Error(error?.message || context);
+  return Object.assign(new Error(error?.message || context), {
+    code: error?.code,
+    queuePosition: error?.queuePosition,
+    status: error?.status,
+  });
 }

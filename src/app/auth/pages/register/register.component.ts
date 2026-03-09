@@ -146,7 +146,14 @@ export class RegisterComponent {
 
     try {
       const data = this.form.getRawValue();
-      await this.authService.register(data);
+      const response = await this.authService.register(data);
+
+      if (response.queued) {
+        this.notificationService.showDefault(
+          response.message || 'Cadastro recebido. Voce foi adicionado a fila de espera.'
+        );
+        return;
+      }
 
       this.notificationService.showDefault(DEFAULT_MESSAGES.REGISTRATION_SUCCESS);
 

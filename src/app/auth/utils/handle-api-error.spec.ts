@@ -29,6 +29,26 @@ describe('handleApiError', () => {
     expect(handleApiError(httpError, 'Default').message).toBe('Backend error field');
   });
 
+  it('should preserve backend error metadata for queue handling', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const httpError = new HttpErrorResponse({
+      status: 403,
+      error: {
+        error: 'ACCOUNT_QUEUED',
+        message: 'Sua conta esta na fila de espera.',
+        queuePosition: 5,
+      },
+    });
+
+    const handled = handleApiError(httpError, 'Default');
+
+    expect(handled.message).toBe('Sua conta esta na fila de espera.');
+    expect(handled.code).toBe('ACCOUNT_QUEUED');
+    expect(handled.queuePosition).toBe(5);
+    expect(handled.status).toBe(403);
+  });
+
   it('should use generic JS error message', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 

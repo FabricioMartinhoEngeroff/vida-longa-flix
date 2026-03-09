@@ -24,6 +24,23 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
     },
   };
 
+  const queuedRegisterResponse = {
+    token: null,
+    queued: true,
+    queuePosition: 5,
+    message: 'Limite de usuarios atingido. Voce foi adicionado a fila de espera na posicao #5.',
+    user: {
+      id: 'u-queued',
+      name: 'Fabricio',
+      email: 'fabricio@email.com',
+      phone: '(11) 98765-4321',
+      status: 'QUEUED',
+      queuePosition: 5,
+      profileComplete: false,
+      roles: [],
+    },
+  };
+
   const authMock = {
     register: vi.fn().mockResolvedValue(successResponse),
   };
@@ -641,6 +658,35 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       }
 
       expect(thrown).toBeUndefined();
+    });
+  });
+
+  // ─── B44. Waitlist — registro alem do limite ───────────────
+
+  describe('B44. Waitlist no registro', () => {
+    it('#248 resposta queued nao deve seguir fluxo de sucesso autenticado', async () => {
+      authMock.register.mockResolvedValueOnce(queuedRegisterResponse as any);
+
+      fillValidForm();
+      await component.register();
+
+      vi.advanceTimersByTime(2000);
+
+      expect(notifMock.showDefault).not.toHaveBeenCalledWith(DEFAULT_MESSAGES.REGISTRATION_SUCCESS);
+      expect(router.navigateByUrl).not.toHaveBeenCalledWith('/app', { replaceUrl: true });
+      expect(component.loading).toBe(false);
+    });
+
+    it('#249 resposta queued deve exibir mensagem da fila com posicao', async () => {
+      authMock.register.mockResolvedValueOnce(queuedRegisterResponse as any);
+
+      fillValidForm();
+      await component.register();
+
+      expect(notifMock.showDefault).toHaveBeenCalledWith(
+        'Limite de usuarios atingido. Voce foi adicionado a fila de espera na posicao #5.'
+      );
+      expect(notifMock.error).not.toHaveBeenCalled();
     });
   });
 });

@@ -603,7 +603,7 @@ Tabela: app_config
      → retornar 201 com token + user
 5. Se count >= MAX_ACTIVE_USERS:
      → salvar user com status = 'QUEUED', queue_position = (max + 1)
-     → enviar e-mail de "voce esta na fila"
+     → registrar notificacao de fila em log (sem servico de e-mail real, por enquanto)
      → NAO gerar token JWT
      → retornar 202 com queued=true + position
 ```
@@ -775,7 +775,7 @@ Se o novo limite for maior e houver usuarios na fila, backend promove automatica
 
 ---
 
-### 8. DELETE /api/auth/waitlist/me (novo — publico, requer email+token ou auth basica)
+### 8. DELETE /api/auth/waitlist/me?email=... (novo — publico, sem auth)
 
 Usuario cancela sua propria posicao na fila.
 
@@ -799,7 +799,7 @@ Quando um usuario ACTIVE e desativado/removido:
        → recalcular queue_position dos restantes
        → converter phone para E.164
        → enviar WhatsApp: "Sua conta Vida Longa Flix foi ativada! Acesse: vidalongaflix.com"
-       → enviar e-mail: "Sua conta foi ativada"
+       → registrar notificacao de ativacao em log (sem servico de e-mail real, por enquanto)
   3. Repetir ate count == MAX_ACTIVE_USERS ou fila vazia
 ```
 
@@ -824,7 +824,7 @@ Quando um usuario ACTIVE e desativado/removido:
 | 248 | **Frontend** recebe `202` com `queued: true` | NAO chama `saveSession()`, NAO salva token. Exibe tela: "Cadastro recebido! Voce esta na posicao #5 da fila." |
 | 249 | **Frontend** tela de fila mostra posicao | Mensagem: "Voce sera notificado por e-mail quando sua conta for ativada." + posicao retornada |
 | 250 | **Frontend** tela de fila tem botao voltar | Botao "Voltar para o login" → `router.navigateByUrl('/authorization')` |
-| 251 | **Backend** envia e-mail ao usuario na fila | E-mail: "Seu cadastro foi recebido. Voce esta na posicao #N. Avisaremos quando uma vaga abrir." |
+| 251 | **Backend** registra notificacao de fila ao usuario | Estado atual: `WaitlistNotificationService` apenas loga "Seu cadastro foi recebido. Voce esta na posicao #N..." — sem envio real de e-mail |
 | 252 | **Backend** persiste dados completos do usuario na fila | User salvo com todos os campos (name, email, phone, password hash) + `status=QUEUED` |
 | 253 | **Backend** converte phone para E.164 mesmo na fila | Salva `phone` formatado, converte para `+55XXXXXXXXXXX` quando for enviar WhatsApp na promocao |
 
@@ -847,7 +847,7 @@ Quando um usuario ACTIVE e desativado/removido:
 |---|---------|----------|
 | 258 | Admin desativa 1 usuario (count ACTIVE: 100 → 99) | **Backend:** busca proximo QUEUED (`queue_position=1`), muda para ACTIVE, recalcula posicoes |
 | 259 | Usuario promovido recebe WhatsApp | **Backend:** converte phone → E.164 (`+5511987654321`), envia via Meta API: "Sua conta Vida Longa Flix foi ativada!" |
-| 260 | Usuario promovido recebe e-mail | **Backend:** e-mail: "Sua conta foi ativada! Acesse vidalongaflix.com para fazer login." |
+| 260 | Usuario promovido recebe notificacao de ativacao | **Backend:** `WaitlistNotificationService` registra em log "Sua conta foi ativada!..." — sem envio real de e-mail no estado atual |
 | 261 | Usuario promovido faz login | `POST /auth/login` → `200 OK` com token (user agora e ACTIVE) |
 | 262 | 3 vagas abrem, fila tem 5 | **Backend:** promove os 3 primeiros (por `queue_position ASC`), posicoes dos 2 restantes recalculadas (1, 2) |
 | 263 | Vaga abre mas fila esta vazia | **Backend:** nada acontece — proximo registro entra direto como ACTIVE |
@@ -873,7 +873,7 @@ Quando um usuario ACTIVE e desativado/removido:
 | 269 | `GET /admin/waitlist` | **Backend:** retorna `{ limit, activeUsers, queue: [...] }` com lista ordenada por posicao |
 | 270 | **Frontend** admin dashboard | Exibe "Usuarios ativos: 95/100" + tabela da fila (nome, e-mail, telefone, posicao, data) |
 | 271 | `POST /admin/waitlist/{userId}/activate` | **Backend:** muda user para ACTIVE, envia WhatsApp + e-mail, recalcula posicoes. **Response:** `200 OK` |
-| 272 | `DELETE /admin/waitlist/{userId}` | **Backend:** remove user da fila, recalcula posicoes, envia e-mail informando remocao. **Response:** `200 OK` |
+| 272 | `DELETE /admin/waitlist/{userId}` | **Backend:** remove user da fila, recalcula posicoes, registra notificacao de remocao em log. **Response:** `200 OK` |
 | 273 | `PUT /admin/config/max-users` com `{ maxActiveUsers: 150 }` | **Backend:** atualiza limite. Se fila > 0 e novo limite > count ACTIVE → promove automaticamente. Response inclui `promotedFromQueue` |
 | 274 | Admin define limite = 150, fila tem 30, ativos = 100 | **Backend:** promove 30 usuarios (100+30=130 < 150). Response: `{ promotedFromQueue: 30 }` |
 
@@ -889,7 +889,7 @@ Quando um usuario ACTIVE e desativado/removido:
 | 278 | Backend falha ao salvar na fila | **Frontend:** notificacao error: "Erro ao processar cadastro. Tente novamente." |
 | 279 | Admin tenta reduzir limite para menos que usuarios ativos | **Backend:** `400 Bad Request` — `{ message: "Limite nao pode ser menor que o total de usuarios ativos (100)." }` |
 | 280 | Usuario na fila tenta registrar novamente (mesmo e-mail) | **Backend:** `409 Conflict` — `{ message: "Voce ja esta na fila de espera. Posicao atual: #3." }` |
-| 281 | `DELETE /auth/waitlist/me` — usuario cancela posicao | **Backend:** remove da fila, recalcula posicoes. **Response:** `200 OK` |
+| 281 | `DELETE /auth/waitlist/me?email=...` — usuario cancela posicao | **Backend:** endpoint publico recebe `email` via query param, remove da fila, recalcula posicoes. **Response:** `200 OK` |
 | 282 | `DELETE /auth/waitlist/me` — usuario nao esta na fila | **Backend:** `404 Not Found` — `{ message: "Voce nao esta na fila de espera." }` |
 
 ---
@@ -909,6 +909,28 @@ Quando um usuario ACTIVE e desativado/removido:
 | 288 | WhatsApp welcome no registro (user ACTIVE) | **Backend:** `POST https://graph.facebook.com/v21.0/{PHONE_NUMBER_ID}/messages` com `"to": "+5511987654321"` |
 | 289 | WhatsApp de ativacao (user promovido da fila) | **Backend:** mesmo fluxo E.164, template: "Sua conta foi ativada!" |
 | 290 | Meta API retorna erro 400 (numero invalido) | **Backend:** logar erro, NAO falhar o registro — WhatsApp e best-effort |
+
+---
+
+## B51. WaitlistNotificationService — estado atual das notificacoes
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 291 | Usuario entra na fila via `POST /auth/register` | **Backend:** `WaitlistNotificationService` registra notificacao de entrada na fila em log; nao existe servico de e-mail real implementado |
+| 292 | Usuario e ativado manualmente ou automaticamente | **Backend:** `WaitlistNotificationService` registra notificacao de ativacao em log; nao envia e-mail real |
+| 293 | Usuario e removido da fila por admin ou autoatendimento | **Backend:** `WaitlistNotificationService` registra notificacao de remocao em log; nao envia e-mail real |
+| 294 | Auditoria de notificacao de fila | Logs diferenciam eventos de fila, ativacao e remocao para facilitar rastreio operacional |
+
+---
+
+## B52. Regras centralizadas de promocao e templates WhatsApp
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 295 | Usuario ACTIVE e apagado do sistema | **Backend:** `UserService` tenta promover automaticamente o proximo usuario `QUEUED` |
+| 296 | Promocao por exclusao, ativacao manual e aumento de limite | **Backend:** reaproveita a mesma regra central de `RegistrationLimitService`, mantendo comportamento consistente |
+| 297 | WhatsApp de boas-vindas no registro | **Backend:** `WhatsAppService` aceita template por mensagem, permitindo template especifico para welcome |
+| 298 | WhatsApp de ativacao de vaga | **Backend:** `WhatsAppService` aceita template por mensagem, permitindo template diferente do welcome sem depender de template global |
 
 ---
 
@@ -966,4 +988,89 @@ Quando um usuario ACTIVE e desativado/removido:
 | B48. Limite — painel admin | 6 |
 | B49. Limite — erros e edge cases | 8 |
 | B50. Limite — conversao telefone E.164 (WhatsApp) | 8 |
-| **Total** | **290** |
+| B51. Limite — notificacoes atuais por log | 4 |
+| B52. Limite — regras centralizadas e templates WhatsApp | 4 |
+
+ # Estes cenarios passam a valer quando existir um servico real de e-mail no backend.
+
+  | # | Cenario | Esperado |
+  |---|---------|----------|
+  | 299 | Usuario entra na fila via `POST /auth/register` | **Backend:** envia e-mail "Voce entrou na fila de espera" com nome do usuario e `queuePosition` |
+  | 300 | E-mail de fila apos resposta `202 Accepted` | **Backend:** cadastro continua salvo como `QUEUED` mesmo se o envio do e-mail ocorrer de forma
+  assincrona |
+  | 301 | Conteudo do e-mail de fila | Deve informar que o limite foi atingido, posicao atual na fila e que o usuario sera avisado quando houver vaga |
+  | 302 | Usuario e promovido automaticamente para `ACTIVE` | **Backend:** envia e-mail "Sua conta foi ativada" com orientacao para acessar a plataforma |
+  | 303 | Admin promove usuario manualmente via `/admin/waitlist/{userId}/activate` | **Backend:** envia o mesmo e-mail de ativacao usado na promocao
+  automatica |
+  | 304 | Usuario e removido da fila pelo admin | **Backend:** envia e-mail informando que a inscricao na fila foi removida |
+  | 305 | Usuario cancela a propria fila via `DELETE /auth/waitlist/me` | **Backend:** envia e-mail confirmando o cancelamento da fila |
+  | 306 | E-mail de fila para usuario com `queuePosition = 1` | Conteudo deixa claro que ele e o proximo da fila ou esta na primeira posicao |
+
+  ## B54. Waitlist — falhas, retry e resiliencia do e-mail
+
+  | # | Cenario | Esperado |
+  |---|---------|----------|
+  | 307 | Servico de e-mail falha ao notificar entrada na fila | **Backend:** nao desfaz o cadastro `QUEUED`; loga erro e segue fluxo |
+  | 308 | Servico de e-mail falha ao notificar ativacao | **Backend:** usuario continua promovido para `ACTIVE`; erro fica registrado para retry/
+  observabilidade |
+  | 309 | Servico de e-mail falha ao notificar remocao da fila | **Backend:** remocao continua efetivada; erro fica registrado |
+  | 310 | Timeout no provedor de e-mail | **Backend:** trata como best-effort, sem quebrar cadastro, ativacao ou remocao |
+  | 311 | Retry de envio de e-mail | **Backend:** evita duplicidade indevida quando o mesmo evento for reprocessado |
+  | 312 | Template de e-mail ausente ou invalido | **Backend:** loga erro estruturado e nao bloqueia a regra principal da fila |
+
+## B55. Frontend — experiencia de fila de espera (waitlist UX)
+
+  | # | Cenario | Esperado |
+  |---|---------|----------|
+  | 313 | `GET /auth/registration-status` retorna `open: false` ao abrir `/register` | Exibe banner: "Estamos com vagas limitadas. Novos cadastros entram na
+  fila de espera." antes do submit |
+  | 314 | `GET /auth/registration-status` retorna `open: true` | Formulario segue fluxo normal, sem banner de fila |
+  | 315 | `POST /auth/register` retorna `202` com `queued: true` | Frontend NAO salva sessao, NAO redireciona para `/app`, troca para estado/tela de fila |
+  | 316 | Tela de fila apos `202 Accepted` | Exibe mensagem principal: "Cadastro recebido!" + `queuePosition` + texto de acompanhamento |
+  | 317 | Tela de fila mostra posicao recebida do backend | Exemplo: "Voce esta na posicao #5 da fila de espera." |
+  | 318 | Tela de fila sem `queuePosition` no payload | Exibe mensagem generica sem quebrar layout: "Voce foi adicionado(a) a fila de espera." |
+  | 319 | Tela de fila com `message` do backend | Usa a mensagem do backend como texto principal ou complementar |
+  | 320 | Tela de fila tem botao "Voltar para o login" | Navega para `/authorization` ou `/login` |
+  | 321 | Tela de fila tem botao "Cancelar inscricao na fila" | Chama `DELETE /auth/waitlist/me?email=...` e exibe confirmacao de cancelamento |
+  | 322 | Cancelamento de fila com sucesso | Exibe notificacao de sucesso e volta para `/authorization` |
+
+  ## B56. Frontend — loading, atraso e feedback visual no cadastro com fila
+
+  | # | Cenario | Esperado |
+  |---|---------|----------|
+  | 323 | Submit de registro com backend lento e vagas indisponiveis | Botao "Criar Conta" fica desabilitado, loading visivel, nenhum duplo submit ocorre |
+  | 324 | Backend demora 5-10s para responder `202` | Frontend mantem spinner/loading ate a resposta chegar, sem exibir erro prematuro |
+  | 325 | Backend retorna `202` apos espera longa | Frontend troca corretamente do loading para a tela de fila, sem piscar sucesso de login/cadastro ativo |
+  | 326 | Backend retorna `201` apos espera longa | Frontend segue fluxo normal de sucesso, salvando sessao e indo para `/app` |
+  | 327 | Timeout/rede falha no submit quando o sistema esta lotado | Exibe erro generico de cadastro, nao assume automaticamente que o usuario entrou na fila
+  |
+  | 328 | Usuario clica varias vezes em "Criar Conta" durante loading | Apenas uma requisicao de cadastro e enviada |
+  | 329 | Usuario fecha modal/pagina durante submit lento | Nenhum erro de subscribe/state update apos destroy do componente |
+  | 330 | Campo de e-mail permanece disponivel para cancelamento/reenvio apos erro | Frontend preserva ou restaura os dados necessarios para nova tentativa |
+
+  ## B57. Frontend — login de usuario em fila
+
+  | # | Cenario | Esperado |
+  |---|---------|----------|
+  | 331 | `POST /auth/login` retorna `403` com `error: "ACCOUNT_QUEUED"` | Exibe notificacao ou bloco explicando que a conta esta na fila de espera |
+  | 332 | `POST /auth/login` retorna `queuePosition` | Exibe "Posicao atual: #N" para o usuario |
+  | 333 | `POST /auth/login` retorna `403` com `error: "ACCOUNT_DISABLED"` | Exibe mensagem especifica de conta desativada, sem tratar como credencial
+  invalida |
+  | 334 | Login de usuario em fila nao salva token | Frontend nao persiste sessao/localStorage/sessionStorage |
+  | 335 | Login de usuario em fila oferece CTA de retorno | Exibe acao para voltar ao cadastro, voltar ao login ou aguardar liberacao |
+
+
+  ## B58. Frontend — mensagem de sistema para cadastro em fila
+
+  | # | Cenario | Esperado |
+  |---|---------|----------|
+  | 336 | `POST /auth/register` retorna `202` com `queued: true` | Frontend substitui o fluxo de sucesso normal por uma tela/estado de fila de espera |
+  | 337 | Mensagem principal da fila | Exibe: "Seu cadastro foi adicionado a fila de espera." |
+  | 338 | Mensagem complementar da fila | Exibe: "Assim que novas vagas forem liberadas, voce sera avisado(a)." |
+  | 339 | Backend retorna `queuePosition` | Frontend exibe complemento: "Sua posicao atual e #N." |
+  | 340 | Backend nao retorna `queuePosition` | Frontend continua exibindo a mensagem generica da fila sem erro de layout ou logica |
+  | 341 | Cadastro em fila nao deve parecer erro | UI usa tom informativo/aviso, sem estilo de falha critica |
+  | 342 | Cadastro em fila nao deve parecer acesso liberado | Frontend nao mostra "Cadastro concluido com sucesso!" e nao redireciona para `/app` |
+  | 343 | Cadastro em fila nao salva sessao | Frontend nao persiste token, localStorage ou sessionStorage |
+  | 344 | Tela de fila oferece proximo passo | Exibe acao como "Voltar para o login" ou "Entendi" |
+  | 345 | Usuario reabre a pagina apos receber `202` | Frontend nao trata o usuario como autenticado automaticamente |

@@ -3,15 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import { User, RegisterData, ProfileData } from '../types/user.types';
+import {
+  User,
+  RegisterData,
+  ProfileData,
+  LoginResponse,
+  RegistrationResponse,
+  RegistrationStatusResponse,
+  WaitlistRemovalResponse,
+} from '../types/user.types';
 import { applyPhoneMaskAuto } from '../utils/masks.utils';
 import { handleApiError } from '../utils/handle-api-error';
 import { LoggerService } from './logger.service';
-
-interface TokenResponse {
-  token: string;
-  user?: User;
-}
 
 interface LoginPayload {
   email: string;
@@ -61,12 +64,12 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string, keepLoggedIn = true): Promise<TokenResponse> {
+  async login(email: string, password: string, keepLoggedIn = true): Promise<LoginResponse> {
     try {
       const payload = this.mapLoginToApi(email, password);
 
       const response = await firstValueFrom(
-        this.http.post<TokenResponse>(`${this.api.baseURL}/auth/login`, payload)
+        this.http.post<LoginResponse>(`${this.api.baseURL}/auth/login`, payload)
       );
 
       if (!response?.token) {
@@ -91,39 +94,59 @@ export class AuthService {
     }
   }
 
-  async register(data: RegisterData): Promise<TokenResponse> {
-  try {
-    const payload = this.mapRegisterToApi(data);
+  async register(data: RegisterData): Promise<RegistrationResponse> {
+    try {
+      const payload = this.mapRegisterToApi(data);
 
-    const response = await firstValueFrom(
-      this.http.post<TokenResponse>(`${this.api.baseURL}/auth/register`, payload)
-    );
+      const response = await firstValueFrom(
+        this.http.post<RegistrationResponse>(`${this.api.baseURL}/auth/register`, payload)
+      );
 
-    if (!response?.token) {
-      throw new Error('Token not returned by API');
+      if (response?.queued) {
+        return response;
+      }
+
+      if (!response?.token) {
+        throw new Error('Token not returned by API');
+      }
+
+      const user: User = response.user || {
+        id: '',
+        name: payload.name,
+        email: payload.email,
+        phone: data.phone,
+        taxId: '',
+        address: undefined,
+        photo: null,
+        profileComplete: false,
+        roles: []
+      };
+
+      this.saveSession(response.token, user, 'local');
+
+      // WhatsApp removido daqui — backend já envia no /auth/register
+      return response;
+
+    } catch (error) {
+      throw handleApiError(error, 'Erro ao registrar usuário');
     }
-
-    const user: User = response.user || {
-      id: '',
-      name: payload.name,
-      email: payload.email,
-      phone: data.phone,
-      taxId: '',
-      address: undefined,
-      photo: null,
-      profileComplete: false,
-      roles: []
-    };
-
-    this.saveSession(response.token, user, 'local');
-
-    // WhatsApp removido daqui — backend já envia no /auth/register
-    return response;
-
-  } catch (error) {
-    throw handleApiError(error, 'Erro ao registrar usuário');
   }
-}
+
+  async getRegistrationStatus(): Promise<RegistrationStatusResponse> {
+    return firstValueFrom(
+      this.http.get<RegistrationStatusResponse>(`${this.api.baseURL}/auth/registration-status`)
+    );
+  }
+
+  async leaveWaitlist(email: string): Promise<WaitlistRemovalResponse> {
+    const normalizedEmail = this.normalizeEmail(email);
+
+    return firstValueFrom(
+      this.http.delete<WaitlistRemovalResponse>(
+        `${this.api.baseURL}/auth/waitlist/me?email=${encodeURIComponent(normalizedEmail)}`
+      )
+    );
+  }
 
   async fetchAuthenticatedUser(): Promise<User | null> {
     const token = this.getToken();
@@ -221,7 +244,7 @@ export class AuthService {
 
   private mapLoginToApi(email: string, password: string): LoginPayload {
     return {
-      email: (email ?? '').trim().toLowerCase(),
+      email: this.normalizeEmail(email),
       password: (password ?? '').trim(),
     };
   }
@@ -229,11 +252,15 @@ export class AuthService {
   private mapRegisterToApi(data: RegisterData): RegisterPayload {
     return {
       name: (data.name ?? '').trim(),
-      email: (data.email ?? '').trim().toLowerCase(),
+      email: this.normalizeEmail(data.email),
       password: data.password ?? '',
       // Keep backend compatibility: send the formatted phone expected by legacy validation.
       phone: applyPhoneMaskAuto(data.phone ?? ''),
     };
+  }
+
+  private normalizeEmail(email: string | null | undefined): string {
+    return (email ?? '').trim().toLowerCase();
   }
 
   getToken(): string | null {
