@@ -28,6 +28,16 @@ jobs:
       - name: Security audit
         run: npm audit --audit-level=high
 
+      - name: Trivy — scan de vulnerabilidades (filesystem)
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: '0'
+
       - name: Lint
         run: npm run lint
 
