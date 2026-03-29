@@ -47,13 +47,13 @@
     "@angular/cli": "^21.2.5",
     "@angular/compiler-cli": "^21.2.6",
     "@types/jasmine": "^6.0.0",
-    "@types/node": "^25.1.0",
-    "angular-eslint": "21.1.0",
+    "@types/node": "^25.5.0",
+    "angular-eslint": "21.3.1",
     "eslint": "^10.1.0",
-    "jasmine-core": "^6.0.0",
+    "jasmine-core": "^6.1.0",
     "jsdom": "^28.1.0",
     "typescript": "~5.9.2",
-    "typescript-eslint": "8.47.0",
-    "vitest": "^4.0.8"
+    "typescript-eslint": "8.57.2",
+    "vitest": "^4.1.2"
   }
 }
