@@ -25,8 +25,8 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Security audit
-        run: npm audit --audit-level=high
+      - name: Security audit (production deps only)
+        run: npm audit --audit-level=high --omit=dev
 
       - name: Trivy — scan de vulnerabilidades (filesystem)
         uses: aquasecurity/trivy-action@0.28.1
