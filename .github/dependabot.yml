@@ -8,8 +8,6 @@ updates:
       time: "09:00"
       timezone: America/Sao_Paulo
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
     groups:
       angular:
         patterns:
@@ -29,5 +27,3 @@ updates:
       time: "09:00"
       timezone: America/Sao_Paulo
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
