@@ -10,7 +10,7 @@
 > O sistema agora pode operar em dois contratos de publicacao, e os cenarios abaixo distinguem explicitamente esses caminhos:
 >
 > - JSON com URL publica (`url` e `cover`)
-> - multipart com arquivo local (`videoFile` e `coverFile`)
+> - multipart com arquivo local (`videoFile` e `coverFile`) enviado para o mesmo endpoint `POST /api/admin/videos`
 >
 > Considerar como referencia invalida de midia no fluxo JSON:
 >
@@ -140,11 +140,11 @@
 | # | Cenario | Esperado |
 |---|---------|----------|
 | 48 | Submit com URL publica | Front faz `POST /api/admin/videos` em JSON com `title`, `description`, `url`, `cover` e `categoryId` |
-| 49 | Submit com arquivos locais | Front usa fluxo multipart com `videoFile` e `coverFile`; esse e o fluxo correto para arquivo local e nao deve enviar `blob:` em JSON |
+| 49 | Submit com arquivos locais | Front usa fluxo multipart com `videoFile` e `coverFile`; nao envia `blob:` em JSON nem persiste apenas `file.name` como URL final |
 | 50 | Descricao com multiplas linhas | Payload final preserva as quebras de linha enviadas pelo usuario |
 | 51 | Receita com multiplas linhas | Payload final preserva as quebras de linha enviadas pelo usuario |
 | 52 | Backend responde `201` no fluxo JSON | Sistema recarrega a lista publica de videos |
-| 53 | Backend responde sucesso no fluxo multipart | Sistema recebe URLs publicas do upload e conclui o cadastro/recarrega a lista |
+| 53 | Backend responde sucesso no fluxo multipart | Sistema conclui o cadastro, exibe sucesso e recarrega a lista publica de videos |
 | 54 | Backend responde `422` com erro em `url` | Tela mostra feedback indicando que `url` nao e publica/valida |
 | 55 | Backend responde `422` com erro em `cover` | Tela mostra feedback indicando que `cover` nao e publica/valida |
 | 56 | Backend responde `500` no submit | Usuario recebe erro generico sem reset indevido do formulario |
@@ -158,17 +158,25 @@
 
 
 > Esta secao representa o fluxo principal para publicar arquivo local quando o usuario seleciona arquivos no dispositivo.
+>
+> Contrato atual implementado no front:
+>
+> - `POST /api/admin/videos`
+> - `Content-Type: multipart/form-data`
+> - campo de arquivo principal: `video`
+> - campo de arquivo opcional de capa: `cover`
+> - metadados enviados no mesmo `FormData`: `title`, `description`, `categoryId`, `recipe`, `protein`, `carbs`, `fat`, `fiber`, `calories`
 
 
 | # | Cenario | Esperado |
 |---|---------|----------|
 | 58 | Usuario seleciona MP4 local baixado do Instagram/WhatsApp | Front prepara upload real, sem tentar salvar `blob:` ou caminho local em JSON |
 | 59 | Usuario seleciona imagem local de capa | Front prepara upload real, sem tentar salvar `blob:` ou caminho local em JSON |
-| 60 | Usuario salva com `videoFile` e `coverFile` validos | Front envia multipart com ambos os arquivos |
-| 61 | Usuario salva com `videoFile` valido e sem `coverFile` | Sistema segue a regra definida para capa opcional/fallback sem quebrar o fluxo |
-| 62 | Upload do video falha | Cadastro final nao e enviado; usuario recebe feedback de erro |
-| 63 | Upload da capa falha | Cadastro final nao e enviado; usuario recebe feedback de erro |
-| 64 | Upload local conclui com sucesso | Cadastro final persiste com URLs publicas e o video publicado funciona |
+| 60 | Usuario salva com `videoFile` e `coverFile` validos | Front envia multipart com ambos os arquivos e todos os metadados obrigatorios no `FormData` |
+| 61 | Usuario salva com `videoFile` valido e sem `coverFile` | Front envia multipart apenas com `video`; fluxo nao quebra |
+| 62 | Upload do video falha | Componente delega ao service; service mostra erro generico e nao ha cadastro bem-sucedido |
+| 63 | Upload da capa falha | Componente delega ao service; service mostra erro generico e nao ha cadastro bem-sucedido |
+| 64 | Upload local conclui com sucesso | Front limpa formulario, limpa `videoFileName` e `coverFileName` e recarrega a lista |
 
 
 ---

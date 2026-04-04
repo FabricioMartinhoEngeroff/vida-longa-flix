@@ -160,7 +160,11 @@ export class VideoAdminComponent {
       calories: Number(this.form.value.calories || 0),
     };
 
-    this.videoService.addVideo(request);
+    if (this.videoFile) {
+      this.videoService.addVideoWithFiles(request, this.videoFile, this.coverFile ?? undefined);
+    } else {
+      this.videoService.addVideo(request);
+    }
 
     this.form.reset({
       categoryName: '',

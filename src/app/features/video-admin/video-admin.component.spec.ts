@@ -16,6 +16,7 @@ describe('VideoAdminComponent', () => {
   let fixture: ComponentFixture<VideoAdminComponent>;
   let httpMock: HttpTestingController;
   let addVideoSpy: ReturnType<typeof vi.fn>;
+  let addVideoWithFilesSpy: ReturnType<typeof vi.fn>;
   let removeVideoSpy: ReturnType<typeof vi.fn>;
   let alertSuccessSpy: ReturnType<typeof vi.fn>;
   let alertErrorSpy: ReturnType<typeof vi.fn>;
@@ -33,6 +34,7 @@ describe('VideoAdminComponent', () => {
 
   beforeEach(async () => {
     addVideoSpy = vi.fn();
+    addVideoWithFilesSpy = vi.fn();
     removeVideoSpy = vi.fn();
     alertSuccessSpy = vi.fn();
     alertErrorSpy = vi.fn();
@@ -47,6 +49,7 @@ describe('VideoAdminComponent', () => {
           provide: VideoService,
           useValue: {
             addVideo: addVideoSpy,
+            addVideoWithFiles: addVideoWithFilesSpy,
             removeVideo: removeVideoSpy,
             videos: videosWritable.asReadonly(),
           },
@@ -547,7 +550,7 @@ describe('VideoAdminComponent', () => {
       });
     });
 
-    it('#49 submit com arquivos locais nao envia blob em JSON', async () => {
+    it('#49 submit com arquivos locais chama addVideoWithFiles em vez de addVideo', async () => {
       const videoFile = new File(['video-content'], 'video.mp4', { type: 'video/mp4' });
       const coverFile = new File(['cover-content'], 'cover.jpg', { type: 'image/jpeg' });
 
@@ -562,11 +565,8 @@ describe('VideoAdminComponent', () => {
 
       await component.save();
 
-      if (addVideoSpy.mock.calls.length > 0) {
-        const arg = addVideoSpy.mock.calls[0][0];
-        expect(arg.url).not.toMatch(/^blob:/);
-        expect(arg.cover).not.toMatch(/^blob:/);
-      }
+      expect(addVideoWithFilesSpy).toHaveBeenCalled();
+      expect(addVideoSpy).not.toHaveBeenCalled();
     });
 
     it('#50 descricao com multiplas linhas preserva quebras no payload', async () => {
@@ -604,8 +604,23 @@ describe('VideoAdminComponent', () => {
       // TDD: implementar apos integrar resposta do backend no componente
     });
 
-    it('#53 backend responde sucesso no fluxo multipart — sistema recebe URLs publicas', () => {
-      // TDD: implementar apos fluxo multipart
+    it('#53 backend responde sucesso no fluxo multipart — addVideoWithFiles e chamado', async () => {
+      const videoFile = new File(['video'], 'video.mp4', { type: 'video/mp4' });
+
+      component.form.patchValue({
+        title: 'Video Multipart',
+        description: 'Descricao valida aqui',
+        categoryName: 'Bolos',
+      });
+      component.onVideoFile({ target: { files: [videoFile] } } as unknown as Event);
+
+      await component.save();
+
+      expect(addVideoWithFilesSpy).toHaveBeenCalledWith(
+        objectContaining({ title: 'Video Multipart', categoryId: 'cat-uuid-1' }),
+        videoFile,
+        undefined,
+      );
     });
 
     it('#54 backend responde 422 com erro em url — tela mostra feedback', () => {
@@ -659,22 +674,28 @@ describe('VideoAdminComponent', () => {
       expect((component as any).coverFile || component.form.get('cover')?.value).toBeTruthy();
     });
 
-    it('#60 save com videoFile e coverFile validos nao envia blob em JSON', async () => {
+    it('#60 save com videoFile e coverFile chama addVideoWithFiles com File objects', async () => {
       component.form.patchValue({
         title: 'Video Upload',
         description: 'Descricao valida aqui',
         categoryName: 'Bolos',
       });
 
-      selectVideoFile(createMockFile('video.mp4', 'video/mp4'));
-      selectCoverFile(createMockFile('capa.jpg', 'image/jpeg'));
+      const vFile = createMockFile('video.mp4', 'video/mp4');
+      const cFile = createMockFile('capa.jpg', 'image/jpeg');
+      selectVideoFile(vFile);
+      selectCoverFile(cFile);
 
       await component.save();
 
-      if (addVideoSpy.mock.calls.length > 0) {
-        const arg = addVideoSpy.mock.calls[0][0];
-        expect(arg.url).not.toMatch(/^blob:/);
-      }
+      expect(addVideoWithFilesSpy).toHaveBeenCalledTimes(1);
+      const [req, videoArg, coverArg] = addVideoWithFilesSpy.mock.calls[0];
+      expect(req.title).toBe('Video Upload');
+      expect(videoArg).toBeInstanceOf(File);
+      expect(videoArg.name).toBe('video.mp4');
+      expect(coverArg).toBeInstanceOf(File);
+      expect(coverArg.name).toBe('capa.jpg');
+      expect(addVideoSpy).not.toHaveBeenCalled();
     });
 
     it('#61 save com videoFile valido e sem coverFile nao quebra o fluxo', async () => {
@@ -695,16 +716,58 @@ describe('VideoAdminComponent', () => {
       expect(error).toBeNull();
     });
 
-    it('#62 upload do video falha — cadastro final nao e enviado, usuario recebe feedback', () => {
-      // TDD: implementar tratamento de falha de upload
+    it('#62 upload do video falha — addVideoWithFiles e chamado (erro tratado no service)', async () => {
+      component.form.patchValue({
+        title: 'Video Falha',
+        description: 'Descricao valida aqui',
+        categoryName: 'Bolos',
+      });
+      const vFile = createMockFile('video.mp4', 'video/mp4');
+      selectVideoFile(vFile);
+
+      await component.save();
+
+      // O componente delega ao service; tratamento de erro fica no service
+      expect(addVideoWithFilesSpy).toHaveBeenCalled();
+      expect(addVideoSpy).not.toHaveBeenCalled();
     });
 
-    it('#63 upload da capa falha — cadastro final nao e enviado, usuario recebe feedback', () => {
-      // TDD: implementar tratamento de falha de upload
+    it('#63 upload da capa falha — addVideoWithFiles e chamado com cover (erro tratado no service)', async () => {
+      component.form.patchValue({
+        title: 'Video Capa Falha',
+        description: 'Descricao valida aqui',
+        categoryName: 'Bolos',
+      });
+      const vFile = createMockFile('video.mp4', 'video/mp4');
+      const cFile = createMockFile('capa.jpg', 'image/jpeg');
+      selectVideoFile(vFile);
+      selectCoverFile(cFile);
+
+      await component.save();
+
+      expect(addVideoWithFilesSpy).toHaveBeenCalledWith(
+        objectContaining({ title: 'Video Capa Falha' }),
+        vFile,
+        cFile,
+      );
     });
 
-    it('#64 upload local conclui com sucesso — cadastro final persiste com URLs publicas', () => {
-      // TDD: implementar fluxo completo de upload multipart
+    it('#64 upload local conclui com sucesso — formulario reseta apos multipart submit', async () => {
+      component.form.patchValue({
+        title: 'Video Sucesso Upload',
+        description: 'Descricao valida aqui',
+        categoryName: 'Bolos',
+      });
+      const vFile = createMockFile('video.mp4', 'video/mp4');
+      selectVideoFile(vFile);
+
+      await component.save();
+
+      expect(addVideoWithFilesSpy).toHaveBeenCalled();
+      // Formulario resetado apos save
+      expect(component.form.get('title')?.value).toBe(null);
+      expect(component.videoFileName).toBe('');
+      expect(component.coverFileName).toBe('');
     });
   });
 

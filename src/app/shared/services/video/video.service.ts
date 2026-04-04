@@ -84,6 +84,37 @@ export class VideoService {
     ).subscribe();
   }
 
+  // Rota admin — POST /admin/videos (multipart com upload de arquivos)
+  addVideoWithFiles(request: VideoRequest, videoFile: File, coverFile?: File): void {
+    const formData = new FormData();
+    formData.append('video', videoFile, videoFile.name);
+    if (coverFile) {
+      formData.append('cover', coverFile, coverFile.name);
+    }
+    formData.append('title', request.title);
+    formData.append('description', request.description);
+    formData.append('categoryId', request.categoryId);
+    formData.append('recipe', request.recipe || '');
+    formData.append('protein', String(request.protein || 0));
+    formData.append('carbs', String(request.carbs || 0));
+    formData.append('fat', String(request.fat || 0));
+    formData.append('fiber', String(request.fiber || 0));
+    formData.append('calories', String(request.calories || 0));
+
+    this.http.post<void>(this.adminUrl, formData).pipe(
+      tap(() => {
+        this.notifications.add('VIDEO', request.title);
+        this.alert.success(`Vídeo "${request.title}" salvo com sucesso!`);
+        this.loadVideos();
+      }),
+      catchError(err => {
+        this.logger.error('Erro ao criar vídeo com upload', err);
+        this.alert.error('Erro ao salvar vídeo. Tente novamente.');
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   // Rota admin — PUT /admin/videos/{id}
   updateVideo(id: string, changes: Partial<Video>): void {
     this.http.put<void>(`${this.adminUrl}/${id}`, changes).pipe(

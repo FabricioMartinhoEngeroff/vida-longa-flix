@@ -109,6 +109,69 @@ describe('VideoService', () => {
     expect(service.totalVideos()).toBe(3);
   });
 
+  it('should create video with multipart upload and reload list', () => {
+    const request: VideoRequest = {
+      title: 'Novo Vídeo Upload', description: 'Descrição',
+      url: 'video.mp4', cover: 'cover.jpg',
+      categoryId: '1', recipe: 'Receita',
+      protein: 5, carbs: 10, fat: 2, fiber: 1, calories: 80,
+    };
+    const videoFile = new File(['video'], 'video.mp4', { type: 'video/mp4' });
+    const coverFile = new File(['cover'], 'cover.jpg', { type: 'image/jpeg' });
+
+    service.addVideoWithFiles(request, videoFile, coverFile);
+
+    const postReq = httpMock.expectOne(adminUrl);
+    expect(postReq.request.method).toBe('POST');
+    expect(postReq.request.body instanceof FormData).toBe(true);
+
+    const formData = postReq.request.body as FormData;
+    expect(formData.get('video')).toBeTruthy();
+    expect(formData.get('cover')).toBeTruthy();
+    expect(formData.get('title')).toBe('Novo Vídeo Upload');
+    expect(formData.get('description')).toBe('Descrição');
+    expect(formData.get('categoryId')).toBe('1');
+    expect(formData.get('recipe')).toBe('Receita');
+    expect(formData.get('protein')).toBe('5');
+    expect(formData.get('carbs')).toBe('10');
+    expect(formData.get('fat')).toBe('2');
+    expect(formData.get('fiber')).toBe('1');
+    expect(formData.get('calories')).toBe('80');
+    postReq.flush(null);
+
+    httpMock.expectOne(baseUrl).flush([
+      ...mockVideos,
+      { ...mockVideos[0], id: '3', title: 'Novo Vídeo Upload' }
+    ]);
+
+    expect(notificationsMock.add).toHaveBeenCalledWith('VIDEO', 'Novo Vídeo Upload');
+    expect(service.totalVideos()).toBe(3);
+  });
+
+  it('should create video with multipart upload without cover file', () => {
+    const request: VideoRequest = {
+      title: 'Vídeo Sem Capa', description: 'Descrição',
+      url: 'video.mp4', cover: 'video.mp4',
+      categoryId: '1', recipe: '',
+      protein: 0, carbs: 0, fat: 0, fiber: 0, calories: 0,
+    };
+    const videoFile = new File(['video'], 'video.mp4', { type: 'video/mp4' });
+
+    service.addVideoWithFiles(request, videoFile);
+
+    const postReq = httpMock.expectOne(adminUrl);
+    const formData = postReq.request.body as FormData;
+    expect(postReq.request.body instanceof FormData).toBe(true);
+    expect(formData.get('video')).toBeTruthy();
+    expect(formData.get('cover')).toBeNull();
+    postReq.flush(null);
+
+    httpMock.expectOne(baseUrl).flush([
+      ...mockVideos,
+      { ...mockVideos[0], id: '3', title: 'Vídeo Sem Capa' }
+    ]);
+  });
+
   it('should update video and reload list', () => {
     service.updateVideo('1', { title: 'Bolo Fit Editado' });
 

@@ -628,23 +628,23 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 **Acesso:** `authGuard` + `adminGuard` (ROLE_ADMIN)
 
-**Descricao:** Formulario para adicionar novos videos e listar/excluir videos e categorias existentes.
+**Descricao:** Formulario para adicionar novos videos e listar/excluir videos e categorias existentes. O cadastro suporta dois contratos: `JSON` com URL publica e `multipart/form-data` com arquivo local.
 
 **Campos do formulario:**
 
-| Campo        | Tipo     | Obrigatorio | Validacao            |
-|--------------|----------|-------------|----------------------|
-| title        | text     | Sim         | Minimo 3 caracteres  |
-| description  | textarea | Sim         | Minimo 5 caracteres  |
-| url          | file     | Sim         | Arquivo de video     |
-| cover        | file     | Nao         | Arquivo de imagem    |
-| categoryName | text     | Sim         | Nome da categoria    |
-| recipe       | textarea | Nao         | -                    |
-| protein      | number   | Nao         | Padrao: 0            |
-| carbs        | number   | Nao         | Padrao: 0            |
-| fat          | number   | Nao         | Padrao: 0            |
-| fiber        | number   | Nao         | Padrao: 0            |
-| calories     | number   | Nao         | Padrao: 0            |
+| Campo        | Tipo                  | Obrigatorio | Validacao                                 |
+|--------------|-----------------------|-------------|-------------------------------------------|
+| title        | text                  | Sim         | Minimo 3 caracteres                       |
+| description  | textarea              | Sim         | Minimo 5 caracteres                       |
+| url          | url publica ou file   | Sim         | URL `https://` no fluxo JSON ou arquivo local no fluxo multipart |
+| cover        | url publica ou file   | Nao         | URL `https://` no fluxo JSON ou arquivo local no fluxo multipart |
+| categoryName | text                  | Sim         | Nome da categoria                         |
+| recipe       | textarea              | Nao         | -                                         |
+| protein      | number                | Nao         | Padrao: 0                                 |
+| carbs        | number                | Nao         | Padrao: 0                                 |
+| fat          | number                | Nao         | Padrao: 0                                 |
+| fiber        | number                | Nao         | Padrao: 0                                 |
+| calories     | number                | Nao         | Padrao: 0                                 |
 
 **Funcionalidades de Upload:**
 
@@ -654,6 +654,13 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 | Drag-and-drop    | Arrastar arquivo para a area de upload               |
 | Feedback visual  | Area muda de cor ao arrastar (`.drag-active`)        |
 | Nome do arquivo  | Exibe nome do arquivo selecionado com icone de check |
+
+**Contratos de publicacao:**
+
+| Contrato | Quando ocorre | Payload |
+|----------|---------------|---------|
+| JSON | Usuario informa URL publica de video/capa | `POST /api/admin/videos` com `title`, `description`, `url`, `cover`, `categoryId` e metadados nutricionais |
+| Multipart | Usuario seleciona arquivo local de video e/ou capa | `POST /api/admin/videos` com `FormData` contendo `video`, `cover` opcional, `title`, `description`, `categoryId`, `recipe`, `protein`, `carbs`, `fat`, `fiber`, `calories` |
 
 **Regras:**
 
@@ -667,7 +674,11 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 **RG-VADM-03** - Apos salvar com sucesso, o formulario e limpo e uma notificacao de sucesso e exibida.
 
-**RG-VADM-04** - Em caso de erro, uma notificacao de erro e exibida.
+**RG-VADM-04** - Quando o usuario seleciona arquivo local, o front nao persiste `blob:`, caminho local nem apenas `file.name` como URL final; o envio passa a ser multipart.
+
+**RG-VADM-05** - No fluxo JSON, `url` e `cover` devem ser URLs publicas validas (`https://`), nao `blob:`, `data:`, `localhost` ou caminhos locais.
+
+**RG-VADM-06** - Em caso de erro, uma notificacao de erro e exibida.
 
 **Endpoints chamados:**
 
@@ -675,7 +686,8 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 |--------------------|-----------------------------------|
 | Listar categorias  | `GET /api/categories?type=VIDEO`  |
 | Criar categoria    | `POST /api/categories`            |
-| Criar video        | `POST /api/admin/videos`          |
+| Criar video via JSON | `POST /api/admin/videos`        |
+| Criar video via multipart | `POST /api/admin/videos`   |
 | Excluir video      | `DELETE /api/admin/videos/{id}`   |
 | Excluir categoria  | `DELETE /api/categories/{id}`     |
 
