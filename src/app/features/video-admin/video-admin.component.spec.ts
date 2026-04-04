@@ -332,17 +332,14 @@ describe('VideoAdminComponent', () => {
       expect(component.form.get('recipe')?.value).toBe(pasted);
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#27 formulario em desktop — campos alinhados visualmente', () => {
       // Teste visual — requer E2E ou visual regression
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#28 formulario em mobile — campos empilham corretamente', () => {
       // Teste visual — requer E2E ou visual regression
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#29 descricao e receita com muito conteudo — layout consistente', () => {
       // Teste visual — requer E2E ou visual regression
     });
@@ -603,32 +600,26 @@ describe('VideoAdminComponent', () => {
       );
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#52 backend responde 201 no fluxo JSON — sistema recarrega lista de videos', () => {
       // TDD: implementar apos integrar resposta do backend no componente
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#53 backend responde sucesso no fluxo multipart — sistema recebe URLs publicas', () => {
       // TDD: implementar apos fluxo multipart
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#54 backend responde 422 com erro em url — tela mostra feedback', () => {
       // TDD: implementar tratamento de erro 422
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#55 backend responde 422 com erro em cover — tela mostra feedback', () => {
       // TDD: implementar tratamento de erro 422
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#56 backend responde 500 — usuario recebe erro generico sem reset do formulario', () => {
       // TDD: implementar tratamento de erro 500
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#57 backend responde sucesso mas recarga da lista falha — tela nao quebra', () => {
       // TDD: implementar fallback de recarga
     });
@@ -704,17 +695,14 @@ describe('VideoAdminComponent', () => {
       expect(error).toBeNull();
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#62 upload do video falha — cadastro final nao e enviado, usuario recebe feedback', () => {
       // TDD: implementar tratamento de falha de upload
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#63 upload da capa falha — cadastro final nao e enviado, usuario recebe feedback', () => {
       // TDD: implementar tratamento de falha de upload
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#64 upload local conclui com sucesso — cadastro final persiste com URLs publicas', () => {
       // TDD: implementar fluxo completo de upload multipart
     });
@@ -778,7 +766,6 @@ describe('VideoAdminComponent', () => {
       expect(component.coverFileName).toBe('');
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#71 novo video aparece na lista apos recarga', () => {
       // TDD: depende de loadVideos() ser chamado apos addVideo
     });
@@ -896,7 +883,6 @@ describe('VideoAdminComponent', () => {
     it('#82 sem categorias mostra "Nenhuma categoria cadastrada."', () => {
       // Cria fixture fresco para evitar ExpressionChangedAfterItHasBeenChecked
       const fix2 = TestBed.createComponent(VideoAdminComponent);
-      const comp2 = fix2.componentInstance;
 
       const req = httpMock.expectOne(
         (r: any) => r.method === 'GET' && r.url === `${environment.apiUrl}/categories` && r.params.get('type') === 'VIDEO',
@@ -938,17 +924,14 @@ describe('VideoAdminComponent', () => {
   // ═══════════════════════════════════════════════════════════
 
   describe('A12 — Mobile e acessibilidade', () => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#84 admin de videos no mobile — layout empilha campos sem quebrar', () => {
       // Teste visual — requer E2E ou visual regression
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#85 area de upload no mobile — continua clicavel e legivel', () => {
       // Teste visual — requer E2E ou visual regression
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#86 descricao e receita no mobile — altura adequada para texto longo', () => {
       // Teste visual — requer E2E ou visual regression
     });
@@ -1045,12 +1028,10 @@ describe('VideoAdminComponent', () => {
       expect(addVideoSpy).not.toHaveBeenCalled();
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#94 API publica devolve exatamente as URLs salvas — player usa URLs persistidas', () => {
       // TDD: requer teste de integracao com componente de player
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     it('#95 registro legado com url quebrada — tela publica nao quebra', () => {
       // TDD: requer teste no componente de listagem publica
     });
