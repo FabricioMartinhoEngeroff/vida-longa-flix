@@ -12,7 +12,7 @@
 
       <label>
         Descrição
-        <input type="text" formControlName="description" />
+        <textarea formControlName="description" rows="4"></textarea>
       </label>
 
       <label>
@@ -79,7 +79,7 @@
     <div class="grid">
       <label>
         Receita
-        <input type="text" formControlName="recipe" />
+        <textarea formControlName="recipe" rows="4"></textarea>
       </label>
 
       <label>
@@ -113,9 +113,9 @@
 
   <h3 class="section-title">Vídeos cadastrados</h3>
   @if (videosList().length > 0) {
-    <div class="resource-list">
+    <div class="resource-list videos-list">
       @for (v of videosList(); track v.id) {
-        <div class="resource-item">
+        <div class="resource-item video-item">
           <div class="resource-main">
             <div class="resource-name">{{ v.title }}</div>
             <div class="resource-meta">Categoria: {{ v.category.name || 'Sem categoria' }}</div>
@@ -138,9 +138,9 @@
 
   <h3 class="section-title">Categorias</h3>
   @if (categories.length > 0) {
-    <div class="resource-list">
+    <div class="resource-list categories-list">
       @for (c of categories; track c.id) {
-        <div class="resource-item">
+        <div class="resource-item category-item">
           <div class="resource-main">
             <div class="resource-name">{{ c.name }}</div>
           </div>
