@@ -123,6 +123,17 @@
 
           <button
             type="button"
+            class="edit-cover-btn"
+            aria-label="Editar capa"
+            (click)="coverInput.click()"
+          >
+            <mat-icon>image</mat-icon>
+          </button>
+          <input #coverInput type="file" accept="image/*" hidden
+            (change)="onEditCover(v.id, $event)" />
+
+          <button
+            type="button"
             class="trash-btn"
             aria-label="Deletar vídeo"
             (click)="askDeleteVideo(v.id, v.title)"

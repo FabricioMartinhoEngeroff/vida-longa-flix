@@ -29,6 +29,7 @@ export class VideoAdminComponent {
 
   private videoFile: File | null = null;
   private coverFile: File | null = null;
+  private isEditingCover = false;
 
   isDeleteModalOpen = false;
   private pendingDelete: { kind: 'VIDEO' | 'CATEGORY'; id: string; label: string } | null = null;
@@ -178,6 +179,25 @@ export class VideoAdminComponent {
     this.coverFileName = '';
     this.videoFile = null;
     this.coverFile = null;
+  }
+
+  onEditCover(videoId: string, event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      this.alert.error('A imagem da capa deve ter no máximo 10MB.');
+      return;
+    }
+
+    if (this.isEditingCover) return;
+    this.isEditingCover = true;
+
+    this.videoService.updateCover(videoId, file);
+
+    setTimeout(() => { this.isEditingCover = false; }, 1000);
   }
 
   askDeleteVideo(id: string, title: string): void {

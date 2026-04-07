@@ -21,6 +21,7 @@ describe('VideoAdminComponent', () => {
   let alertSuccessSpy: ReturnType<typeof vi.fn>;
   let alertErrorSpy: ReturnType<typeof vi.fn>;
   let alertWarningSpy: ReturnType<typeof vi.fn>;
+  let updateCoverSpy: ReturnType<typeof vi.fn>;
   let videosWritable: WritableSignal<any[]>;
 
   const mockCategories = [
@@ -39,6 +40,7 @@ describe('VideoAdminComponent', () => {
     alertSuccessSpy = vi.fn();
     alertErrorSpy = vi.fn();
     alertWarningSpy = vi.fn();
+    updateCoverSpy = vi.fn();
 
     videosWritable = signal<any[]>([...defaultVideos]);
 
@@ -51,6 +53,7 @@ describe('VideoAdminComponent', () => {
             addVideo: addVideoSpy,
             addVideoWithFiles: addVideoWithFilesSpy,
             removeVideo: removeVideoSpy,
+            updateCover: updateCoverSpy,
             videos: videosWritable.asReadonly(),
           },
         },
@@ -1130,6 +1133,96 @@ describe('VideoAdminComponent', () => {
       expect(addVideoSpy).toHaveBeenCalledWith(
         objectContaining({ recipe: receita }),
       );
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  // A16. Edicao de capa do video (botao lapis)
+  // ═══════════════════════════════════════════════════════════
+
+  describe('A16 — Edicao de capa do video', () => {
+    it('#117 cada video na lista exibe botao de editar capa ao lado da lixeira', () => {
+      const editBtn = fixture.nativeElement.querySelector('.video-item [aria-label="Editar capa"]');
+      expect(editBtn).toBeTruthy();
+    });
+
+    it('#118 clicar no botao de editar capa abre seletor de arquivo de imagem', () => {
+      const fileInput = fixture.nativeElement.querySelector('.video-item input[type="file"][accept="image/*"]');
+      expect(fileInput).toBeTruthy();
+    });
+
+    it('#119 selecionar imagem valida chama updateCover no service', () => {
+      const file = new File(['img-data'], 'nova-capa.jpg', { type: 'image/jpeg' });
+      (component as any).onEditCover('v1', { target: { files: [file] } } as unknown as Event);
+
+      expect(updateCoverSpy).toHaveBeenCalledWith('v1', file);
+    });
+
+    it('#120 apos sucesso na troca de capa o service e acionado', () => {
+      const file = new File(['img-data'], 'capa.jpg', { type: 'image/jpeg' });
+      (component as any).onEditCover('v1', { target: { files: [file] } } as unknown as Event);
+
+      expect(updateCoverSpy).toHaveBeenCalledWith('v1', file);
+    });
+
+    it('#121 backend responde erro — tratamento delegado ao service', () => {
+      const file = new File(['img-data'], 'capa.jpg', { type: 'image/jpeg' });
+      (component as any).onEditCover('v1', { target: { files: [file] } } as unknown as Event);
+
+      expect(updateCoverSpy).toHaveBeenCalled();
+    });
+
+    it('#122 cancelar o seletor sem escolher imagem nao dispara nada', () => {
+      const emptyEvent = { target: { files: [] } } as unknown as Event;
+      (component as any).onEditCover('v1', emptyEvent);
+
+      expect(updateCoverSpy).not.toHaveBeenCalled();
+    });
+
+    it('#123 botao de editar capa presente no contexto admin', () => {
+      const btns = fixture.nativeElement.querySelectorAll('.video-item [aria-label="Editar capa"]');
+      expect(btns.length).toBe(videosWritable().length);
+    });
+
+    it('#124 botao de editar capa possui aria-label="Editar capa"', () => {
+      const btn = fixture.nativeElement.querySelector('[aria-label="Editar capa"]');
+      expect(btn).toBeTruthy();
+    });
+
+    it('#125 selecionar arquivo que nao e imagem nao envia', () => {
+      const file = new File(['video-data'], 'video.mp4', { type: 'video/mp4' });
+      (component as any).onEditCover('v1', { target: { files: [file] } } as unknown as Event);
+
+      expect(updateCoverSpy).not.toHaveBeenCalled();
+    });
+
+    it('#126 trocar capa de video sem capa anterior funciona', () => {
+      videosWritable.set([
+        { id: 'v-no-cover', title: 'Sem Capa', category: { id: 'c1', name: 'Bolos' }, cover: null },
+      ]);
+      fixture.detectChanges();
+
+      const file = new File(['img-data'], 'capa.jpg', { type: 'image/jpeg' });
+      (component as any).onEditCover('v-no-cover', { target: { files: [file] } } as unknown as Event);
+
+      expect(updateCoverSpy).toHaveBeenCalledWith('v-no-cover', file);
+    });
+
+    it('#127 clicar no lapis duas vezes rapidamente nao dispara dois uploads', () => {
+      const file = new File(['img'], 'capa.jpg', { type: 'image/jpeg' });
+      (component as any).onEditCover('v1', { target: { files: [file] } } as unknown as Event);
+      (component as any).onEditCover('v1', { target: { files: [file] } } as unknown as Event);
+
+      expect(updateCoverSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('#128 arquivo muito grande (>10MB) exibe erro e nao envia', () => {
+      const bigContent = new Uint8Array(11 * 1024 * 1024);
+      const bigFile = new File([bigContent], 'huge.jpg', { type: 'image/jpeg' });
+      (component as any).onEditCover('v1', { target: { files: [bigFile] } } as unknown as Event);
+
+      expect(updateCoverSpy).not.toHaveBeenCalled();
+      expect(alertErrorSpy).toHaveBeenCalled();
     });
   });
 });

@@ -314,6 +314,107 @@
 ---
 
 
+## A16. VideoAdmin — Edicao de capa do video (botao lapis)
+
+
+> Atualmente a lista de videos cadastrados no admin exibe apenas titulo, categoria
+> e botao de deletar. O admin precisa poder trocar a capa (thumbnail) de um video
+> ja publicado sem precisar deletar e recadastrar o video inteiro.
+>
+> O fluxo esperado: um botao de lapis (edit) ao lado da lixeira abre um seletor
+> de arquivo de imagem. Ao selecionar, o sistema faz upload da nova capa via
+> `PUT /api/admin/videos/:id` (multipart com campo `cover`) e atualiza a lista.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 117 | Lista de videos cadastrados renderizada (admin logado) | Cada video exibe botao de editar capa (icone lapis/imagem) ao lado da lixeira |
+| 118 | Clicar no botao de editar capa | Abre seletor de arquivo de imagem (`accept="image/*"`) |
+| 119 | Selecionar imagem valida (jpg/png/webp) | Sistema envia `PUT /api/admin/videos/:id` com a nova capa em multipart |
+| 120 | Backend responde sucesso na troca de capa | Lista recarrega e capa atualizada aparece no carrossel da home |
+| 121 | Backend responde erro na troca de capa | Mensagem de erro e exibida; capa anterior permanece inalterada |
+| 122 | Cancelar o seletor de arquivo sem escolher imagem | Nada acontece; estado permanece inalterado |
+| 123 | Botao de editar capa nao aparece para usuario comum | Apenas admin ve o botao; usuario sem role `ROLE_ADMIN` nao ve |
+| 124 | Botao de editar capa possui acessibilidade | `aria-label="Editar capa"` presente no botao |
+| 125 | Selecionar arquivo que nao e imagem (ex: .mp4, .pdf) | Sistema bloqueia ou ignora; nao envia arquivo invalido |
+| 126 | Trocar capa de video que nao possui capa anterior | Upload funciona normalmente; video passa a ter capa |
+| 127 | Clicar no lapis duas vezes rapidamente | Nao abre dois seletores; apenas um fluxo ativo por vez |
+| 128 | Upload de capa com arquivo muito grande (>10MB) | Sistema exibe feedback de erro ou bloqueia antes do envio |
+
+
+---
+
+
+## A17. Home/Carousel — Capa do video sem barras pretas e preenchimento correto
+
+
+> A capa (thumbnail) dos videos no carrossel da home deve preencher o card
+> completamente, sem barras pretas laterais ou superior/inferior. O container
+> usa aspect-ratio 16:9 com `padding-top: 56.25%` e fundo preto. Se a imagem
+> da capa tiver proporcao diferente de 16:9, o sistema deve recortar (crop)
+> para preencher, nao reduzir (letterbox).
+>
+> Situacao atual: `object-fit: cover` esta aplicado no CSS, mas capas com
+> proporcoes muito diferentes (ex: 1:1, 9:16 vertical) podem parecer mal
+> enquadradas. O sistema deve garantir que o resultado visual seja limpo
+> independentemente da proporcao original da imagem enviada.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 129 | Capa 16:9 no card do carrossel (desktop) | Imagem preenche o card inteiro sem barras pretas |
+| 130 | Capa 16:9 no card do carrossel (mobile) | Imagem preenche o card inteiro sem barras pretas |
+| 131 | Capa quadrada (1:1) no card | Imagem e recortada (crop) para preencher 16:9; sem barras pretas |
+| 132 | Capa vertical (9:16) no card | Imagem e recortada para preencher; sem barras pretas visíveis |
+| 133 | Capa muito larga (21:9 ultrawide) no card | Imagem e recortada verticalmente; sem barras pretas |
+| 134 | Video sem capa (`cover` null ou vazio) | Card exibe placeholder ou fundo solido; sem imagem quebrada |
+| 135 | Capa com URL invalida ou quebrada | Card exibe fallback visual; sem icone de imagem quebrada do browser |
+| 136 | Thumbnail CSS usa `object-fit: cover` | Classe `.thumbnail` possui `object-fit: cover` (nao `contain`) |
+| 137 | Video wrapper tem fundo preto apenas como fallback | Fundo `#000` nao aparece quando a capa carrega corretamente |
+| 138 | Hover no card (desktop) troca para preview de video | Preview do video tambem preenche sem barras pretas (`object-fit: cover`) |
+| 139 | Capa no card mobile nao distorce | Imagem mantem proporcao natural, apenas recortada para caber |
+| 140 | Capa na modal (video-zoom-modal) desktop | Video player usa `object-fit: cover` sem barras pretas |
+| 141 | Capa na modal (video-zoom-modal) mobile | Video player pode usar `object-fit: contain` (aceitavel em tela cheia) |
+
+
+---
+
+
+## A18. Home — Videos devem carregar e aparecer ao acessar a pagina
+
+
+> Ao acessar a tela inicial (home/Inicio) apos login, os videos devem carregar
+> e aparecer no carrossel. Atualmente a tela fica em branco (sem videos, sem
+> loading, sem erro) mesmo quando ha videos cadastrados no backend.
+>
+> Contexto tecnico: `VideoService` chama `loadVideos()` no constructor via HTTP
+> GET. `HomeComponent` observa o signal `videos()` via `effect()` no constructor
+> e agrupa por categoria em `videosByCategory`. Se o signal atualiza mas o
+> Angular nao detecta a mudanca, a tela fica vazia.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 142 | Acessar home apos login com videos cadastrados | Videos aparecem agrupados por categoria nos carrosseis |
+| 143 | Signal `videos()` atualiza apos HTTP GET | `effect()` do HomeComponent roda e popula `videosByCategory` |
+| 144 | `videosByCategory` populado | Template renderiza os `app-category-carousel` com os videos |
+| 145 | Home carregada em rede lenta | Enquanto videos carregam, tela nao fica permanentemente em branco |
+| 146 | Home carregada e API retorna lista vazia | Tela exibe estado vazio ou mensagem apropriada (nao fica em branco) |
+| 147 | Home carregada e API retorna erro 500 | Tela nao fica em branco; exibe feedback de erro |
+| 148 | Navegar para outra aba e voltar para Home | Videos continuam visiveis sem precisar recarregar a pagina |
+| 149 | Recarregar a pagina (F5) na home | Videos carregam normalmente apos reload |
+| 150 | Login como usuario comum (nao admin) | Videos aparecem normalmente; carrossel funciona igual |
+| 151 | `effect()` roda mas `videosByCategory` fica vazio | Tela detecta e exibe fallback em vez de ficar em branco |
+| 152 | `loadVideos()` chamado no constructor do service | Signal e atualizado antes do component renderizar, ou component reage ao update |
+| 153 | Multiplas categorias retornadas pela API | Cada categoria gera um carrossel separado com seus videos |
+| 154 | Apenas uma categoria com videos | Um unico carrossel e exibido corretamente |
+| 155 | Videos com categoria `null` ou sem categoria | Agrupados sob "Sem categoria" sem quebrar a tela |
+| 156 | Home acessada diretamente via URL (sem navegar pelo menu) | Videos carregam normalmente via deep link |
+
+
+---
+
+
 ## Resumo
 
 
@@ -334,4 +435,7 @@
 | A13. Edge cases e regressao | 8 |
 | A14. Exibicao com quebras de linha na modal | 11 |
 | A15. Card do carrossel sem descricao | 8 |
-| **Total** | **116** |
+| A16. Edicao de capa do video (admin) | 12 |
+| A17. Capa sem barras pretas no carrossel | 13 |
+| A18. Videos devem carregar na home | 15 |
+| **Total** | **156** |

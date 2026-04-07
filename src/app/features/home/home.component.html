@@ -54,15 +54,22 @@
   </div>
 </ng-template>
 
-<div class="web">
-  <app-category-carousel
-    *ngFor="let group of videosByCategory"
-    [title]="group.nome"
-    [items]="group.itens"
-    [itemTemplate]="videoItem"
-    [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\s+/g,'-')"
-  ></app-category-carousel>
-</div>
+@if (videosByCategory.length > 0) {
+  <div class="web">
+    <app-category-carousel
+      *ngFor="let group of videosByCategory"
+      [title]="group.nome"
+      [items]="group.itens"
+      [itemTemplate]="videoItem"
+      [attr.id]="'cat-' + group.nome.toLowerCase().replace(/\s+/g,'-')"
+    ></app-category-carousel>
+  </div>
+} @else {
+  <div class="empty-state">
+    <mat-icon>video_library</mat-icon>
+    <p>Nenhum vídeo disponível no momento.</p>
+  </div>
+}
 
 <app-confirmation-modal
   [open]="isDeleteModalOpen"

@@ -130,6 +130,24 @@ export class VideoService {
     ).subscribe();
   }
 
+  // Rota admin — PUT /admin/videos/{id} (multipart com nova capa)
+  updateCover(id: string, file: File): void {
+    const formData = new FormData();
+    formData.append('cover', file, file.name);
+
+    this.http.put<void>(`${this.adminUrl}/${id}`, formData).pipe(
+      tap(() => {
+        this.alert.success('Capa atualizada com sucesso!');
+        this.loadVideos();
+      }),
+      catchError(err => {
+        this.logger.error('Erro ao atualizar capa', err);
+        this.alert.error('Erro ao atualizar capa. Tente novamente.');
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   // Rota admin — DELETE /admin/videos/{id}
   removeVideo(id: string): void {
     const current = this.videosSignal();
