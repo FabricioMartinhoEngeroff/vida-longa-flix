@@ -42,6 +42,16 @@
 
       @if (isAdmin) {
         <button
+          class="edit-cover-btn"
+          type="button"
+          aria-label="Editar capa"
+          (click)="coverCardInput.click(); $event.stopPropagation()"
+        >
+          <mat-icon>image</mat-icon>
+        </button>
+        <input #coverCardInput type="file" accept="image/*" hidden
+          (change)="onEditCoverCard(video.id, $event)" />
+        <button
           class="trash-btn"
           type="button"
           (click)="askDeleteVideo(video.id, video.title); $event.stopPropagation()"
@@ -54,7 +64,12 @@
   </div>
 </ng-template>
 
-@if (videosByCategory.length > 0) {
+@if (loading) {
+  <div class="loading">
+    <mat-icon>hourglass_empty</mat-icon>
+    <p>Carregando vídeos...</p>
+  </div>
+} @else if (videosByCategory.length > 0) {
   <div class="web">
     <app-category-carousel
       *ngFor="let group of videosByCategory"

@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit {
   isAdmin = false;
   isDeleteModalOpen = false;
   private pendingDelete: { id: string; label: string } | null = null;
+  private isEditingCoverCard = false;
 
   private hoverTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
   private readonly HOVER_DELAY_MS = 2000;
@@ -130,6 +131,21 @@ export class HomeComponent implements OnInit {
   getTotalComments(videoId: string): number {
   return this.commentsService.get(videoId).length;
 }
+
+  get loading(): boolean {
+    return this.videoService.loading();
+  }
+
+  onEditCoverCard(videoId: string, event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 10 * 1024 * 1024) return;
+    if (this.isEditingCoverCard) return;
+    this.isEditingCoverCard = true;
+    this.videoService.updateCover(videoId, file);
+    setTimeout(() => { this.isEditingCoverCard = false; }, 1000);
+  }
 
   viewAll(): void {
     // TODO: ver tudo

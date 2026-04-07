@@ -415,6 +415,80 @@
 ---
 
 
+## A19. Home/Carousel — Botao de editar capa no card (admin)
+
+
+> Atualmente o card de video no carrossel da home possui apenas o botao de lixeira
+> (excluir) para admins. O admin precisa poder trocar a capa (thumbnail) direto
+> pelo carrossel, sem ir ate a tela de admin.
+>
+> O fluxo: um botao de lapis/imagem (semelhante a lixeira) aparece apenas para admin
+> no card. Ao clicar, abre seletor de imagem. Ao selecionar, faz upload multipart
+> via `PUT /api/admin/videos/:id` com nova capa e atualiza o carrossel.
+>
+> Problema visivel na foto: o video "teste" na categoria "Bolos" usa o logo do
+> VidaLongaFlix como capa — fundo preto fica visivel. O admin precisa poder
+> trocar essa capa facilmente.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 157 | Card de video no carrossel (admin logado) | Botao de editar capa (icone lapis/imagem) visivel ao lado da lixeira |
+| 158 | Card de video no carrossel (usuario comum) | Botao de editar capa NAO aparece; apenas engagement e visivel |
+| 159 | Clicar no botao de editar capa | Abre seletor de arquivo de imagem (`accept="image/*"`) |
+| 160 | Selecionar imagem valida (jpg/png/webp) | Sistema envia `PUT /api/admin/videos/:id` com nova capa em multipart |
+| 161 | Upload de capa com sucesso | Capa do card atualiza sem precisar recarregar a pagina |
+| 162 | Upload de capa com erro | Mensagem de erro exibida; capa anterior permanece |
+| 163 | Cancelar seletor sem escolher imagem | Nada acontece; card permanece inalterado |
+| 164 | Botao de editar capa possui acessibilidade | `aria-label="Editar capa"` presente no botao |
+| 165 | Selecionar arquivo que nao e imagem (ex: .mp4) | Sistema ignora; nao envia arquivo invalido |
+| 166 | Arquivo maior que 10MB | Sistema exibe erro e nao envia |
+| 167 | Botao de editar capa no mobile (admin) | Botao visivel e clicavel no card mobile |
+| 168 | Clicar no botao de editar capa nao abre a modal de video | `$event.stopPropagation()` impede que o click propague para o card |
+| 169 | Duplo clique rapido no botao | Apenas um upload e disparado |
+
+
+---
+
+
+## A20. Home — Loading state e carregamento inicial de videos
+
+
+> Problema atual: ao acessar a home logo apos login, a tela exibe
+> "Nenhum video disponivel" (empty state) mesmo quando existem videos
+> cadastrados. Os videos so aparecem ao clicar em "Inicio" (re-navegar).
+>
+> Causa raiz: o `VideoService` chama `loadVideos()` no constructor, mas
+> o HTTP GET nao concluiu quando o `HomeComponent` faz o primeiro render.
+> O signal `videos()` ainda e `[]`, e o `@if (videosByCategory.length > 0)`
+> exibe o estado vazio. Quando a request conclui, o signal atualiza mas
+> o componente pode nao re-renderizar se o change detection nao for acionado.
+>
+> Solucao necessaria: distinguir "carregando" de "vazio de verdade".
+> Adicionar um signal `loading` ao `VideoService` para que a home exiba
+> um indicador de carregamento enquanto o GET esta em andamento, e so
+> mostre o estado vazio quando a API confirmar que nao ha videos.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 170 | Primeiro acesso apos login — HTTP em andamento | Home exibe indicador de carregamento (spinner ou skeleton), nao empty state |
+| 171 | HTTP GET conclui com videos | Carregamento desaparece e carrosseis com videos aparecem |
+| 172 | HTTP GET conclui com lista vazia | Carregamento desaparece e empty state aparece ("Nenhum video disponivel") |
+| 173 | HTTP GET falha (erro 500) | Carregamento desaparece e mensagem de erro aparece |
+| 174 | Signal `loading()` inicia como `true` ao chamar `loadVideos()` | `VideoService.loading()` retorna `true` durante o GET |
+| 175 | Signal `loading()` muda para `false` apos resposta | `VideoService.loading()` retorna `false` apos sucesso ou erro |
+| 176 | Home template usa `loading()` para decidir o que exibir | `@if (loading)` exibe spinner; `@else if (empty)` exibe estado vazio; `@else` exibe carrosseis |
+| 177 | Re-navegar para Home quando videos ja carregaram | Videos aparecem imediatamente sem loading (signal ja populado) |
+| 178 | Clicar em "Inicio" apos login | Videos aparecem (signal ja foi atualizado pelo HTTP concluido) |
+| 179 | `loadVideos()` chamado novamente (refresh) | Loading aparece brevemente e depois videos atualizam |
+| 180 | Change detection e acionado apos signal atualizar | `effect()` roda e `videosByCategory` e atualizado; template re-renderiza |
+| 181 | Home com `ChangeDetectorRef.markForCheck()` no effect | Garante que o template re-renderiza apos signal mudar |
+
+
+---
+
+
 ## Resumo
 
 
@@ -438,4 +512,6 @@
 | A16. Edicao de capa do video (admin) | 12 |
 | A17. Capa sem barras pretas no carrossel | 13 |
 | A18. Videos devem carregar na home | 15 |
-| **Total** | **156** |
+| A19. Botao editar capa no card do carrossel | 13 |
+| A20. Loading state e carregamento inicial | 12 |
+| **Total** | **181** |

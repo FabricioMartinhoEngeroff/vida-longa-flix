@@ -16,8 +16,10 @@ export class VideoService {
   private readonly adminUrl = `${environment.apiUrl}/admin/videos`;
 
   private videosSignal = signal<Video[]>([]);
+  private loadingSignal = signal<boolean>(false);
 
   readonly videos = this.videosSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
   readonly totalVideos = computed(() => this.videosSignal().length);
   readonly totalLikes = computed(() =>
     this.videosSignal().reduce((sum, v) => sum + (v.likesCount ?? 0), 0)
@@ -35,6 +37,7 @@ export class VideoService {
 
   // Rota pública — GET /videos
   loadVideos(): void {
+    this.loadingSignal.set(true);
     this.http.get<Video[]>(this.publicUrl).pipe(
       catchError(err => {
         this.logger.error('Erro ao carregar vídeos', err);
@@ -47,6 +50,7 @@ export class VideoService {
         likesCount: v.likesCount ?? 0
       }));
       this.videosSignal.set(synced);
+      this.loadingSignal.set(false);
     });
   }
 
