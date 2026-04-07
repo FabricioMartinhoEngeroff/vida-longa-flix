@@ -265,6 +265,55 @@
 ---
 
 
+## A14. VideoZoomModal — Exibicao de descricao e receita com quebras de linha
+
+
+> A descricao e a receita podem conter quebras de linha (`\n`) inseridas pelo usuario
+> no formulario de cadastro. A modal de detalhe do video deve preservar essas quebras
+> visualmente, tanto no modo leitura quanto no modo edicao.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 98 | Descricao com `\n` exibida na modal | Quebras de linha aparecem visualmente (nao fica tudo em uma linha so) |
+| 99 | Receita com `\n` exibida na modal | Quebras de linha aparecem visualmente na caixa de receita |
+| 100 | Descricao com multiplos paragrafos na modal | Cada paragrafo aparece separado visualmente |
+| 101 | Receita com etapas numeradas separadas por `\n` | Cada etapa aparece em sua propria linha |
+| 102 | Editable-field em modo leitura com `\n` | Texto exibido preserva as quebras de linha via `white-space: pre-line` ou equivalente |
+| 103 | Editable-field em modo edicao (textarea) | Conteudo carregado no textarea ja exibe as quebras de linha corretamente |
+| 104 | Descricao vazia ou `null` na modal | Exibe texto de fallback (`emptyText`) sem quebrar layout |
+| 105 | Receita vazia ou `null` na modal | Exibe "Sem receita cadastrada." sem quebrar layout |
+| 106 | Descricao com apenas espacos em branco e `\n` | Modal nao exibe blocos vazios estranhos; renderiza espacamento limpo |
+| 107 | Receita com apenas espacos em branco e `\n` | Caixa de receita nao exibe linhas vazias excessivas |
+| 108 | Descricao muito longa sem nenhuma quebra de linha | Texto faz word-wrap normalmente sem transbordar o container da modal |
+
+
+---
+
+
+## A15. Home/Carousel — Descricao nao deve aparecer no card de video
+
+
+> O card de video exibido no carrossel da home (tanto mobile quanto desktop) nao deve
+> exibir a descricao do video. A descricao so deve ser visivel ao abrir a modal de detalhe
+> (`video-zoom-modal`).
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 109 | Card de video no carrossel (desktop) | Descricao do video nao e exibida no card |
+| 110 | Card de video no carrossel (mobile) | Descricao do video nao e exibida no card |
+| 111 | Card de video exibe apenas titulo | Titulo do video continua visivel no card |
+| 112 | Abrir modal a partir do card | Descricao completa aparece somente dentro da modal |
+| 113 | Card sem descricao nao afeta layout | Espacamento e alinhamento do card permanecem consistentes |
+| 114 | Video com descricao muito longa | Card nao estoura altura nem exibe texto escondido parcialmente |
+| 115 | Video com descricao `null` ou vazia | Card renderiza normalmente sem espacos extras ou elementos vazios |
+| 116 | Video sem campo descricao (undefined) | Card nao quebra; titulo e acoes continuam visiveis |
+
+
+---
+
+
 ## Resumo
 
 
@@ -283,4 +332,6 @@
 | A11. Estados vazios e listas | 5 |
 | A12. Mobile e acessibilidade | 6 |
 | A13. Edge cases e regressao | 8 |
-| **Total** | **97** |
+| A14. Exibicao com quebras de linha na modal | 11 |
+| A15. Card do carrossel sem descricao | 8 |
+| **Total** | **116** |

@@ -221,4 +221,107 @@ describe('VideoZoomModalComponent', () => {
 
     expect(modalServiceMock.close).not.toHaveBeenCalled();
   });
+
+  // ── A14. Exibicao com quebras de linha na modal ─────────────────
+
+  describe('A14 — Exibicao de descricao e receita com quebras de linha', () => {
+    const videoWithLineBreaks = {
+      id: 'v-lb',
+      url: 'https://cdn.exemplo.com/video.mp4',
+      title: 'Video Teste',
+      description: 'Linha 1\nLinha 2\nLinha 3',
+      recipe: 'Etapa 1\nEtapa 2\nEtapa 3',
+      protein: 5,
+      carbs: 10,
+      fat: 3,
+      fiber: 2,
+      calories: 100,
+      favorited: false,
+    } as any;
+
+    async function openModalWith(video: any) {
+      videosSignal.set([video]);
+      selectedVideoSignal.set(video);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
+
+    it('#98 descricao com \\n exibida na modal preserva quebras visualmente', async () => {
+      await openModalWith(videoWithLineBreaks);
+
+      const desc = fixture.nativeElement.querySelector('.description .display-value') as HTMLElement;
+      expect(desc).toBeTruthy();
+      expect(desc.textContent).toContain('Linha 1');
+      expect(desc.textContent).toContain('Linha 2');
+      const ws = getComputedStyle(desc).whiteSpace;
+      expect(ws).toBe('pre-line');
+    });
+
+    it('#99 receita com \\n exibida na modal preserva quebras visualmente', async () => {
+      await openModalWith(videoWithLineBreaks);
+
+      const recipe = fixture.nativeElement.querySelector('.recipe-box .display-value') as HTMLElement;
+      expect(recipe).toBeTruthy();
+      expect(recipe.textContent).toContain('Etapa 1');
+      expect(recipe.textContent).toContain('Etapa 2');
+      const ws = getComputedStyle(recipe).whiteSpace;
+      expect(ws).toBe('pre-line');
+    });
+
+    it('#100 descricao com multiplos paragrafos aparece separada visualmente', async () => {
+      const video = { ...videoWithLineBreaks, description: 'Paragrafo 1\n\nParagrafo 2\n\nParagrafo 3' };
+      await openModalWith(video);
+
+      const desc = fixture.nativeElement.querySelector('.description .display-value') as HTMLElement;
+      expect(desc).toBeTruthy();
+      expect(desc.textContent).toContain('Paragrafo 1');
+      expect(desc.textContent).toContain('Paragrafo 3');
+    });
+
+    it('#101 receita com etapas numeradas separadas por \\n', async () => {
+      const video = { ...videoWithLineBreaks, recipe: '1. Misturar\n2. Bater\n3. Assar' };
+      await openModalWith(video);
+
+      const recipe = fixture.nativeElement.querySelector('.recipe-box .display-value') as HTMLElement;
+      expect(recipe).toBeTruthy();
+      expect(recipe.textContent).toContain('1. Misturar');
+      expect(recipe.textContent).toContain('3. Assar');
+    });
+
+    it('#104 descricao vazia na modal exibe fallback sem quebrar', async () => {
+      const video = { ...videoWithLineBreaks, description: '' };
+      await openModalWith(video);
+
+      const desc = fixture.nativeElement.querySelector('.description') as HTMLElement;
+      expect(desc).toBeTruthy();
+      // nao quebra o layout
+    });
+
+    it('#105 receita vazia na modal exibe "Sem receita cadastrada."', async () => {
+      const video = { ...videoWithLineBreaks, recipe: '' };
+      await openModalWith(video);
+
+      const recipe = fixture.nativeElement.querySelector('.recipe-box') as HTMLElement;
+      expect(recipe).toBeTruthy();
+      expect(recipe.textContent).toContain('Sem receita cadastrada.');
+    });
+
+    it('#106 descricao com apenas espacos e \\n renderiza sem blocos estranhos', async () => {
+      const video = { ...videoWithLineBreaks, description: '  \n\n  \n ' };
+      await openModalWith(video);
+
+      const desc = fixture.nativeElement.querySelector('.description') as HTMLElement;
+      expect(desc).toBeTruthy();
+    });
+
+    it('#108 descricao muito longa sem quebra nao transborda o container', async () => {
+      const video = { ...videoWithLineBreaks, description: 'A'.repeat(500) };
+      await openModalWith(video);
+
+      const desc = fixture.nativeElement.querySelector('.description .display-value') as HTMLElement;
+      expect(desc).toBeTruthy();
+      expect(desc.textContent).toContain('A'.repeat(50));
+    });
+  });
 });

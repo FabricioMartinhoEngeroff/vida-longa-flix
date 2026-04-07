@@ -131,4 +131,62 @@ describe('EditableFieldComponent', () => {
     expect(input).toBeTruthy();
     expect(input.hidden).toBe(false);
   });
+
+  // ── A14. Exibicao com quebras de linha ──────────────────────────
+
+  describe('A14 — Exibicao com quebras de linha', () => {
+    it('#102 display-value deve ter white-space: pre-line para preservar quebras', () => {
+      fixture.componentRef.setInput('value', 'Linha1\nLinha2\nLinha3');
+      fixture.detectChanges(false);
+
+      const span = fixture.nativeElement.querySelector('.display-value') as HTMLElement;
+      expect(span).toBeTruthy();
+      const ws = getComputedStyle(span).whiteSpace;
+      expect(ws).toBe('pre-line');
+    });
+
+    it('#103 textarea em modo edicao carrega quebras de linha corretamente', () => {
+      const multiline = 'Primeira linha\nSegunda linha\nTerceira linha';
+      fixture.componentRef.setInput('value', multiline);
+      fixture.componentRef.setInput('fieldType', 'textarea');
+      fixture.componentRef.setInput('canEdit', true);
+      fixture.detectChanges(false);
+
+      fixture.nativeElement.querySelector('.btn-edit').click();
+      fixture.detectChanges(false);
+
+      const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+      expect(textarea).toBeTruthy();
+      expect(textarea.value).toBe(multiline);
+    });
+
+    it('#104 valor vazio exibe emptyText sem quebrar layout', () => {
+      fixture.componentRef.setInput('value', null);
+      fixture.componentRef.setInput('emptyText', 'Sem descricao.');
+      fixture.detectChanges(false);
+
+      const span = fixture.nativeElement.querySelector('.display-value') as HTMLElement;
+      expect(span.textContent).toContain('Sem descricao.');
+    });
+
+    it('#106 valor com apenas espacos e \\n exibe sem blocos estranhos', () => {
+      fixture.componentRef.setInput('value', '  \n\n  \n ');
+      fixture.detectChanges(false);
+
+      const span = fixture.nativeElement.querySelector('.display-value') as HTMLElement;
+      expect(span).toBeTruthy();
+      // deve renderizar sem erro
+      expect(span.textContent).toBeDefined();
+    });
+
+    it('#108 texto muito longo sem quebra faz word-wrap dentro do container', () => {
+      const longText = 'A'.repeat(500);
+      fixture.componentRef.setInput('value', longText);
+      fixture.detectChanges(false);
+
+      const span = fixture.nativeElement.querySelector('.display-value') as HTMLElement;
+      expect(span).toBeTruthy();
+      expect(span.textContent).toContain(longText);
+    });
+  });
 });

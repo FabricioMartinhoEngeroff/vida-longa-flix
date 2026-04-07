@@ -6,6 +6,7 @@
 
 .display-value {
   color: #ddd;
+  white-space: pre-line;
 }
 
 .btn-edit {
