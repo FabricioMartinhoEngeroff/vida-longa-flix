@@ -110,8 +110,29 @@ describe('MenuModalComponent', () => {
   it('should display fallback image when cover is missing', () => {
     component.menu = { ...mockMenu, cover: '' };
     fixture.detectChanges();
-    
+
     const img = fixture.nativeElement.querySelector('.cover-large');
     expect(img.src).toContain('assets/images/Logo.png');
+  });
+
+  // ── A21. Dicas da nutri na modal ──────────────────────
+
+  it('#214 dicas da nutri com quebras de linha exibe corretamente na modal', () => {
+    component.menu = {
+      ...mockMenu,
+      nutritionistTips: 'Dica 1\nDica 2\nDica 3',
+    };
+    fixture.detectChanges();
+
+    const blocks = fixture.nativeElement.querySelectorAll('.block');
+    let tipsBlock: HTMLElement | null = null;
+    blocks.forEach((b: HTMLElement) => {
+      if (b.querySelector('h4')?.textContent?.includes('Dicas da Nutri')) {
+        tipsBlock = b;
+      }
+    });
+    expect(tipsBlock).toBeTruthy();
+    const editableField = tipsBlock!.querySelector('app-editable-field');
+    expect(editableField).toBeTruthy();
   });
 });

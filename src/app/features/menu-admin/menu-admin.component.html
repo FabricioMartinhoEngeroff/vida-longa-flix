@@ -11,11 +11,6 @@
       </label>
 
       <label>
-        Descrição
-        <input type="text" formControlName="description" />
-      </label>
-
-      <label>
         Categoria
         <input
           class="category-input"
@@ -29,6 +24,11 @@
         </datalist>
       </label>
     </div>
+
+    <label>
+      Descrição
+      <textarea formControlName="description" rows="6"></textarea>
+    </label>
 
     <p class="upload-hint">Arraste e solte a capa aqui ou clique para selecionar</p>
     <label class="upload-area"
@@ -51,18 +51,15 @@
       </span>
     </label>
 
-    <h3>Conteúdo</h3>
-    <div class="grid">
-      <label>
-        Receita
-        <input type="text" formControlName="recipe" />
-      </label>
+    <label>
+      Receita
+      <textarea formControlName="recipe" rows="6"></textarea>
+    </label>
 
-      <label>
-        Dicas da Nutri
-        <input type="text" formControlName="nutritionistTips" />
-      </label>
-    </div>
+    <label>
+      Dicas da Nutri
+      <textarea formControlName="nutritionistTips" rows="6"></textarea>
+    </label>
 
     <h3>Informações Nutricionais</h3>
     <div class="grid">

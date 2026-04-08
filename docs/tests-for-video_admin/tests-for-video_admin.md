@@ -489,6 +489,87 @@
 ---
 
 
+## A21. VideoAdmin + MenuAdmin — Layout espacoso para descricao, receita e dicas da nutri
+
+
+> Problema atual nos dois formularios de admin (video-admin e menu-admin):
+>
+> **Video-admin:** Descricao e Receita estao dentro do `.grid` de 2 colunas,
+> espremidos em metade da largura. Descricao ja e textarea (rows=4) mas fica
+> apertado no grid. Receita idem.
+>
+> **Menu-admin:** Descricao, Receita e Dicas da Nutri sao `<input type="text">`
+> de linha unica — nem sequer sao textareas! Todos estao dentro do grid de 2
+> colunas, impossibilitando quebras de linha e conteudo longo.
+>
+> Os 3 campos (Descricao, Receita, Dicas da Nutri) precisam ser textareas
+> full-width, com bastante espaco (altura semelhante as areas de upload/drag-drop)
+> para que o admin consiga escrever conteudo com quebras de linha, topicos e
+> paragrafos confortavelmente.
+>
+> Reorganizacao dos formularios:
+>
+> - Campos curtos (titulo, categoria) ficam no grid de 2 colunas
+> - Campos longos (descricao, receita, dicas da nutri) ficam **fora** do grid, full-width, com textarea alto
+> - Areas de upload permanecem full-width
+> - Campos numericos (nutricionais) ficam no grid de 2 colunas
+> - Ordem logica: dados basicos → descricao → uploads → receita + dicas → nutricionais
+
+
+### Video-admin
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 182 | Campo descricao renderizado no video-admin | Textarea full-width (fora do grid 2 colunas), nao espremido em meia largura |
+| 183 | Campo receita renderizado no video-admin | Textarea full-width (fora do grid 2 colunas), nao espremido em meia largura |
+| 184 | Altura do textarea de descricao (video-admin) | Altura minima confortavel (min 6 rows), semelhante a area de upload |
+| 185 | Altura do textarea de receita (video-admin) | Altura minima confortavel (min 6 rows), semelhante a area de upload |
+| 186 | Digitar Enter no textarea de descricao (video-admin) | Quebra de linha inserida e preservada no campo |
+| 187 | Digitar Enter no textarea de receita (video-admin) | Quebra de linha inserida e preservada no campo |
+| 188 | Ordem dos campos no video-admin | Titulo + Categoria (grid) → Descricao (full) → Uploads → Receita (full) → Nutricionais (grid) |
+| 189 | Desktop — descricao e receita no video-admin | Textareas usam 100% da largura, nao metade |
+| 190 | Mobile — descricao e receita no video-admin | Textareas ocupam toda a largura sem sobreposicao |
+
+
+### Menu-admin
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 191 | Campo descricao renderizado no menu-admin | Usa textarea (nao input text), full-width, fora do grid 2 colunas |
+| 192 | Campo receita renderizado no menu-admin | Usa textarea (nao input text), full-width, fora do grid 2 colunas |
+| 193 | Campo dicas da nutri renderizado no menu-admin | Usa textarea (nao input text), full-width, fora do grid 2 colunas |
+| 194 | Altura do textarea de descricao (menu-admin) | Altura minima confortavel (min 6 rows), semelhante a area de upload |
+| 195 | Altura do textarea de receita (menu-admin) | Altura minima confortavel (min 6 rows), semelhante a area de upload |
+| 196 | Altura do textarea de dicas da nutri (menu-admin) | Altura minima confortavel (min 6 rows), semelhante a area de upload |
+| 197 | Digitar Enter no textarea de descricao (menu-admin) | Quebra de linha inserida e preservada no campo |
+| 198 | Digitar Enter no textarea de receita (menu-admin) | Quebra de linha inserida e preservada no campo |
+| 199 | Digitar Enter no textarea de dicas da nutri (menu-admin) | Quebra de linha inserida e preservada no campo |
+| 200 | Ordem dos campos no menu-admin | Titulo + Categoria (grid) → Descricao (full) → Upload capa → Receita (full) → Dicas da Nutri (full) → Nutricionais (grid) |
+| 201 | Desktop — descricao, receita e dicas no menu-admin | Textareas usam 100% da largura, nao metade |
+| 202 | Mobile — descricao, receita e dicas no menu-admin | Textareas ocupam toda a largura sem sobreposicao |
+
+
+### Comportamento compartilhado (ambos formularios)
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 203 | Colar texto com topicos/bullets na descricao | Conteudo permanece formatado com quebras de linha |
+| 204 | Colar texto com etapas numeradas na receita | Conteudo permanece formatado com cada etapa em sua linha |
+| 205 | Colar texto longo em dicas da nutri | Conteudo permanece formatado com quebras de linha |
+| 206 | Textarea com muito conteudo | Campo nao transborda; scroll interno ou expansao controlada |
+| 207 | Campos nutricionais (proteina, carbs, etc) no grid | Permanecem no grid de 2 colunas — sao campos curtos numericos |
+| 208 | Titulo e Categoria lado a lado no grid | Ambos campos curtos compartilham a mesma linha no desktop |
+| 209 | Descricao com multiplas linhas salva corretamente | Payload do submit preserva `\n` no campo description |
+| 210 | Receita com multiplas linhas salva corretamente | Payload do submit preserva `\n` no campo recipe |
+| 211 | Dicas da nutri com multiplas linhas salva corretamente | Payload do submit preserva `\n` no campo nutritionistTips |
+| 212 | Descricao digitada no admin exibe corretamente na modal | Modal renderiza quebras de linha via `white-space: pre-line` |
+| 213 | Receita digitada no admin exibe corretamente na modal | Modal renderiza quebras de linha da receita preservadas |
+| 214 | Dicas da nutri digitada no admin exibe corretamente na modal | Modal renderiza quebras de linha das dicas preservadas |
+
+
 ## Resumo
 
 
@@ -514,4 +595,5 @@
 | A18. Videos devem carregar na home | 15 |
 | A19. Botao editar capa no card do carrossel | 13 |
 | A20. Loading state e carregamento inicial | 12 |
-| **Total** | **181** |
+| A21. Layout espacoso (video-admin + menu-admin) | 33 |
+| **Total** | **214** |

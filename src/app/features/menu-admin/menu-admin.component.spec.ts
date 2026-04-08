@@ -183,4 +183,177 @@ describe('MenuAdminComponent', () => {
 
     expect(removeMenuSpy).toHaveBeenCalledWith('m1');
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // A21. Layout espacoso para descricao, receita e dicas (menu-admin)
+  // ═══════════════════════════════════════════════════════════
+
+  describe('A21 — Layout espacoso (menu-admin)', () => {
+    it('#191 campo descricao usa textarea (nao input text), full-width', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      expect(textarea).toBeTruthy();
+      expect(textarea.closest('.grid')).toBeNull();
+    });
+
+    it('#192 campo receita usa textarea (nao input text), full-width', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      expect(textarea).toBeTruthy();
+      expect(textarea.closest('.grid')).toBeNull();
+    });
+
+    it('#193 campo dicas da nutri usa textarea (nao input text), full-width', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="nutritionistTips"]');
+      expect(textarea).toBeTruthy();
+      expect(textarea.closest('.grid')).toBeNull();
+    });
+
+    it('#194 textarea de descricao tem altura minima confortavel (min 6 rows)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      expect(textarea).toBeTruthy();
+      expect(Number(textarea.getAttribute('rows'))).toBeGreaterThanOrEqual(6);
+    });
+
+    it('#195 textarea de receita tem altura minima confortavel (min 6 rows)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      expect(textarea).toBeTruthy();
+      expect(Number(textarea.getAttribute('rows'))).toBeGreaterThanOrEqual(6);
+    });
+
+    it('#196 textarea de dicas da nutri tem altura minima confortavel (min 6 rows)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="nutritionistTips"]');
+      expect(textarea).toBeTruthy();
+      expect(Number(textarea.getAttribute('rows'))).toBeGreaterThanOrEqual(6);
+    });
+
+    it('#197 Enter na descricao preserva quebra de linha', () => {
+      component.form.patchValue({ description: 'Linha 1\nLinha 2' });
+      expect(component.form.get('description')?.value).toContain('\n');
+    });
+
+    it('#198 Enter na receita preserva quebra de linha', () => {
+      component.form.patchValue({ recipe: 'Etapa 1\nEtapa 2' });
+      expect(component.form.get('recipe')?.value).toContain('\n');
+    });
+
+    it('#199 Enter nas dicas da nutri preserva quebra de linha', () => {
+      component.form.patchValue({ nutritionistTips: 'Dica 1\nDica 2' });
+      expect(component.form.get('nutritionistTips')?.value).toContain('\n');
+    });
+
+    it('#200 ordem: titulo+categoria (grid) → descricao → upload capa → receita → dicas → nutricionais', () => {
+      const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+      const all = form.querySelectorAll('[formControlName], .upload-area');
+      const order: string[] = [];
+      all.forEach((el: Element) => {
+        const name = el.getAttribute('formControlName');
+        if (name) order.push(name);
+        else if (el.classList.contains('upload-area')) order.push('upload');
+      });
+
+      const titleIdx = order.indexOf('title');
+      const catIdx = order.indexOf('categoryName');
+      const descIdx = order.indexOf('description');
+      const uploadIdx = order.indexOf('upload');
+      const recipeIdx = order.indexOf('recipe');
+      const tipsIdx = order.indexOf('nutritionistTips');
+      const proteinIdx = order.indexOf('protein');
+
+      expect(descIdx).toBeGreaterThan(Math.max(titleIdx, catIdx));
+      expect(uploadIdx).toBeGreaterThan(descIdx);
+      expect(recipeIdx).toBeGreaterThan(uploadIdx);
+      expect(tipsIdx).toBeGreaterThan(recipeIdx);
+      expect(proteinIdx).toBeGreaterThan(tipsIdx);
+    });
+
+    it('#201 desktop — textareas de descricao, receita e dicas nao estao no grid', () => {
+      const desc = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      const recipe = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      const tips = fixture.nativeElement.querySelector('textarea[formControlName="nutritionistTips"]');
+      expect(desc).toBeTruthy();
+      expect(recipe).toBeTruthy();
+      expect(tips).toBeTruthy();
+      expect(desc.closest('.grid')).toBeNull();
+      expect(recipe.closest('.grid')).toBeNull();
+      expect(tips.closest('.grid')).toBeNull();
+    });
+
+    it('#202 mobile — textareas existem fora do grid para usar largura total', () => {
+      const desc = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      const recipe = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      const tips = fixture.nativeElement.querySelector('textarea[formControlName="nutritionistTips"]');
+      expect(desc).toBeTruthy();
+      expect(recipe).toBeTruthy();
+      expect(tips).toBeTruthy();
+      expect(desc.closest('.grid')).toBeNull();
+      expect(recipe.closest('.grid')).toBeNull();
+      expect(tips.closest('.grid')).toBeNull();
+    });
+
+    it('#203 colar texto com topicos na descricao preserva formatacao', () => {
+      const pasted = '- Topico 1\n- Topico 2\n- Topico 3';
+      component.form.patchValue({ description: pasted });
+      expect(component.form.get('description')?.value).toBe(pasted);
+    });
+
+    it('#205 colar texto longo em dicas da nutri preserva formatacao', () => {
+      const pasted = 'Dica importante:\n- Hidratar-se\n- Comer devagar';
+      component.form.patchValue({ nutritionistTips: pasted });
+      expect(component.form.get('nutritionistTips')?.value).toBe(pasted);
+    });
+
+    it('#206 textarea com muito conteudo nao perde dados', () => {
+      const longText = Array.from({ length: 50 }, (_, i) => `Linha ${i + 1}`).join('\n');
+      component.form.patchValue({ description: longText });
+      expect(component.form.get('description')?.value).toBe(longText);
+    });
+
+    it('#207 campos nutricionais permanecem no grid de 2 colunas', () => {
+      const proteinInput = fixture.nativeElement.querySelector('[formControlName="protein"]');
+      expect(proteinInput).toBeTruthy();
+      expect(proteinInput.closest('.grid')).toBeTruthy();
+    });
+
+    it('#208 titulo e categoria lado a lado no mesmo grid', () => {
+      const titleInput = fixture.nativeElement.querySelector('[formControlName="title"]');
+      const catInput = fixture.nativeElement.querySelector('[formControlName="categoryName"]');
+      expect(titleInput.closest('.grid')).toBeTruthy();
+      expect(catInput.closest('.grid')).toBeTruthy();
+      expect(titleInput.closest('.grid')).toBe(catInput.closest('.grid'));
+    });
+
+    it('#209 descricao com \\n preserva quebras no payload do submit', async () => {
+      component.form.patchValue({
+        title: 'Cardapio A21',
+        description: 'Linha 1\nLinha 2',
+        categoryName: 'Almoço',
+      });
+      await component.save();
+      const called = addMenuSpy.mock.calls[0][0];
+      expect(called.description).toBe('Linha 1\nLinha 2');
+    });
+
+    it('#210 receita com \\n preserva quebras no payload do submit', async () => {
+      component.form.patchValue({
+        title: 'Cardapio A21',
+        description: 'Descricao valida',
+        categoryName: 'Almoço',
+        recipe: 'Passo 1\nPasso 2',
+      });
+      await component.save();
+      const called = addMenuSpy.mock.calls[0][0];
+      expect(called.recipe).toBe('Passo 1\nPasso 2');
+    });
+
+    it('#211 dicas da nutri com \\n preserva quebras no payload do submit', async () => {
+      component.form.patchValue({
+        title: 'Cardapio A21',
+        description: 'Descricao valida',
+        categoryName: 'Almoço',
+        nutritionistTips: 'Dica 1\nDica 2',
+      });
+      await component.save();
+      const called = addMenuSpy.mock.calls[0][0];
+      expect(called.nutritionistTips).toBe('Dica 1\nDica 2');
+    });
+  });
 });

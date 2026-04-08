@@ -1225,4 +1225,142 @@ describe('VideoAdminComponent', () => {
       expect(alertErrorSpy).toHaveBeenCalled();
     });
   });
+
+  // ═══════════════════════════════════════════════════════════
+  // A21. Layout espacoso para descricao e receita (video-admin)
+  // ═══════════════════════════════════════════════════════════
+
+  describe('A21 — Layout espacoso (video-admin)', () => {
+    it('#182 campo descricao e textarea full-width (fora do grid)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      expect(textarea).toBeTruthy();
+      expect(textarea.closest('.grid')).toBeNull();
+    });
+
+    it('#183 campo receita e textarea full-width (fora do grid)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      expect(textarea).toBeTruthy();
+      expect(textarea.closest('.grid')).toBeNull();
+    });
+
+    it('#184 textarea de descricao tem altura minima confortavel (min 6 rows)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      expect(textarea).toBeTruthy();
+      expect(Number(textarea.getAttribute('rows'))).toBeGreaterThanOrEqual(6);
+    });
+
+    it('#185 textarea de receita tem altura minima confortavel (min 6 rows)', () => {
+      const textarea = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      expect(textarea).toBeTruthy();
+      expect(Number(textarea.getAttribute('rows'))).toBeGreaterThanOrEqual(6);
+    });
+
+    it('#186 Enter na descricao preserva quebra de linha', () => {
+      component.form.patchValue({ description: 'Linha 1\nLinha 2\nLinha 3' });
+      expect(component.form.get('description')?.value).toContain('\n');
+    });
+
+    it('#187 Enter na receita preserva quebra de linha', () => {
+      component.form.patchValue({ recipe: 'Etapa 1\nEtapa 2' });
+      expect(component.form.get('recipe')?.value).toContain('\n');
+    });
+
+    it('#188 ordem: titulo+categoria (grid) → descricao → uploads → receita → nutricionais', () => {
+      const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+      const all = form.querySelectorAll('[formControlName], .upload-area');
+      const order: string[] = [];
+      all.forEach((el: Element) => {
+        const name = el.getAttribute('formControlName');
+        if (name) order.push(name);
+        else if (el.classList.contains('upload-area')) order.push('upload');
+      });
+
+      const titleIdx = order.indexOf('title');
+      const catIdx = order.indexOf('categoryName');
+      const descIdx = order.indexOf('description');
+      const firstUploadIdx = order.indexOf('upload');
+      const recipeIdx = order.indexOf('recipe');
+
+      expect(titleIdx).toBeGreaterThanOrEqual(0);
+      expect(catIdx).toBeGreaterThanOrEqual(0);
+      expect(descIdx).toBeGreaterThan(Math.max(titleIdx, catIdx));
+      expect(firstUploadIdx).toBeGreaterThan(descIdx);
+      expect(recipeIdx).toBeGreaterThan(firstUploadIdx);
+    });
+
+    it('#189 desktop — textareas de descricao e receita nao estao no grid', () => {
+      const desc = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      const recipe = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      expect(desc.closest('.grid')).toBeNull();
+      expect(recipe.closest('.grid')).toBeNull();
+    });
+
+    it('#190 mobile — textareas existem fora do grid para usar largura total', () => {
+      const desc = fixture.nativeElement.querySelector('textarea[formControlName="description"]');
+      const recipe = fixture.nativeElement.querySelector('textarea[formControlName="recipe"]');
+      expect(desc).toBeTruthy();
+      expect(recipe).toBeTruthy();
+      expect(desc.closest('.grid')).toBeNull();
+      expect(recipe.closest('.grid')).toBeNull();
+    });
+
+    it('#203 colar texto com topicos na descricao preserva formatacao', () => {
+      const pasted = '- Topico 1\n- Topico 2\n- Topico 3';
+      component.form.patchValue({ description: pasted });
+      expect(component.form.get('description')?.value).toBe(pasted);
+    });
+
+    it('#204 colar texto com etapas numeradas na receita preserva formatacao', () => {
+      const pasted = '1. Misture\n2. Asse\n3. Sirva';
+      component.form.patchValue({ recipe: pasted });
+      expect(component.form.get('recipe')?.value).toBe(pasted);
+    });
+
+    it('#206 textarea com muito conteudo nao perde dados', () => {
+      const longText = Array.from({ length: 50 }, (_, i) => `Linha ${i + 1}`).join('\n');
+      component.form.patchValue({ description: longText });
+      expect(component.form.get('description')?.value).toBe(longText);
+    });
+
+    it('#207 campos nutricionais permanecem no grid de 2 colunas', () => {
+      const proteinInput = fixture.nativeElement.querySelector('[formControlName="protein"]');
+      expect(proteinInput).toBeTruthy();
+      expect(proteinInput.closest('.grid')).toBeTruthy();
+    });
+
+    it('#208 titulo e categoria lado a lado no mesmo grid', () => {
+      const titleInput = fixture.nativeElement.querySelector('[formControlName="title"]');
+      const catInput = fixture.nativeElement.querySelector('[formControlName="categoryName"]');
+      expect(titleInput.closest('.grid')).toBeTruthy();
+      expect(catInput.closest('.grid')).toBeTruthy();
+      expect(titleInput.closest('.grid')).toBe(catInput.closest('.grid'));
+    });
+
+    it('#209 descricao com \\n preserva quebras no payload do submit', async () => {
+      component.form.patchValue({
+        title: 'Video A21',
+        description: 'Paragrafo 1\n\nParagrafo 2',
+        url: 'https://cdn.example.com/video.mp4',
+        categoryName: 'Bolos',
+      });
+      await component.save();
+      expect(addVideoSpy).toHaveBeenCalledWith(
+        objectContaining({ description: 'Paragrafo 1\n\nParagrafo 2' }),
+      );
+    });
+
+    it('#210 receita com \\n preserva quebras no payload do submit', async () => {
+      component.form.patchValue({
+        title: 'Video A21 Receita',
+        description: 'Descricao valida aqui',
+        url: 'https://cdn.example.com/video.mp4',
+        categoryName: 'Bolos',
+        recipe: 'Passo 1\nPasso 2\nPasso 3',
+      });
+      await component.save();
+      expect(addVideoSpy).toHaveBeenCalledWith(
+        objectContaining({ recipe: 'Passo 1\nPasso 2\nPasso 3' }),
+      );
+    });
+  });
 });

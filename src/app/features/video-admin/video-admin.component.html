@@ -11,26 +11,26 @@
       </label>
 
       <label>
-        Descrição
-        <textarea formControlName="description" rows="4"></textarea>
+        Categoria
+        <input
+          class="category-input"
+          type="text"
+          formControlName="categoryName"
+          placeholder="Digite ou selecione uma categoria"
+          list="video-category-list"
+        />
+        <datalist id="video-category-list">
+          @for (cat of categories; track cat.id) {
+            <option [value]="cat.name"></option>
+          }
+        </datalist>
       </label>
-
-      <label>
-  Categoria
-  <input
-    class="category-input"
-    type="text"
-    formControlName="categoryName"
-    placeholder="Digite ou selecione uma categoria"
-    list="video-category-list"
-  />
-  <datalist id="video-category-list">
-    @for (cat of categories; track cat.id) {
-      <option [value]="cat.name"></option>
-    }
-  </datalist>
-</label>
     </div>
+
+    <label>
+      Descrição
+      <textarea formControlName="description" rows="6"></textarea>
+    </label>
 
     <p class="upload-hint">Arraste e solte o vídeo aqui ou clique para selecionar</p>
     <label class="upload-area"
@@ -74,14 +74,14 @@
       </span>
     </label>
 
+    <label>
+      Receita
+      <textarea formControlName="recipe" rows="6"></textarea>
+    </label>
+
     <h3>Informações Nutricionais</h3>
 
     <div class="grid">
-      <label>
-        Receita
-        <textarea formControlName="recipe" rows="4"></textarea>
-      </label>
-
       <label>
         Proteínas
         <input type="number" formControlName="protein" />
