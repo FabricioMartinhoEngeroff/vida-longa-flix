@@ -570,6 +570,61 @@
 | 214 | Dicas da nutri digitada no admin exibe corretamente na modal | Modal renderiza quebras de linha das dicas preservadas |
 
 
+---
+
+
+## A22. Video + Menu — Padrao fixo de capa responsiva
+
+
+> Para padronizar a geracao das capas e evitar tentativa e erro do time de
+> conteudo, o sistema deve adotar um unico padrao oficial de imagem para capas
+> de video e cardapio:
+>
+> - proporcao fixa: `16:9`
+> - tamanho-base recomendado para criacao: `1600 x 900 px`
+> - regra de renderizacao: preencher o container com `cover`, sem distorcao e sem barras vazias
+>
+> Se a imagem original vier fora desse ratio, o front pode resolver com
+> `object-fit: cover` ou com uma funcao/helper de normalizacao/crop central.
+> O requisito principal e manter um resultado final consistente em notebook e celular.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 215 | Time de conteudo cria nova capa para video ou menu | Referencia oficial de criacao e `1600x900 px` (`16:9`) |
+| 216 | Capa `1600x900` renderizada em card de video no desktop | Enquadra corretamente, sem distorcao e sem barras pretas |
+| 217 | Capa `1600x900` renderizada em card de menu no desktop | Enquadra corretamente, sem distorcao e sem espacos vazios |
+| 218 | Capa `1600x900` renderizada em card de video no mobile | Mantem leitura boa da imagem e preenchimento limpo |
+| 219 | Capa `1600x900` renderizada em card de menu no mobile | Mantem leitura boa da imagem e preenchimento limpo |
+| 220 | Imagem original ja esta em `16:9` | Sistema redimensiona sem crop inesperado nem deformacao |
+| 221 | Imagem quadrada (`1:1`) usada como capa | Sistema aplica crop/cover para preencher `16:9` sem esticar a imagem |
+| 222 | Imagem vertical (`9:16`) usada como capa | Sistema aplica crop/cover para preencher `16:9` sem barras vazias |
+| 223 | Imagem ultrawide (`21:9`) usada como capa | Sistema corta excesso horizontal mantendo o centro visual util |
+| 224 | Implementacao usa helper/funcao de ajuste de capa | Funcao preserva proporcao, prioriza crop central e entrega saida final coerente com `16:9` |
+| 225 | Mesma capa e vista no notebook e no celular | Sistema usa a mesma referencia de proporcao; muda apenas o tamanho do container, nao a logica de enquadramento |
+| 226 | Capa ausente ou com URL quebrada | Front aplica fallback visual sem quebrar o layout dos cards e da modal |
+
+
+---
+
+
+## A23. VideoAdmin — Negativos complementares do fluxo CSV
+
+
+> A tela de `video-admin` ja exibe o bloco de importacao CSV, mas os documentos
+> anteriores ainda nao explicitavam os cenarios negativos especificos desse fluxo.
+
+
+| # | Cenario | Esperado |
+|---|---------|----------|
+| 227 | Usuario seleciona arquivo que nao e `.csv` no import de videos | Upload e rejeitado com alerta "Apenas arquivos .csv sao aceitos." |
+| 228 | Usuario seleciona `.csv` vazio no import de videos | Upload e rejeitado com alerta "O arquivo esta vazio." |
+| 229 | Usuario seleciona `.csv` maior que 50MB no import de videos | Upload e rejeitado com alerta de tamanho maximo |
+| 230 | Backend responde `400` no import CSV de videos | Usuario recebe erro de arquivo CSV invalido; importacao nao prossegue |
+| 231 | Backend responde `403` no import CSV de videos | Usuario recebe erro de permissao; importacao nao prossegue |
+| 232 | Backend responde `500` ou timeout no import CSV de videos | Usuario recebe erro generico/timeout; tela nao quebra |
+
+
 ## Resumo
 
 
@@ -596,4 +651,6 @@
 | A19. Botao editar capa no card do carrossel | 13 |
 | A20. Loading state e carregamento inicial | 12 |
 | A21. Layout espacoso (video-admin + menu-admin) | 33 |
-| **Total** | **214** |
+| A22. Padrao fixo de capa responsiva | 12 |
+| A23. Negativos complementares do fluxo CSV | 6 |
+| **Total** | **232** |

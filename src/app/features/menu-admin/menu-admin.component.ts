@@ -102,10 +102,15 @@ export class MenuAdminComponent implements OnInit {
       this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'MENU' }];
     }
 
+    // Validação: não permite persistir blob:, data:, ou localhost como cover final
+    const coverValue = this.form.value.cover || '';
+    const isInvalidCover = /^(blob:|data:)/.test(coverValue) || coverValue.includes('localhost');
+    const finalCover = isInvalidCover ? '' : coverValue;
+
     const request: MenuRequest = {
       title: this.form.value.title,
       description: this.form.value.description,
-      cover: this.form.value.cover || '',
+      cover: finalCover,
       categoryId,
       recipe: this.form.value.recipe || '',
       nutritionistTips: this.form.value.nutritionistTips || '',
@@ -127,6 +132,27 @@ export class MenuAdminComponent implements OnInit {
       calories: 0,
     });
     this.coverFileName = '';
+  }
+
+  onEditCoverFile(menuId: string, event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    // Validação de tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      return;
+    }
+
+    // Validação de tamanho (10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return;
+    }
+
+    // TODO: Implementar upload real quando backend suportar
+    // Por enquanto, usa URL pública ou permanece vazio
+    const publicUrl = ''; // Placeholder para upload real
+    this.menuService.updateMenu(menuId, { cover: publicUrl });
   }
 
   askDeleteMenu(id: string, title: string): void {

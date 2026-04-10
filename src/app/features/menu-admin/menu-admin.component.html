@@ -102,14 +102,33 @@
             <div class="resource-meta">Categoria: {{ m.category.name || 'Sem categoria' }}</div>
           </div>
 
-          <button
-            type="button"
-            class="trash-btn"
-            aria-label="Deletar cardápio"
-            (click)="askDeleteMenu(m.id, m.title)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
+          <div class="resource-actions">
+            <label class="edit-cover-btn">
+              <input
+                type="file"
+                accept="image/*"
+                data-role="edit-cover"
+                style="display: none"
+                (change)="onEditCoverFile(m.id, $event)"
+              />
+              <button
+                type="button"
+                aria-label="Editar capa"
+                (click)="$event.preventDefault()"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </label>
+
+            <button
+              type="button"
+              class="trash-btn"
+              aria-label="Deletar cardápio"
+              (click)="askDeleteMenu(m.id, m.title)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </div>
       }
     </div>

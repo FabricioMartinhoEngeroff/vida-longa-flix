@@ -201,4 +201,25 @@ getMenuComments(id: string): string[] {
       .toLowerCase()
       .trim();
   }
+
+  onEditCoverFile(menuId: string, event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    // Validação de tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      return;
+    }
+
+    // Validação de tamanho (10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return;
+    }
+
+    // TODO: Implementar upload real quando backend suportar
+    // Por enquanto, usa URL pública ou permanece vazio
+    const publicUrl = ''; // Placeholder para upload real
+    this.menuService.updateMenu(menuId, { cover: publicUrl });
+  }
 }
