@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { vi } from 'vitest';
 import { signal, WritableSignal } from '@angular/core';
 
@@ -10,7 +10,6 @@ import { MenuCommentsService } from '../../shared/services/menus/menu-comments-s
 import { AuthService } from '../../auth/services/auth.service';
 
 describe('MenusComponent', () => {
-  let commentsState: Record<string, string[]> = {};
   let menusSignal: WritableSignal<any[]>;
   let commentsSignal: WritableSignal<Record<string, string[]>>;
   let user$: BehaviorSubject<any>;
@@ -58,7 +57,6 @@ describe('MenusComponent', () => {
   beforeEach(async () => {
     menusSignal = signal<any[]>([]);
     commentsSignal = signal<Record<string, string[]>>({});
-    commentsState = {};
     user$ = new BehaviorSubject<any>({ roles: [] });
     queryParams$ = new BehaviorSubject<any>({});
 
@@ -263,8 +261,8 @@ describe('MenusComponent', () => {
       menusSignal.set([mockMenu1]);
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
-      const backSpy = vi.spyOn(window.history, 'back').mockImplementation(() => {});
-      vi.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const backSpy = vi.spyOn(window.history, 'back').mockImplementation(() => undefined);
+      vi.spyOn(window.history, 'pushState').mockImplementation(() => undefined);
       const component = fixture.componentInstance;
       component.open(mockMenu1 as any);
       component.close();
@@ -276,7 +274,7 @@ describe('MenusComponent', () => {
       menusSignal.set([mockMenu1]);
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
-      vi.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      vi.spyOn(window.history, 'pushState').mockImplementation(() => undefined);
       const component = fixture.componentInstance;
       component.open(mockMenu1 as any);
       component.onPopState();
@@ -458,7 +456,7 @@ describe('MenusComponent', () => {
       menusSignal.set([mockMenu1]);
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
-      menuServiceMock.updateCover.mockImplementation(() => { /* erro interno */ });
+      menuServiceMock.updateCover.mockImplementation(() => undefined);
       const fn = (fixture.componentInstance as any).onEditCoverFile;
       if (typeof fn === 'function') {
         const file = new File([''], 'nova.jpg', { type: 'image/jpeg' });
