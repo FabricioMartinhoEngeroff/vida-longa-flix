@@ -28,22 +28,23 @@
           ></app-engagement-summary>
 
           @if (isAdmin) {
-            <label class="edit-cover-btn" (click)="$event.stopPropagation()">
-              <input
-                type="file"
-                accept="image/*"
-                style="display: none"
-                (change)="onEditCoverFile(item.id, $event); $event.stopPropagation()"
-              />
-              <button
-                type="button"
-                aria-label="Editar capa"
-                title="Editar capa"
-                (click)="$event.preventDefault()"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-            </label>
+            <button
+              type="button"
+              class="edit-cover-btn"
+              aria-label="Editar capa"
+              title="Editar capa"
+              (click)="coverInput.click(); $event.stopPropagation()"
+            >
+              <mat-icon>image</mat-icon>
+            </button>
+            <input
+              #coverInput
+              type="file"
+              accept="image/*"
+              hidden
+              (click)="$event.stopPropagation()"
+              (change)="onEditCoverFile(item.id, $event); $event.stopPropagation()"
+            />
 
             <button
               class="trash-btn"

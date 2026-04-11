@@ -41,6 +41,7 @@ export class MenusComponent implements OnInit {
   private searchTerm = '';
 
   private menuModalInHistory = false;
+  private editingCoverMenuIds = new Set<string>();
 
   constructor(
   private menuService: MenuService,
@@ -217,9 +218,10 @@ getMenuComments(id: string): string[] {
       return;
     }
 
-    // TODO: Implementar upload real quando backend suportar
-    // Por enquanto, usa URL pública ou permanece vazio
-    const publicUrl = ''; // Placeholder para upload real
-    this.menuService.updateMenu(menuId, { cover: publicUrl });
+    if (this.editingCoverMenuIds.has(menuId)) return;
+    this.editingCoverMenuIds.add(menuId);
+
+    this.menuService.updateCover(menuId, file);
+    setTimeout(() => { this.editingCoverMenuIds.delete(menuId); }, 1000);
   }
 }

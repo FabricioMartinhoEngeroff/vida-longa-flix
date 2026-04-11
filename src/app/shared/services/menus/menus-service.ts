@@ -95,6 +95,24 @@ export class MenuService {
     ).subscribe();
   }
 
+  // Rota admin — PUT /admin/menus/{id} (multipart com nova capa)
+  updateCover(id: string, file: File): void {
+    const formData = new FormData();
+    formData.append('cover', file, file.name);
+
+    this.http.put<void>(`${this.adminUrl}/${id}`, formData).pipe(
+      tap(() => {
+        this.alert.success('Capa atualizada com sucesso!');
+        this.loadMenus();
+      }),
+      catchError(err => {
+        this.logger.error('Erro ao atualizar capa do cardápio', err);
+        this.alert.error('Erro ao atualizar capa. Tente novamente.');
+        return of(null);
+      })
+    ).subscribe();
+  }
+
   removeMenu(id: string): void {
     this.http.delete<void>(`${this.adminUrl}/${id}`).pipe(
       tap(() => {

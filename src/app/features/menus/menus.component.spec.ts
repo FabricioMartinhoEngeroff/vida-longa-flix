@@ -365,7 +365,7 @@ describe('MenusComponent', () => {
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
       fixture.componentInstance.open(mockMenu1 as any);
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       expect(fixture.componentInstance.selected?.cover).toBe(mockMenu1.cover);
     });
 
@@ -407,8 +407,10 @@ describe('MenusComponent', () => {
       menusSignal.set([mockMenu1]);
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
-      // Documentacao: a presenca do botao depende da implementacao futura.
+      const editBtn = fixture.nativeElement.querySelector('.card [aria-label="Editar capa"]');
       expect(fixture.componentInstance.isAdmin).toBe(true);
+      expect(editBtn).toBeTruthy();
+      expect(editBtn.querySelector('mat-icon')?.textContent?.trim()).toBe('image');
     });
 
     it('#156 usuario comum nao ve botao de editar capa', () => {
@@ -417,19 +419,23 @@ describe('MenusComponent', () => {
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
       expect(fixture.componentInstance.isAdmin).toBe(false);
+      expect(fixture.nativeElement.querySelector('.card [aria-label="Editar capa"]')).toBeNull();
     });
 
-    it('#157 admin clica no botao de editar capa — modal do cardapio NAO abre', () => {
+    it('#157 admin clica no botao de editar capa — abre seletor e nao abre modal do cardapio', () => {
       user$.next({ roles: ['ROLE_ADMIN'] });
       menusSignal.set([mockMenu1]);
       const fixture = TestBed.createComponent(MenusComponent);
       fixture.detectChanges();
       const component = fixture.componentInstance;
-      const fn = (component as any).onEditCoverFile;
-      if (typeof fn === 'function') {
-        const file = new File([''], 'nova.jpg', { type: 'image/jpeg' });
-        fn.call(component, 'menu-1', { target: { files: [file] } } as any);
-      }
+      const editBtn = fixture.nativeElement.querySelector('.card [aria-label="Editar capa"]') as HTMLButtonElement;
+      const fileInput = fixture.nativeElement.querySelector('.card input[type="file"][accept="image/*"]') as HTMLInputElement;
+      const inputClickSpy = vi.spyOn(fileInput, 'click');
+
+      editBtn.click();
+      fixture.detectChanges();
+
+      expect(inputClickSpy).toHaveBeenCalled();
       expect(component.selected).toBeNull();
     });
 
@@ -481,7 +487,7 @@ describe('MenusComponent', () => {
       component.open(mockMenu1 as any);
       // Atualiza capa no signal
       menusSignal.set([{ ...mockMenu1, cover: 'https://cdn/nova.jpg' }]);
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       expect(component.selected?.cover).toBe('https://cdn/nova.jpg');
     });
 
@@ -499,7 +505,7 @@ describe('MenusComponent', () => {
       fixture.detectChanges();
       const component = fixture.componentInstance;
       menusSignal.set([{ ...mockMenu1, cover: 'https://cdn/nova.jpg' }]);
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       component.open(menusSignal()[0] as any);
       expect(component.selected?.cover).toBe('https://cdn/nova.jpg');
     });

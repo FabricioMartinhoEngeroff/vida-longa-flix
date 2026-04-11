@@ -127,6 +127,25 @@ describe('MenuService', () => {
     expect(service.getMenuById('1')?.title).toBe('Frango Editado');
   });
 
+  it('should update menu cover with multipart upload and reload list', () => {
+    const file = new File(['cover'], 'nova-capa.jpg', { type: 'image/jpeg' });
+
+    service.updateCover('1', file);
+
+    const putReq = httpMock.expectOne(`${adminUrl}/1`);
+    expect(putReq.request.method).toBe('PUT');
+    expect(putReq.request.body instanceof FormData).toBe(true);
+    expect((putReq.request.body as FormData).get('cover')).toBeTruthy();
+    putReq.flush(null);
+
+    httpMock.expectOne(baseUrl).flush([
+      { ...mockMenus[0], cover: 'https://cdn/nova-capa.jpg' },
+      mockMenus[1],
+    ]);
+
+    expect(service.getMenuById('1')?.cover).toBe('https://cdn/nova-capa.jpg');
+  });
+
   it('should delete menu and reload list', () => {
     service.removeMenu('1');
 

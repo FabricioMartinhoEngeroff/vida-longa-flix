@@ -350,7 +350,7 @@
 ---
 
 
-## A17. MenuAdmin — Edicao de capa do cardapio (botao lapis)
+## A17. MenuAdmin — Edicao de capa do cardapio (botao de imagem)
 
 
 > Fluxo desejado equivalente ao de video: o admin deve conseguir trocar a capa
@@ -359,25 +359,28 @@
 > Comportamento esperado:
 >
 > - cada item da lista de cardapios cadastrados exibe botao de editar capa ao lado da lixeira
-> - ao selecionar a imagem, o sistema envia a nova capa para o backend
+> - o botao usa o mesmo icone do fluxo de video: `mat-icon` com valor `image`
+> - ao clicar no icone, o sistema aciona o input de arquivo do item (`input.click()`) e abre o seletor de imagem do PC
+> - ao selecionar a imagem, o sistema envia a nova capa para o backend como multipart (`FormData` com campo `cover`)
 > - em sucesso, a lista publica e o card correspondente refletem a nova capa
 > - em erro, a capa anterior permanece
+> - negativos obrigatorios: cancelamento do seletor, arquivo nao imagem, imagem maior que 10MB, erro do backend e clique duplicado no mesmo item
 
 
 | # | Cenario | Esperado |
 |---|---------|----------|
-| 143 | Lista de cardapios cadastrados renderizada no `menu-admin` | Cada item exibe botao de editar capa ao lado da lixeira |
-| 144 | Clicar no botao de editar capa | Abre seletor de arquivo de imagem com `accept=\"image/*\"` |
-| 145 | Selecionar imagem valida (`jpg`, `png`, `webp`) | Front inicia fluxo de atualizacao de capa para o cardapio correto |
-| 146 | Backend responde sucesso na troca de capa | Lista de cardapios e/ou lista publica e recarregada; nova capa passa a aparecer |
+| 143 | Lista de cardapios cadastrados renderizada no `menu-admin` | Cada item exibe botao de editar capa ao lado da lixeira com icone `image` |
+| 144 | Clicar no icone de editar capa | Aciona `input.click()` e abre seletor de arquivo de imagem com `accept=\"image/*\"` |
+| 145 | Selecionar imagem valida (`jpg`, `png`, `webp`) | Front chama `updateCover(menuId, file)` para o cardapio correto |
+| 146 | Backend responde sucesso na troca de capa | Service envia `PUT /api/admin/menus/{id}` multipart com campo `cover`, recarrega a lista e a nova capa passa a aparecer |
 | 147 | Usuario cancela o seletor de arquivo | Nada acontece; estado permanece inalterado |
-| 148 | Botao de editar capa possui acessibilidade | Possui `aria-label=\"Editar capa\"` |
+| 148 | Botao de editar capa possui acessibilidade e icone correto | Possui `aria-label=\"Editar capa\"` e `mat-icon` igual a `image` |
 | 149 | Cardapio sem capa anterior | Upload da nova capa funciona normalmente |
 | 150 | Troca de capa de dois cardapios diferentes em sequencia | Cada item atualiza apenas sua propria capa |
 | 151 | Backend responde erro na troca de capa | Usuario recebe mensagem de erro; capa anterior permanece visivel |
 | 152 | Usuario seleciona arquivo que nao e imagem (`.mp4`, `.pdf`) | Sistema ignora ou bloqueia o arquivo; nao envia payload invalido |
-| 153 | Usuario seleciona imagem muito grande (>10MB, por exemplo) | Sistema bloqueia antes do envio ou exibe erro apropriado |
-| 154 | Usuario clica no lapis duas vezes rapidamente | Nao dispara uploads duplicados nem abre fluxos concorrentes para o mesmo item |
+| 153 | Usuario seleciona imagem muito grande (>10MB, por exemplo) | Sistema bloqueia antes do envio e exibe erro apropriado |
+| 154 | Usuario clica no icone de imagem duas vezes rapidamente | Nao dispara uploads duplicados nem abre fluxos concorrentes para o mesmo item |
 
 
 ---
@@ -394,9 +397,9 @@
 
 | # | Cenario | Esperado |
 |---|---------|----------|
-| 155 | Usuario admin visualiza card de menu na tela publica | Card exibe botao de editar capa junto das acoes de admin |
+| 155 | Usuario admin visualiza card de menu na tela publica | Card exibe botao de editar capa com icone `image` junto das acoes de admin |
 | 156 | Usuario comum visualiza card de menu na tela publica | Botao de editar capa nao aparece |
-| 157 | Admin clica no botao de editar capa do card | Seletor de imagem abre sem abrir a modal do cardapio |
+| 157 | Admin clica no botao de editar capa do card | Seletor de imagem abre via `input.click()` sem abrir a modal do cardapio |
 | 158 | Clique no botao de editar capa | `stopPropagation()` impede propagacao para o click principal do card |
 | 159 | Upload de nova capa conclui com sucesso na tela publica | Card atualiza a imagem sem quebrar o layout do carrossel/lista |
 | 160 | Upload falha na tela publica | Feedback de erro e exibido; card continua com a capa anterior |

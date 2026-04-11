@@ -29,6 +29,8 @@ export class MenuAdminComponent implements OnInit {
 
   isDeleteModalOpen = false;
   private pendingDelete: { kind: 'MENU' | 'CATEGORY'; id: string; label: string } | null = null;
+  private isSaving = false;
+  private editingCoverMenuIds = new Set<string>();
 
   constructor(
     private fb: FormBuilder,
@@ -53,7 +55,10 @@ export class MenuAdminComponent implements OnInit {
 
   ngOnInit(): void {
     // Busca categorias do tipo MENU igual ao VideoAdminComponent faz para VIDEO
-    this.categoriesService.list('MENU').subscribe(cats => this.categories = cats);
+    this.categoriesService.list('MENU').subscribe({
+      next: (cats) => this.categories = cats,
+      error: () => { this.categories = []; },
+    });
   }
 
   menusList() {
@@ -84,54 +89,56 @@ export class MenuAdminComponent implements OnInit {
 
   async save(): Promise<void> {
     if (this.form.invalid) return;
+    if (this.isSaving) return;
+    this.isSaving = true;
 
-    let categoryId: string;
     try {
-      categoryId = await this.categoriesService.ensureCategoryId(
+      const categoryId = await this.categoriesService.ensureCategoryId(
         'MENU',
         this.form.value.categoryName,
         this.categories
       );
+
+      const typedName = (this.form.value.categoryName ?? '').trim();
+      if (typedName && !this.categories.some(c => c.id === categoryId)) {
+        this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'MENU' }];
+      }
+
+      // Validação: não permite persistir blob:, data:, ou localhost como cover final
+      const coverValue = this.form.value.cover || '';
+      const isInvalidCover = /^(blob:|data:)/.test(coverValue) || coverValue.includes('localhost');
+      const finalCover = isInvalidCover ? '' : coverValue;
+
+      const request: MenuRequest = {
+        title: this.form.value.title,
+        description: this.form.value.description,
+        cover: finalCover,
+        categoryId,
+        recipe: this.form.value.recipe || '',
+        nutritionistTips: this.form.value.nutritionistTips || '',
+        protein: Number(this.form.value.protein || 0),
+        carbs: Number(this.form.value.carbs || 0),
+        fat: Number(this.form.value.fat || 0),
+        fiber: Number(this.form.value.fiber || 0),
+        calories: Number(this.form.value.calories || 0),
+      };
+
+      this.menuService.addMenu(request);
+
+      this.form.reset({
+        categoryName: '',
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        calories: 0,
+      });
+      this.coverFileName = '';
     } catch (e: any) {
       this.alert.error(e?.message || 'Categoria não encontrada.');
-      return;
+    } finally {
+      this.isSaving = false;
     }
-
-    const typedName = (this.form.value.categoryName ?? '').trim();
-    if (typedName && !this.categories.some(c => c.id === categoryId)) {
-      this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'MENU' }];
-    }
-
-    // Validação: não permite persistir blob:, data:, ou localhost como cover final
-    const coverValue = this.form.value.cover || '';
-    const isInvalidCover = /^(blob:|data:)/.test(coverValue) || coverValue.includes('localhost');
-    const finalCover = isInvalidCover ? '' : coverValue;
-
-    const request: MenuRequest = {
-      title: this.form.value.title,
-      description: this.form.value.description,
-      cover: finalCover,
-      categoryId,
-      recipe: this.form.value.recipe || '',
-      nutritionistTips: this.form.value.nutritionistTips || '',
-      protein: Number(this.form.value.protein || 0),
-      carbs: Number(this.form.value.carbs || 0),
-      fat: Number(this.form.value.fat || 0),
-      fiber: Number(this.form.value.fiber || 0),
-      calories: Number(this.form.value.calories || 0),
-    };
-
-    this.menuService.addMenu(request);
-
-    this.form.reset({
-      categoryName: '',
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-      calories: 0,
-    });
-    this.coverFileName = '';
   }
 
   onEditCoverFile(menuId: string, event: Event): void {
@@ -146,13 +153,17 @@ export class MenuAdminComponent implements OnInit {
     // Validação de tamanho (10MB)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
+      this.alert.error('A imagem da capa deve ter no máximo 10MB.');
       return;
     }
 
-    // TODO: Implementar upload real quando backend suportar
-    // Por enquanto, usa URL pública ou permanece vazio
-    const publicUrl = ''; // Placeholder para upload real
-    this.menuService.updateMenu(menuId, { cover: publicUrl });
+    if (this.editingCoverMenuIds.has(menuId)) {
+      return;
+    }
+    this.editingCoverMenuIds.add(menuId);
+
+    this.menuService.updateCover(menuId, file);
+    setTimeout(() => { this.editingCoverMenuIds.delete(menuId); }, 1000);
   }
 
   askDeleteMenu(id: string, title: string): void {

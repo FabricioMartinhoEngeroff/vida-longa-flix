@@ -20,7 +20,9 @@
           list="menu-category-list"
         />
         <datalist id="menu-category-list">
-          <option *ngFor="let cat of categories" [value]="cat.name"></option>
+          @for (cat of categories; track cat.id) {
+            <option [value]="cat.name"></option>
+          }
         </datalist>
       </label>
     </div>
@@ -103,22 +105,22 @@
           </div>
 
           <div class="resource-actions">
-            <label class="edit-cover-btn">
-              <input
-                type="file"
-                accept="image/*"
-                data-role="edit-cover"
-                style="display: none"
-                (change)="onEditCoverFile(m.id, $event)"
-              />
-              <button
-                type="button"
-                aria-label="Editar capa"
-                (click)="$event.preventDefault()"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-            </label>
+            <button
+              type="button"
+              class="edit-cover-btn"
+              aria-label="Editar capa"
+              (click)="coverInput.click()"
+            >
+              <mat-icon>image</mat-icon>
+            </button>
+            <input
+              #coverInput
+              type="file"
+              accept="image/*"
+              data-role="edit-cover"
+              hidden
+              (change)="onEditCoverFile(m.id, $event)"
+            />
 
             <button
               type="button"
