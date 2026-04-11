@@ -305,10 +305,10 @@ describe('MenuModalComponent', () => {
     });
 
     it('#164 modal reflete capa nova sem cache inconsistente', () => {
-      component.menu = { ...mockMenu, cover: 'https://cdn/old.jpg' };
+      fixture.componentRef.setInput('menu', { ...mockMenu, cover: 'https://cdn/old.jpg' });
       fixture.detectChanges();
-      component.menu = { ...mockMenu, cover: 'https://cdn/new.jpg' };
-      fixture.detectChanges();
+      fixture.componentRef.setInput('menu', { ...mockMenu, cover: 'https://cdn/new.jpg' });
+      fixture.detectChanges(false);
       const img = fixture.nativeElement.querySelector('.cover-large');
       expect(img.src).toContain('new.jpg');
       expect(img.src).not.toContain('old.jpg');
