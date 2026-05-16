@@ -1,4 +1,4 @@
-🎬 VidaLong Flix — Frontend
+🎬 VidaLongaFlix — Frontend
 
 Viva mais. Viva melhor. Assista com propósito.
 
