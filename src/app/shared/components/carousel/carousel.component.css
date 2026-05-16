@@ -24,15 +24,15 @@
   transform: translateY(-50%);
   z-index: 5;
 
-  background: transparent;
+  background: rgba(0, 0, 0, 0.55);
   border: none;
   cursor: pointer;
 
   padding: 6px;
-  border-radius: 12px;
+  border-radius: 50%;
 
-  color: #050505;
-  transition: transform 0.12s ease, opacity 0.2s ease;
+  color: #ffffff;
+  transition: transform 0.12s ease, background 0.2s ease;
 
   -webkit-tap-highlight-color: transparent;
 }
@@ -47,7 +47,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .scroll-button:hover {
-    opacity: 0.85;
+    background: rgba(0, 0, 0, 0.75);
   }
 }
 
