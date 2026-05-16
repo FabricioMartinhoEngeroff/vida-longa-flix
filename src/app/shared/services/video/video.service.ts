@@ -46,6 +46,7 @@ export class VideoService {
     ).subscribe(videos => {
       const synced = videos.map(v => ({
         ...v,
+        cover: this.resolveUrl(v.cover),
         favorited: this.favoritesService.isFavorited(v.id, 'VIDEO'),
         likesCount: v.likesCount ?? 0
       }));
@@ -184,5 +185,10 @@ export class VideoService {
 
   getVideosByCategory(categoryId: string): Video[] {
     return this.videosSignal().filter(v => v.category.id === categoryId);
+  }
+
+  private resolveUrl(url: string): string {
+    if (!url || url.startsWith('http')) return url;
+    return `${environment.apiUrl}/${url}`;
   }
 }

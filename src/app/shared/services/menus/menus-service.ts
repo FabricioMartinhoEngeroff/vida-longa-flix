@@ -41,6 +41,7 @@ export class MenuService {
     ).subscribe(menus => {
       const synced = menus.map(m => ({
         ...m,
+        cover: this.resolveUrl(m.cover),
         favorited: this.favoritesService.isFavorited(m.id, 'MENU'),
         likesCount: m.likesCount ?? 0
       }));
@@ -133,5 +134,10 @@ export class MenuService {
 
   getMenusByCategory(categoryId: string): Menu[] {
     return this.menusSignal().filter(m => m.category.id === categoryId);
+  }
+
+  private resolveUrl(url: string): string {
+    if (!url || url.startsWith('http')) return url;
+    return `${environment.apiUrl}/${url}`;
   }
 }
