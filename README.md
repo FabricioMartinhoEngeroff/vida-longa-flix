@@ -2,7 +2,7 @@
 
 > **Viva mais. Viva melhor. Assista com propósito.**
 
-Plataforma de streaming de conteúdo focada em **saude e longevidade**, onde cada video e receita foi pensado para ajudar o usuario a atingir objetivos concretos de saude. Construida com **Angular 21** e deployada na **AWS (S3 + CloudFront)**.
+Plataforma de streaming link:https://vidalongaflix.com/authorization com conteúdo focada em **saude e longevidade**, onde cada video e receita foi pensado para ajudar o usuario a atingir objetivos concretos de saude. Construida com **Angular 21** e deployada na **AWS (S3 + CloudFront)**.
 
 | Emagrecimento | Ganho de Massa Muscular | Longevidade |
 |:---:|:---:|:---:|
