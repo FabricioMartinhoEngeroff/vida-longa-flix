@@ -30,19 +30,20 @@ describe('EditableFieldComponent', () => {
     expect(el.querySelector('strong').textContent).toContain('Title');
   });
 
-  it('should show edit button only when canEdit is true', () => {
+  it('should not render edit button in the DOM when canEdit is false', () => {
     fixture.componentRef.setInput('value', 'Test');
     fixture.componentRef.setInput('canEdit', false);
     fixture.detectChanges(false);
-    const btnWhenCantEdit = fixture.nativeElement.querySelector('.btn-edit');
-    expect(btnWhenCantEdit).toBeTruthy();
-    expect(btnWhenCantEdit.hidden).toBe(true);
 
+    expect(fixture.nativeElement.querySelector('.btn-edit')).toBeNull();
+  });
+
+  it('should render edit button in the DOM when canEdit is true', () => {
+    fixture.componentRef.setInput('value', 'Test');
     fixture.componentRef.setInput('canEdit', true);
     fixture.detectChanges(false);
-    const btnWhenCanEdit = fixture.nativeElement.querySelector('.btn-edit');
-    expect(btnWhenCanEdit).toBeTruthy();
-    expect(btnWhenCanEdit.hidden).toBe(false);
+
+    expect(fixture.nativeElement.querySelector('.btn-edit')).toBeTruthy();
   });
 
   it('should show suffix next to value', () => {

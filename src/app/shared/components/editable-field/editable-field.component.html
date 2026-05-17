@@ -42,14 +42,15 @@
   <span class="display-mode">
     <strong [hidden]="!label">{{ label }}:</strong>
     <span class="display-value">{{ displayText }}</span>
-    <button
-      class="btn-edit"
-      type="button"
-      [hidden]="!canEdit"
-      (click)="startEdit()"
-      aria-label="Editar"
-    >
-      <mat-icon>edit</mat-icon>
-    </button>
+    @if (canEdit) {
+      <button
+        class="btn-edit"
+        type="button"
+        (click)="startEdit()"
+        aria-label="Editar"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
   </span>
 }
