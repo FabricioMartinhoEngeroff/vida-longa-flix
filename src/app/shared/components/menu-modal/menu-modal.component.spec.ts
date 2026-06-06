@@ -99,6 +99,13 @@ describe('MenuModalComponent', () => {
     expect(fixture.nativeElement.querySelector('.btn-edit')).toBeTruthy();
   });
 
+  it('não deve renderizar botões de edição no DOM quando canEdit é false', () => {
+    component.canEdit = false;
+    fixture.detectChanges();
+    const editButtons = fixture.nativeElement.querySelectorAll('.btn-edit');
+    expect(editButtons.length).toBe(0);
+  });
+
   it('should not render when menu is null', () => {
     component.menu = null;
     fixture.detectChanges();

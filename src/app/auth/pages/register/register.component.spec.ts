@@ -7,7 +7,7 @@ import { NotificationService } from '../../services/notification.service';
 import { LoggerService } from '../../services/logger.service';
 import { DEFAULT_MESSAGES } from '../../../shared/services/alert-message/default-messages.constants';
 
-describe('RegisterComponent — WhatsApp Welcome', () => {
+describe('RegisterComponent — Email Welcome', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let router: Router;
@@ -224,7 +224,7 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
 
   // ─── C3. Resposta do backend — sucesso ─────────────────────
 
-  describe('C3. Sucesso (registro + WhatsApp)', () => {
+  describe('C3. Sucesso (registro + email)', () => {
     it('#13 backend retorna token+user — notificacao de sucesso', async () => {
       fillValidForm();
       await component.register();
@@ -232,12 +232,12 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(notifMock.showDefault).toHaveBeenCalledWith(DEFAULT_MESSAGES.REGISTRATION_SUCCESS);
     });
 
-    it('#14 apos sucesso — notificacao "Cadastro concluido com sucesso!"', async () => {
+    it('#14 apos sucesso — notificacao "Cadastro concluido com sucesso! Um email de boas-vindas foi enviado para voce."', async () => {
       fillValidForm();
       await component.register();
 
       const call = notifMock.showDefault.mock.calls[0][0];
-      expect(call.text).toBe('Cadastro concluído com sucesso!');
+      expect(call.text).toBe('Cadastro concluído com sucesso! Um email de boas-vindas foi enviado para você.');
     });
 
     it('#15 apos notificacao — redirecionamento para /app', async () => {
@@ -258,11 +258,11 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(notifMock.error).not.toHaveBeenCalled();
     });
 
-    it('#17 WhatsApp enviado pelo backend — transparente para o frontend', async () => {
+    it('#17 email enviado pelo backend — transparente para o frontend', async () => {
       fillValidForm();
       await component.register();
 
-      // Frontend nao tem acesso a API do WhatsApp
+      // Frontend nao tem acesso ao servidor SMTP
       // Apenas verifica que o registro concluiu com sucesso
       expect(notifMock.error).not.toHaveBeenCalled();
     });
@@ -335,10 +335,10 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
     });
   });
 
-  // ─── C5. Registro OK, WhatsApp falhou ──────────────────────
+  // ─── C5. Registro OK, email best-effort ─────────────────────
 
-  describe('C5. Registro OK mas WhatsApp falhou', () => {
-    it('#25 WhatsApp falhou (numero invalido) — frontend recebe sucesso', async () => {
+  describe('C5. Registro OK, email best-effort', () => {
+    it('#25 falha no email (SMTP) — frontend recebe sucesso', async () => {
       authMock.register.mockResolvedValueOnce(successResponse);
 
       fillValidForm();
@@ -348,7 +348,7 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(notifMock.error).not.toHaveBeenCalled();
     });
 
-    it('#26 WhatsApp timeout — frontend recebe sucesso', async () => {
+    it('#26 timeout no servidor de email — frontend recebe sucesso', async () => {
       authMock.register.mockResolvedValueOnce(successResponse);
 
       fillValidForm();
@@ -357,7 +357,7 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(notifMock.showDefault).toHaveBeenCalledWith(DEFAULT_MESSAGES.REGISTRATION_SUCCESS);
     });
 
-    it('#27 WhatsApp API fora do ar — frontend recebe sucesso', async () => {
+    it('#27 servidor SMTP fora do ar — frontend recebe sucesso', async () => {
       authMock.register.mockResolvedValueOnce(successResponse);
 
       fillValidForm();
@@ -367,7 +367,7 @@ describe('RegisterComponent — WhatsApp Welcome', () => {
       expect(notifMock.error).not.toHaveBeenCalled();
     });
 
-    it('#28 cota WhatsApp esgotada — nenhuma diferenca para o usuario', async () => {
+    it('#28 cota SMTP esgotada — nenhuma diferenca para o usuario', async () => {
       authMock.register.mockResolvedValueOnce(successResponse);
 
       fillValidForm();

@@ -62,6 +62,61 @@ describe('VideoZoomModalComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  // ── Controle de acesso: ícone de edição ──────────────────────────────
+
+  describe('controle de acesso — ícone de edição', () => {
+    const baseVideo = {
+      id: 'v1',
+      url: 'http://test/v.mp4',
+      title: 'Título',
+      description: 'Desc',
+      recipe: 'Receita',
+      protein: 1, carbs: 1, fat: 1, fiber: 1, calories: 100,
+      favorited: false,
+    } as any;
+
+    async function openWith(video: any) {
+      videosSignal.set([video]);
+      selectedVideoSignal.set(video);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
+
+    it('não deve exibir nenhum botão de edição para usuário comum (ROLE_USER)', async () => {
+      // O beforeEach do describe pai já cria o fixture com ROLE_ADMIN.
+      // Recriamos o módulo com ROLE_USER para este teste.
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [VideoZoomModalComponent],
+        providers: [
+          { provide: ModalService, useValue: modalServiceMock },
+          { provide: VideoService, useValue: videoServiceMock },
+          { provide: CommentsService, useValue: commentsServiceMock },
+          { provide: AuthService, useValue: { user$: of({ roles: ['ROLE_USER'] }) } },
+        ],
+      }).compileComponents();
+
+      const f = TestBed.createComponent(VideoZoomModalComponent);
+      f.detectChanges();
+
+      videosSignal.set([baseVideo]);
+      selectedVideoSignal.set(baseVideo);
+      f.detectChanges();
+      await f.whenStable();
+      f.detectChanges();
+
+      const editButtons = f.nativeElement.querySelectorAll('.btn-edit');
+      expect(editButtons.length).toBe(0);
+    });
+
+    it('deve exibir botões de edição para admin (ROLE_ADMIN)', async () => {
+      await openWith(baseVideo);
+      const editButtons = fixture.nativeElement.querySelectorAll('.btn-edit');
+      expect(editButtons.length).toBeGreaterThan(0);
+    });
+  });
+
   it('should add comment with video type', () => {
     component.updatedVideo = { id: '5' } as any;
 

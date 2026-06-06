@@ -8,7 +8,7 @@ import { LoggerService } from './logger.service';
 import { AuthService } from './auth.service';
 import { vi } from 'vitest';
 
-describe('AuthService — WhatsApp Welcome', () => {
+describe('AuthService — Email Welcome', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
 
@@ -78,7 +78,7 @@ describe('AuthService — WhatsApp Welcome', () => {
     vi.clearAllMocks();
   });
 
-  // ─── C3. Sucesso (registro + WhatsApp) ─────────────────────
+  // ─── C3. Sucesso (registro + email) ─────────────────────────
 
   describe('C3. Sucesso no registro', () => {
     it('#13 token salvo no localStorage apos sucesso', async () => {
@@ -126,16 +126,16 @@ describe('AuthService — WhatsApp Welcome', () => {
       expect(user.email).toBe('fabricio@email.com');
     });
 
-    it('#17 WhatsApp transparente — backend ja envia no register', async () => {
+    it('#17 email transparente — backend ja envia no register', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
-      // Apenas 1 request feito — nao ha chamada separada para WhatsApp
+      // Apenas 1 request feito — nao ha chamada separada para email
       expect(req.request.url).toBe(`${environment.apiUrl}/auth/register`);
       req.flush(successResponse);
       await p;
 
-      httpMock.expectNone(`${environment.apiUrl}/whatsapp`);
+      httpMock.expectNone(`${environment.apiUrl}/email-send`);
     });
   });
 
@@ -223,11 +223,11 @@ describe('AuthService — WhatsApp Welcome', () => {
     });
   });
 
-  // ─── C5. Registro OK, WhatsApp falhou ──────────────────────
+  // ─── C5. Registro OK, email best-effort ─────────────────────
 
-  describe('C5. Registro OK mas WhatsApp falhou', () => {
-    it('#25-28 frontend recebe sucesso independente do WhatsApp', async () => {
-      // O backend retorna sucesso mesmo se WhatsApp falhou
+  describe('C5. Registro OK, email best-effort', () => {
+    it('#25-28 frontend recebe sucesso independente do envio de email', async () => {
+      // O backend retorna sucesso mesmo se o email de boas-vindas falhou
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
@@ -241,7 +241,7 @@ describe('AuthService — WhatsApp Welcome', () => {
 
   // ─── C6. Formato do telefone ───────────────────────────────
 
-  describe('C6. Formato telefone para WhatsApp', () => {
+  describe('C6. Formato do telefone', () => {
     it('#29 phone "11987654321" — enviado como "(11) 98765-4321"', async () => {
       const p = service.register({ ...registerData, phone: '11987654321' });
 
@@ -283,19 +283,21 @@ describe('AuthService — WhatsApp Welcome', () => {
   // ─── C10. Seguranca ────────────────────────────────────────
 
   describe('C10. Seguranca', () => {
-    it('#52 credenciais WhatsApp NAO existem no frontend', () => {
-      expect((environment as any).whatsappToken).toBeUndefined();
-      expect((environment as any).whatsappApiKey).toBeUndefined();
-      expect((environment as any).whatsappPhoneNumberId).toBeUndefined();
+    it('#52 credenciais SMTP NAO existem no frontend', () => {
+      expect((environment as any).mailPassword).toBeUndefined();
+      expect((environment as any).smtpPassword).toBeUndefined();
+      expect((environment as any).mailUsername).toBeUndefined();
     });
 
-    it('#53 token WhatsApp NAO esta em environment', () => {
+    it('#53 chaves SMTP NAO estao em environment', () => {
       const envKeys = Object.keys(environment);
-      const whatsappKeys = envKeys.filter((k) => k.toLowerCase().includes('whatsapp'));
-      expect(whatsappKeys.length).toBe(0);
+      const smtpKeys = envKeys.filter(
+        (k) => k.toLowerCase().includes('mail') || k.toLowerCase().includes('smtp')
+      );
+      expect(smtpKeys.length).toBe(0);
     });
 
-    it('#56 token JWT salvo NAO contem dados do WhatsApp', async () => {
+    it('#56 token JWT salvo NAO contem credenciais de email', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
@@ -304,7 +306,8 @@ describe('AuthService — WhatsApp Welcome', () => {
 
       const token = localStorage.getItem('token');
       expect(token).toBe('jwt-token-abc');
-      expect(token!.toLowerCase()).not.toContain('whatsapp');
+      expect(token!.toLowerCase()).not.toContain('smtp');
+      expect(token!.toLowerCase()).not.toContain('password');
     });
   });
 
@@ -330,7 +333,7 @@ describe('AuthService — WhatsApp Welcome', () => {
       await p;
     });
 
-    it('#59 email duplicado — backend retorna 409, nenhum WhatsApp', async () => {
+    it('#59 email duplicado — backend retorna 409, nenhum email de boas-vindas', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);

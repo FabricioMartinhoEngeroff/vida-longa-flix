@@ -11,7 +11,7 @@ export const DEFAULT_MESSAGES = {
   REGISTRATION_SUCCESS: {
     type: 'success' as const,
     title: 'Sucesso',
-    text: 'Cadastro concluído com sucesso!'
+    text: 'Cadastro concluído com sucesso! Um email de boas-vindas foi enviado para você.'
   },
   
   LOGIN_SUCCESS: {
