@@ -1,18 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../api/api.service';
 import { LoggerService } from '../logger.service';
 
+
 @Injectable({ providedIn: 'root' })
 export class PasswordRecoveryService {
+
+
   constructor(
     private http: HttpClient,
     private api: ApiService,
     private logger: LoggerService
-  ) {}
+  ) { }
 
   async sendRecoveryEmail(email: string): Promise<void> {
+
     const normalizedEmail = (email ?? '').trim().toLowerCase();
 
     if (!normalizedEmail) {
@@ -32,38 +36,47 @@ export class PasswordRecoveryService {
   }
 
   async validateToken(token: string): Promise<boolean> {
-    this.logger.log('🔍 Validating token:', token);
-    
     if (!token) return false;
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await firstValueFrom(
+        this.http.get<void>(`${this.api.baseURL}/auth/validate-token`, {
+          params: { token },
+        })
+      );
       return true;
+
     } catch (error) {
-      this.logger.error('Token validation error:', error);
-      return false;
+
+      if (error instanceof HttpErrorResponse) {
+        if (error.status === 404 || error.status === 410) {
+          return false;
+        }
+      }
+
+      throw error;
     }
   }
 
+
   async changePassword(token: string, newPassword: string): Promise<void> {
-    this.logger.log('🔐 Changing password with token');
-    
+    // Guard: validação local antes de ir à rede.
     if (!token || !newPassword) {
       throw new Error('Token and new password are required');
     }
 
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      this.logger.log('✅ Password changed successfully');
-    } catch (error) {
-      this.logger.error('Password change error:', error);
-      throw new Error('Failed to change password');
-    }
+    await firstValueFrom(
+      this.http.post<void>(`${this.api.baseURL}/auth/reset-password`, {
+        token,
+        newPassword,
+      })
+    );
   }
+
 
   async sendChangeConfirmation(email: string): Promise<void> {
     const normalizedEmail = (email ?? '').trim().toLowerCase();
-    
+
     if (!normalizedEmail) return;
 
     try {
@@ -73,6 +86,7 @@ export class PasswordRecoveryService {
         })
       );
     } catch (error) {
+
       this.logger.warn('⚠️ Failed to send confirmation email:', error);
     }
   }
