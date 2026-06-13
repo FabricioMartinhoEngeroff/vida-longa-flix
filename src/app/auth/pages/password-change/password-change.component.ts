@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormGroup } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -41,6 +41,7 @@ export class PasswordChangeComponent implements OnInit {
     private notificationService: NotificationService,
     private recoveryService: PasswordRecoveryService,
     private logger: LoggerService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.form = this.fb.group({
       newPassword: [
@@ -78,6 +79,7 @@ export class PasswordChangeComponent implements OnInit {
       this.tokenValid = false;
     } finally {
       this.validatingToken = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -135,5 +137,6 @@ export class PasswordChangeComponent implements OnInit {
     this.logger.error('Erro ao alterar senha:', e);
   } finally {
     this.loading = false;
+    this.cdr.detectChanges();
   }
 }}
