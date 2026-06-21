@@ -19,6 +19,7 @@ import { LoggerService } from './logger.service';
 interface LoginPayload {
   email: string;
   password: string;
+  keepLoggedIn: boolean;
 }
 
 interface RegisterPayload {
@@ -46,27 +47,22 @@ export class AuthService {
   }
 
   private loadSession() {
-    // Prefer localStorage, fallback to sessionStorage (when user didn't choose "keep logged in").
-    const localToken = localStorage.getItem(this.TOKEN_KEY);
-    const localUser = localStorage.getItem(this.USER_KEY);
-    const sessionToken = sessionStorage.getItem(this.TOKEN_KEY);
-    const sessionUser = sessionStorage.getItem(this.USER_KEY);
+  const localUser = localStorage.getItem(this.USER_KEY);
+  const sessionUser = sessionStorage.getItem(this.USER_KEY);
+  const userData = localUser ?? sessionUser;
 
-    const token = localToken ?? sessionToken;
-    const userData = localUser ?? sessionUser;
-
-    if (token && userData) {
-      try {
-        this.userSubject.next(JSON.parse(userData));
-      } catch {
-        this.clearSession();
-      }
+  if (userData) {
+    try {
+      this.userSubject.next(JSON.parse(userData));
+    } catch {
+      this.clearSession();
     }
   }
+}
 
   async login(email: string, password: string, keepLoggedIn = true): Promise<LoginResponse> {
     try {
-      const payload = this.mapLoginToApi(email, password);
+      const payload = this.mapLoginToApi(email, password, keepLoggedIn);
 
       const response = await firstValueFrom(
         this.http.post<LoginResponse>(`${this.api.baseURL}/auth/login`, payload)
@@ -87,7 +83,7 @@ export class AuthService {
         profileComplete: true,
       };
 
-      this.saveSession(response.token, user, keepLoggedIn ? 'local' : 'session');
+      this.saveSession(user, keepLoggedIn ? 'local' : 'session');
       return response;
     } catch (error) {
       throw handleApiError(error, 'Erro ao fazer login');
@@ -122,7 +118,7 @@ export class AuthService {
         roles: []
       };
 
-      this.saveSession(response.token, user, 'local');
+      this.saveSession(user, 'local');
 
       // WhatsApp removido daqui — backend já envia no /auth/register
       return response;
@@ -148,30 +144,28 @@ export class AuthService {
     );
   }
 
-  async fetchAuthenticatedUser(): Promise<User | null> {
-    const token = this.getToken();
-    if (!token) {
-      this.router.navigateByUrl('/login');
-      return null;
-    }
-
-    try {
-      const response = await firstValueFrom(
-        this.http.get<User>(`${this.api.baseURL}/users/me`)
-      );
-
-      if (response) {
-        // Keep the same storage type already used by the session.
-        const inLocal = !!localStorage.getItem(this.TOKEN_KEY);
-        this.saveSession(token, response, inLocal ? 'local' : 'session');
-      }
-
-      return response ?? null;
-    } catch (error) {
-      this.logger.error('Error fetching authenticated user:', error);
-      return null;
-    }
+ async fetchAuthenticatedUser(): Promise<User | null> {
+  if (!this.isAuthenticated()) {
+    this.router.navigateByUrl('/login');
+    return null;
   }
+
+  try {
+    const response = await firstValueFrom(
+      this.http.get<User>(`${this.api.baseURL}/users/me`)
+    );
+
+    if (response) {
+      const inLocal = !!localStorage.getItem(this.USER_KEY);
+      this.saveSession(response, inLocal ? 'local' : 'session');
+    }
+
+    return response ?? null;
+  } catch (error) {
+    this.logger.error('Error fetching authenticated user:', error);
+    return null;
+  }
+}
 
   async updateProfile(data: ProfileData): Promise<User> {
     const currentUser = this.user;
@@ -190,10 +184,8 @@ export class AuthService {
       updatedAt: new Date()
     };
 
-    const token = this.getToken();
-    if (!token) throw new Error('User not authenticated');
-    const inLocal = !!localStorage.getItem(this.TOKEN_KEY);
-    this.saveSession(token, updatedUser, inLocal ? 'local' : 'session');
+    const inLocal = !!localStorage.getItem(this.USER_KEY);
+    this.saveSession(updatedUser, inLocal ? 'local' : 'session');
 
     return updatedUser;
   }
@@ -210,29 +202,36 @@ export class AuthService {
       updatedAt: new Date()
     };
 
-    const token = this.getToken();
-    if (!token) throw new Error('User not authenticated');
-    const inLocal = !!localStorage.getItem(this.TOKEN_KEY);
-    this.saveSession(token, updatedUser, inLocal ? 'local' : 'session');
+    const inLocal = !!localStorage.getItem(this.USER_KEY);
+    this.saveSession(updatedUser, inLocal ? 'local' : 'session');
   }
 
-  logout() {
-    this.clearSession();
-    this.router.navigate(['/authorization']);
+   async logout(): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.api.baseURL}/auth/logout`, {})
+      );
+    } catch {
+      // se o backend falhar, limpa local de qualquer forma
+    } finally {
+      this.clearSession();
+      this.router.navigate(['/authorization']);
+    }
   }
 
-  private saveSession(token: string, user: User, storage: 'local' | 'session') {
-    const primary = storage === 'local' ? localStorage : sessionStorage;
-    const secondary = storage === 'local' ? sessionStorage : localStorage;
+ private saveSession(user: User, storage: 'local' | 'session') {
+  const primary = storage === 'local' ? localStorage : sessionStorage;
+  const secondary = storage === 'local' ? sessionStorage : localStorage;
 
-    primary.setItem(this.TOKEN_KEY, token);
-    primary.setItem(this.USER_KEY, JSON.stringify(user));
+  primary.setItem(this.USER_KEY, JSON.stringify(user));
+  secondary.removeItem(this.USER_KEY);
 
-    // Ensure there's a single source of truth.
-    secondary.removeItem(this.TOKEN_KEY);
-    secondary.removeItem(this.USER_KEY);
-    this.userSubject.next(user);
-  }
+  // Limpeza de transicao: remove token de sessoes anteriores a migracao pro cookie httpOnly.
+  primary.removeItem(this.TOKEN_KEY);
+  secondary.removeItem(this.TOKEN_KEY);
+
+  this.userSubject.next(user);
+}
 
   private clearSession() {
     localStorage.removeItem(this.TOKEN_KEY);
@@ -242,12 +241,13 @@ export class AuthService {
     this.userSubject.next(null);
   }
 
-  private mapLoginToApi(email: string, password: string): LoginPayload {
-    return {
-      email: this.normalizeEmail(email),
-      password: (password ?? '').trim(),
-    };
-  }
+  private mapLoginToApi(email: string, password: string, keepLoggedIn: boolean): LoginPayload {
+  return {
+    email: this.normalizeEmail(email),
+    password: (password ?? '').trim(),
+    keepLoggedIn,
+  };
+}
 
   private mapRegisterToApi(data: RegisterData): RegisterPayload {
     return {
@@ -272,6 +272,6 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
-  }
+  return !!this.user;
+}
 }

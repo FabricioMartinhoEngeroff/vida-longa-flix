@@ -34,11 +34,11 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 ## 4. General Rules
 
-**GR01** - Authentication uses JWT (JSON Web Token). The token is stored in `localStorage` (persistent session) or `sessionStorage` (temporary session), according to user choice at login.
+**GR01** - Authentication uses JWT (JSON Web Token) managed by the backend via httpOnly cookie. The frontend stores only the user object (`user`) in `localStorage` (persistent session) or `sessionStorage` (temporary session), according to user choice at login. The token is never written to browser storage.
 
-**GR02** - Only one storage type is used per session. If the user checks "keep me logged in", it uses `localStorage`; otherwise, `sessionStorage`.
+**GR02** - Only one storage type is used per session. If the user checks "keep me logged in", the `user` object is saved in `localStorage`; otherwise, in `sessionStorage`.
 
-**GR03** - The HTTP interceptor automatically adds the `Authorization: Bearer {token}` header to all API requests. Invalid tokens (format other than 3 dot-separated parts) are not sent.
+**GR03** - The HTTP interceptor adds `withCredentials: true` to all API requests, causing the browser to automatically send the httpOnly session cookie. No `Authorization: Bearer` header is added.
 
 **GR04** - Routes protected by `authGuard` require authentication. Admin routes are protected by `authGuard` + `adminGuard`.
 
@@ -118,7 +118,7 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 **RL-LOGIN-01** - Email is normalized (trim + lowercase) before submission.
 
-**RL-LOGIN-02** - If "keep me logged in" is checked, token and user data are saved in `localStorage`. Otherwise, in `sessionStorage`.
+**RL-LOGIN-02** - If "keep me logged in" is checked, user data is saved in `localStorage`. Otherwise, in `sessionStorage`. The token is not stored — the backend manages the session via httpOnly cookie.
 
 **RL-LOGIN-03** - On error, an alert message is displayed via NotificationService.
 
@@ -206,10 +206,12 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 | Method                      | Endpoint                    | Description                  |
 |-----------------------------|-----------------------------|------------------------------|
-| `login()`                   | `POST /api/auth/login`      | Authenticate user            |
-| `register()`                | `POST /api/auth/register`   | Register user                |
-| `fetchAuthenticatedUser()`  | `GET /api/users/me`         | Retrieve logged-in user data |
-| `logout()`                  | None (local)                | Clear storage, redirect      |
+| `login()`                   | `POST /api/auth/login`              | Authenticate user                   |
+| `register()`                | `POST /api/auth/register`           | Register user                       |
+| `fetchAuthenticatedUser()`  | `GET /api/users/me`                 | Retrieve logged-in user data        |
+| `logout()`                  | `POST /api/auth/logout`             | Expire cookie on backend, clear storage, redirect |
+| `getRegistrationStatus()`   | `GET /api/auth/registration-status` | Check registration capacity (public)|
+| `leaveWaitlist()`           | `DELETE /api/auth/waitlist/me`      | Cancel user's position in queue     |
 
 **Observables/State:**
 
@@ -224,20 +226,20 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 **File:** `auth.interceptor.ts`
 
-**Description:** Functional interceptor that adds the authorization header.
+**Description:** Functional interceptor that configures credentials for httpOnly cookie-based authentication.
 
 **Rules:**
 
-**RL-INT-01** - Only adds the header to requests targeting the API base URL (`environment.apiUrl`).
+**RL-INT-01** - Only acts on requests targeting the API base URL (`environment.apiUrl`). External requests pass through unmodified.
 
-**RL-INT-02** - Validates JWT format (3 dot-separated parts). Invalid, empty, "null", or "undefined" tokens are not sent.
+**RL-INT-02** - Adds `withCredentials: true` to the request, causing the browser to automatically send the httpOnly session cookie. No `Authorization` header is added.
 
 ---
 
 ### 6.7 Guards
 
 **authGuard:**
-- Checks `authService.isAuthenticated()` (token existence)
+- Checks `authService.isAuthenticated()` (user presence in `BehaviorSubject`)
 - Redirects to `/login` if not authenticated
 
 **adminGuard:**
@@ -1119,13 +1121,16 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 ### Authentication
 
-| Method | Endpoint                           | Description              |
-|--------|------------------------------------|--------------------------|
-| POST   | `/api/auth/login`                  | Login                    |
-| POST   | `/api/auth/register`               | Registration             |
-| GET    | `/api/users/me`                    | Logged-in user data      |
-| POST   | `/api/auth/password-recovery`      | Password recovery        |
-| POST   | `/api/auth/password-change/notify` | Change confirmation      |
+| Method | Endpoint                              | Description                          |
+|--------|---------------------------------------|--------------------------------------|
+| POST   | `/api/auth/login`                     | Login                                |
+| POST   | `/api/auth/register`                  | Registration                         |
+| POST   | `/api/auth/logout`                    | Logout (expire cookie on backend)    |
+| GET    | `/api/users/me`                       | Logged-in user data                  |
+| POST   | `/api/auth/password-recovery`         | Password recovery                    |
+| POST   | `/api/auth/password-change/notify`    | Change confirmation                  |
+| GET    | `/api/auth/registration-status`       | Registration capacity (public)       |
+| DELETE | `/api/auth/waitlist/me?email=...`     | Cancel position in queue             |
 
 ### Videos
 
@@ -1175,10 +1180,11 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 | Key                                | Type          | Description                    |
 |------------------------------------|---------------|--------------------------------|
-| `token`                            | string        | User JWT                       |
-| `user`                             | JSON (User)   | User data                      |
+| `user`                             | JSON (User)   | Authenticated user data        |
 | `vlflix:content-notifications:v1`  | JSON (array)  | Content notifications          |
 | `vida-longa-flix:views:{email}`    | JSON (Record) | View history                   |
+
+> **Note:** The JWT is no longer stored in the browser. The session is maintained via an httpOnly cookie managed by the backend. The `token` key may appear in legacy sessions (pre-migration) and is automatically removed on the next login or logout.
 
 ---
 
@@ -1192,9 +1198,9 @@ VidaLongaFlix is a video and meal plan streaming platform focused on health and 
 
 | Area                    | Tests                                           |
 |-------------------------|-------------------------------------------------|
-| AuthService             | Session persistence, token handling              |
+| AuthService             | Session persistence, httpOnly cookie, waitlist   |
 | Guards                  | authGuard, adminGuard                           |
-| Interceptor             | Header addition, JWT validation                  |
+| Interceptor             | withCredentials, external URL isolation          |
 | Services                | VideoService, MenuService, FavoritesService, etc|
 | Components              | Rendering, interaction, forms                    |
 | Validators              | Strong password, CPF format, phone               |

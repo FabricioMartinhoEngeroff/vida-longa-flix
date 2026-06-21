@@ -81,14 +81,16 @@ describe('AuthService — Email Welcome', () => {
   // ─── C3. Sucesso (registro + email) ─────────────────────────
 
   describe('C3. Sucesso no registro', () => {
-    it('#13 token salvo no localStorage apos sucesso', async () => {
+    it('#13 user salvo no localStorage apos sucesso (sem token — cookie httpOnly cuida da sessao)', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       req.flush(successResponse);
       await p;
 
-      expect(localStorage.getItem('token')).toBe('jwt-token-abc');
+      const user = JSON.parse(localStorage.getItem('user')!);
+      expect(user.name).toBe('Fabricio');
+      expect(localStorage.getItem('token')).toBeNull();
     });
 
     it('#14 apos sucesso — retorna response com token e user', async () => {
@@ -113,14 +115,14 @@ describe('AuthService — Email Welcome', () => {
       expect(routerMock.navigateByUrl).not.toHaveBeenCalled();
     });
 
-    it('#16 localStorage contem token + dados do usuario', async () => {
+    it('#16 localStorage contem dados do usuario, sem token (cookie httpOnly substitui)', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       req.flush(successResponse);
       await p;
 
-      expect(localStorage.getItem('token')).toBe('jwt-token-abc');
+      expect(localStorage.getItem('token')).toBeNull();
       const user = JSON.parse(localStorage.getItem('user')!);
       expect(user.name).toBe('Fabricio');
       expect(user.email).toBe('fabricio@email.com');
@@ -235,7 +237,7 @@ describe('AuthService — Email Welcome', () => {
       const result = await p;
 
       expect(result.token).toBe('jwt-token-abc');
-      expect(localStorage.getItem('token')).toBe('jwt-token-abc');
+      expect(localStorage.getItem('token')).toBeNull();
     });
   });
 
@@ -297,17 +299,14 @@ describe('AuthService — Email Welcome', () => {
       expect(smtpKeys.length).toBe(0);
     });
 
-    it('#56 token JWT salvo NAO contem credenciais de email', async () => {
+    it('#56 nenhum token JWT fica salvo no localStorage (sessao via cookie httpOnly)', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       req.flush(successResponse);
       await p;
 
-      const token = localStorage.getItem('token');
-      expect(token).toBe('jwt-token-abc');
-      expect(token!.toLowerCase()).not.toContain('smtp');
-      expect(token!.toLowerCase()).not.toContain('password');
+      expect(localStorage.getItem('token')).toBeNull();
     });
   });
 
@@ -487,22 +486,23 @@ describe('AuthService — Email Welcome', () => {
       await p;
     });
 
-    it('register salva token em localStorage (nao sessionStorage)', async () => {
+    it('register salva user em localStorage (nao sessionStorage)', async () => {
       const p = service.register(registerData);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
       req.flush(successResponse);
       await p;
 
-      expect(localStorage.getItem('token')).toBe('jwt-token-abc');
-      expect(sessionStorage.getItem('token')).toBeNull();
+      expect(localStorage.getItem('user')).not.toBeNull();
+      expect(sessionStorage.getItem('user')).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
     });
   });
 
   // ─── Login session persistence (testes originais) ──────────
 
   describe('Login session persistence', () => {
-    it('stores token in sessionStorage when keepLoggedIn=false', async () => {
+    it('stores user in sessionStorage when keepLoggedIn=false', async () => {
       const p = service.login('test@email.com', '123456', false);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
@@ -512,11 +512,13 @@ describe('AuthService — Email Welcome', () => {
       });
       await p;
 
-      expect(sessionStorage.getItem('token')).toBe('t-session');
+      expect(sessionStorage.getItem('user')).not.toBeNull();
+      expect(localStorage.getItem('user')).toBeNull();
       expect(localStorage.getItem('token')).toBeNull();
+      expect(sessionStorage.getItem('token')).toBeNull();
     });
 
-    it('stores token in localStorage when keepLoggedIn=true', async () => {
+    it('stores user in localStorage when keepLoggedIn=true', async () => {
       const p = service.login('test@email.com', '123456', true);
 
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
@@ -526,8 +528,9 @@ describe('AuthService — Email Welcome', () => {
       });
       await p;
 
-      expect(localStorage.getItem('token')).toBe('t-local');
-      expect(sessionStorage.getItem('token')).toBeNull();
+      expect(localStorage.getItem('user')).not.toBeNull();
+      expect(sessionStorage.getItem('user')).toBeNull();
+      expect(localStorage.getItem('token')).toBeNull();
     });
   });
 
@@ -719,8 +722,12 @@ describe('AuthService — Email Welcome', () => {
       expect(service.getToken()).toBe('session-tok');
     });
 
-    it('#53 isAuthenticated com token presente — true', () => {
-      localStorage.setItem('token', 'tok');
+    it('#53 isAuthenticated com user carregado via login — true', async () => {
+      const p = service.login('a@b.com', '123456', true);
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      req.flush(successResponse);
+      await p;
+
       expect(service.isAuthenticated()).toBe(true);
     });
 
@@ -733,17 +740,18 @@ describe('AuthService — Email Welcome', () => {
 
   // ─── B38. Logout — limpeza de sessao ─────────────────────────
 
-  describe('B38. Logout', () => {
+   describe('B38. Logout', () => {
     it('#198 logout limpa localStorage e sessionStorage', async () => {
-      // Setup: login first
       const p = service.login('a@b.com', '123456', true);
       const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
       req.flush(successResponse);
       await p;
 
-      expect(localStorage.getItem('token')).toBe('jwt-token-abc');
+      expect(localStorage.getItem('user')).not.toBeNull();
 
-      service.logout();
+      const logoutP = service.logout();
+      httpMock.expectOne(`${environment.apiUrl}/auth/logout`).flush({});
+      await logoutP;
 
       expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('user')).toBeNull();
@@ -752,7 +760,10 @@ describe('AuthService — Email Welcome', () => {
     });
 
     it('#199 logout navega para /authorization', async () => {
-      service.logout();
+      const logoutP = service.logout();
+      httpMock.expectOne(`${environment.apiUrl}/auth/logout`).flush({});
+      await logoutP;
+
       expect(routerMock.navigate).toHaveBeenCalledWith(['/authorization']);
     });
 
@@ -762,9 +773,48 @@ describe('AuthService — Email Welcome', () => {
       req.flush(successResponse);
       await p;
 
-      service.logout();
+      const logoutP = service.logout();
+      httpMock.expectOne(`${environment.apiUrl}/auth/logout`).flush({});
+      await logoutP;
+
       expect(service.isAuthenticated()).toBe(false);
       expect(service.user).toBeNull();
+    });
+
+    it('#201 logout com backend falhando — ainda limpa sessao local', async () => {
+      const p = service.login('a@b.com', '123456', true);
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      req.flush(successResponse);
+      await p;
+
+      const logoutP = service.logout();
+      httpMock
+        .expectOne(`${environment.apiUrl}/auth/logout`)
+        .flush({}, { status: 500, statusText: 'Server Error' });
+      await logoutP;
+
+      expect(service.isAuthenticated()).toBe(false);
+      expect(localStorage.getItem('user')).toBeNull();
+    });
+  });
+  // ─── B50. keepLoggedIn enviado para o backend ────────────────
+  describe('B50. keepLoggedIn enviado para o backend', () => {
+    it('#300 login com keepLoggedIn=true — payload inclui keepLoggedIn: true', async () => {
+      const p = service.login('user@ex.com', 'pass123', true);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      expect(req.request.body.keepLoggedIn).toBe(true);
+      req.flush(successResponse);
+      await p;
+    });
+
+    it('#301 login com keepLoggedIn=false — payload inclui keepLoggedIn: false', async () => {
+      const p = service.login('user@ex.com', 'pass123', false);
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      expect(req.request.body.keepLoggedIn).toBe(false);
+      req.flush(successResponse);
+      await p;
     });
   });
 });

@@ -113,16 +113,16 @@
 
 | # | Cenario | Esperado |
 |---|---------|----------|
-| 45 | Login com `keepLoggedIn = true` | Token e user salvos em **localStorage**; sessionStorage limpo |
-| 46 | Login com `keepLoggedIn = false` | Token e user salvos em **sessionStorage**; localStorage limpo |
+| 45 | Login com `keepLoggedIn = true` | User salvo em **localStorage**; token NAO e gravado (cookie httpOnly cuida da sessao) |
+| 46 | Login com `keepLoggedIn = false` | User salvo em **sessionStorage**; token NAO e gravado |
 | 47 | `loadSession()` com localStorage populado | Carrega user do localStorage, `userSubject.next(user)` |
 | 48 | `loadSession()` com apenas sessionStorage populado | Fallback: carrega user do sessionStorage |
-| 49 | `loadSession()` com ambos storages populados | Prioriza localStorage (`localToken ?? sessionToken`) |
+| 49 | `loadSession()` com ambos storages populados | Prioriza localStorage (`localUser ?? sessionUser`) |
 | 50 | `loadSession()` com user JSON invalido | `catch` no JSON.parse → `clearSession()` |
 | 51 | `loadSession()` sem nenhum storage | `userSubject` permanece null, sem erro |
-| 52 | `getToken()` | Retorna `localStorage.getItem('token') ?? sessionStorage.getItem('token')` |
-| 53 | `isAuthenticated()` com token presente | Retorna `true` |
-| 54 | `isAuthenticated()` sem token | Retorna `false` |
+| 52 | `getToken()` | Retorna `localStorage.getItem('token') ?? sessionStorage.getItem('token')` (compatibilidade) |
+| 53 | `isAuthenticated()` com usuario carregado | Retorna `true` (`!!this.user`) |
+| 54 | `isAuthenticated()` sem usuario | Retorna `false` |
 
 ---
 
@@ -241,7 +241,7 @@
 | # | Cenario | Esperado |
 |---|---------|----------|
 | 109 | Preencher todos os campos validos, submeter | `loading = true`, chama `authService.register(data)` |
-| 110 | Backend retorna token + user | `saveSession(token, user, 'local')` — registro sempre salva em localStorage |
+| 110 | Backend retorna token + user | `saveSession(user, 'local')` — salva apenas o user em localStorage; token nao e gravado (cookie httpOnly) |
 | 111 | Sucesso no registro | Notificacao: "Cadastro concluido com sucesso!" (REGISTRATION_SUCCESS) |
 | 112 | Apos notificacao de sucesso | `setTimeout(() => router.navigateByUrl('/app', { replaceUrl: true }))` com duracao de notificacao success |
 | 113 | Loading reseta apos completar | `finally { this.loading = false }` |
@@ -439,17 +439,14 @@
 
 ---
 
-## B36. Auth Interceptor — injecao de token
+## B36. Auth Interceptor — autenticacao via cookie httpOnly
 
 | # | Cenario | Esperado |
 |---|---------|----------|
-| 186 | Request para API com token JWT valido (3 partes separadas por `.`) | Header `Authorization: Bearer {token}` adicionado |
-| 187 | Request para API sem token | Request passa direto, sem header Authorization |
-| 188 | Token invalido (sem 3 partes com `.`) | Request passa direto, sem header (validacao `token.split('.').length !== 3`) |
-| 189 | Token "null" ou "undefined" (string literal) | Request passa direto (verificacao `token === 'null' \|\| token === 'undefined'`) |
-| 190 | Request para URL externa (nao comeca com apiUrl) | Request passa direto, token NAO e vazado para terceiros |
-| 191 | Request para URL da API (comeca com apiUrl) | Token adicionado normalmente |
-| 192 | Token com espacos nas pontas | `trim()` remove espacos antes de validar |
+| 186 | Request para API com token legado no localStorage | Header `Authorization` **nao** e adicionado — token legado e ignorado |
+| 190 | Request para URL externa | Sem `withCredentials`, sem `Authorization` — nenhum dado vazado para terceiros |
+| 193 | Request para API | `withCredentials: true` adicionado — browser envia cookie httpOnly automaticamente |
+| 194 | Request para URL externa | `withCredentials` permanece `false` |
 
 ---
 
@@ -469,9 +466,10 @@
 
 | # | Cenario | Esperado |
 |---|---------|----------|
-| 198 | Chamar `authService.logout()` | `clearSession()`: remove token e user de localStorage e sessionStorage, `userSubject.next(null)` |
-| 199 | Apos logout, navegacao | `router.navigate(['/authorization'])` |
-| 200 | `isAuthenticated()` apos logout | Retorna `false` |
+| 198 | Chamar `authService.logout()` com backend ok | Chama `POST /api/auth/logout` (expira cookie), depois `clearSession()`: remove user de localStorage e sessionStorage, `userSubject.next(null)` |
+| 199 | Apos logout com backend ok, navegacao | `router.navigate(['/authorization'])` |
+| 200 | `isAuthenticated()` apos logout | Retorna `false` (`!!this.user` e false) |
+| 201 | Logout com backend retornando 500 | `finally` garante: `clearSession()` e navegacao executados mesmo com falha do backend |
 
 ---
 
@@ -973,9 +971,9 @@ Quando um usuario ACTIVE e desativado/removido:
 | B33. Password Change — validacao de token | 4 |
 | B34. Auth Guard | 2 |
 | B35. Admin Guard | 4 |
-| B36. Auth Interceptor | 7 |
+| B36. Auth Interceptor | 4 |
 | B37. handleApiError | 5 |
-| B38. Logout | 3 |
+| B38. Logout | 4 |
 | B39. FormFieldComponent | 11 |
 | B40. Masks Utils | 13 |
 | B41. NotificationService | 6 |

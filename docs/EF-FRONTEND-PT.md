@@ -34,11 +34,11 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 ## 4. Regras Gerais
 
-**RG01** - A autenticacao utiliza JWT (JSON Web Token). O token e armazenado em `localStorage` (sessao persistente) ou `sessionStorage` (sessao temporaria), conforme escolha do usuario no login.
+**RG01** - A autenticacao utiliza JWT (JSON Web Token) gerenciado pelo backend via cookie httpOnly. O frontend armazena apenas os dados do usuario (`user`) em `localStorage` (sessao persistente) ou `sessionStorage` (sessao temporaria), conforme escolha no login. O token nao e gravado no storage do browser.
 
-**RG02** - Apenas um tipo de storage e usado por sessao. Se o usuario marca "manter conectado", usa `localStorage`; caso contrario, usa `sessionStorage`.
+**RG02** - Apenas um tipo de storage e usado por sessao. Se o usuario marca "manter conectado", o objeto `user` e salvo em `localStorage`; caso contrario, em `sessionStorage`.
 
-**RG03** - O interceptor HTTP adiciona o header `Authorization: Bearer {token}` automaticamente em todas as requisicoes para a API. Tokens invalidos (formato diferente de 3 partes separadas por ponto) nao sao enviados.
+**RG03** - O interceptor HTTP adiciona `withCredentials: true` em todas as requisicoes para a API, o que faz o browser enviar automaticamente o cookie httpOnly de autenticacao. Nenhum header `Authorization: Bearer` e adicionado — o cookie cuida da sessao.
 
 **RG04** - Rotas protegidas por `authGuard` exigem autenticacao. Rotas admin sao protegidas por `authGuard` + `adminGuard`.
 
@@ -118,7 +118,7 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 **RG-LOGIN-01** - O e-mail e normalizado (trim + lowercase) antes do envio.
 
-**RG-LOGIN-02** - Se "manter conectado" estiver marcado, token e dados do usuario sao salvos em `localStorage`. Caso contrario, em `sessionStorage`.
+**RG-LOGIN-02** - Se "manter conectado" estiver marcado, os dados do usuario sao salvos em `localStorage`. Caso contrario, em `sessionStorage`. O token nao e gravado — o backend gerencia a sessao via cookie httpOnly.
 
 **RG-LOGIN-03** - Em caso de erro, uma mensagem de alerta e exibida via NotificationService.
 
@@ -204,12 +204,14 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 **Endpoints chamados:**
 
-| Metodo                    | Endpoint                    | Descricao                        |
-|---------------------------|-----------------------------|----------------------------------|
-| `login()`                 | `POST /api/auth/login`      | Autenticar usuario               |
-| `register()`              | `POST /api/auth/register`   | Cadastrar usuario                |
-| `fetchAuthenticatedUser()`| `GET /api/users/me`         | Recuperar dados do usuario logado|
-| `logout()`                | Nenhum (local)              | Limpa storage, redireciona       |
+| Metodo                    | Endpoint                          | Descricao                              |
+|---------------------------|-----------------------------------|----------------------------------------|
+| `login()`                 | `POST /api/auth/login`            | Autenticar usuario                     |
+| `register()`              | `POST /api/auth/register`         | Cadastrar usuario                      |
+| `fetchAuthenticatedUser()`| `GET /api/users/me`               | Recuperar dados do usuario logado      |
+| `logout()`                | `POST /api/auth/logout`           | Expira cookie no backend, limpa storage|
+| `getRegistrationStatus()` | `GET /api/auth/registration-status` | Consulta lotacao do cadastro         |
+| `leaveWaitlist()`         | `DELETE /api/auth/waitlist/me`    | Usuario cancela posicao na fila        |
 
 **Observables/Estado:**
 
@@ -224,20 +226,20 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 **Arquivo:** `auth.interceptor.ts`
 
-**Descricao:** Interceptor funcional que adiciona o header de autorizacao.
+**Descricao:** Interceptor funcional que configura credenciais para autenticacao via cookie httpOnly.
 
 **Regras:**
 
-**RG-INT-01** - Somente adiciona o header em requisicoes para a URL base da API (`environment.apiUrl`).
+**RG-INT-01** - Somente atua em requisicoes para a URL base da API (`environment.apiUrl`). Requisicoes para URLs externas passam sem modificacao.
 
-**RG-INT-02** - Valida formato JWT (3 partes separadas por ponto). Tokens invalidos, vazios, "null" ou "undefined" nao sao enviados.
+**RG-INT-02** - Adiciona `withCredentials: true` na requisicao, fazendo o browser enviar automaticamente o cookie httpOnly de sessao. Nenhum header `Authorization` e adicionado.
 
 ---
 
 ### 6.7 Guards
 
 **authGuard:**
-- Verifica `authService.isAuthenticated()` (existencia do token)
+- Verifica `authService.isAuthenticated()` (existencia do usuario no `BehaviorSubject`)
 - Redireciona para `/login` se nao autenticado
 
 **adminGuard:**
@@ -1131,13 +1133,16 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 ### Autenticacao
 
-| Metodo | Endpoint                          | Descricao              |
-|--------|-----------------------------------|------------------------|
-| POST   | `/api/auth/login`                 | Login                  |
-| POST   | `/api/auth/register`              | Cadastro               |
-| GET    | `/api/users/me`                   | Dados do usuario logado|
-| POST   | `/api/auth/password-recovery`     | Recuperar senha        |
-| POST   | `/api/auth/password-change/notify`| Confirmacao de troca   |
+| Metodo | Endpoint                             | Descricao                        |
+|--------|--------------------------------------|----------------------------------|
+| POST   | `/api/auth/login`                    | Login                            |
+| POST   | `/api/auth/register`                 | Cadastro                         |
+| POST   | `/api/auth/logout`                   | Logout (expira cookie no backend)|
+| GET    | `/api/users/me`                      | Dados do usuario logado          |
+| POST   | `/api/auth/password-recovery`        | Recuperar senha                  |
+| POST   | `/api/auth/password-change/notify`   | Confirmacao de troca             |
+| GET    | `/api/auth/registration-status`      | Lotacao do cadastro (publico)    |
+| DELETE | `/api/auth/waitlist/me?email=...`    | Cancelar posicao na fila         |
 
 ### Videos
 
@@ -1187,10 +1192,11 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 | Chave                              | Tipo           | Descricao                          |
 |------------------------------------|----------------|------------------------------------|
-| `token`                            | string         | JWT do usuario                     |
-| `user`                             | JSON (User)    | Dados do usuario                   |
+| `user`                             | JSON (User)    | Dados do usuario autenticado       |
 | `vlflix:content-notifications:v1`  | JSON (array)   | Notificacoes de conteudo           |
 | `vida-longa-flix:views:{email}`    | JSON (Record)  | Historico de visualizacoes         |
+
+> **Nota:** O JWT nao e mais armazenado no browser. A sessao e mantida via cookie httpOnly gerenciado pelo backend. A chave `token` pode aparecer em sessoes antigas (pre-migracao) e e removida automaticamente no proximo login ou logout.
 
 ---
 
@@ -1204,9 +1210,9 @@ O VidaLongaFlix e uma plataforma de streaming de videos e cardapios voltada para
 
 | Area                    | Testes                                           |
 |-------------------------|--------------------------------------------------|
-| AuthService             | Persistencia de sessao, manipulacao de token      |
+| AuthService             | Persistencia de sessao, cookie httpOnly, waitlist|
 | Guards                  | authGuard, adminGuard                            |
-| Interceptor             | Adicao de header, validacao de JWT               |
+| Interceptor             | withCredentials, isolamento de URLs externas     |
 | Services                | VideoService, MenuService, FavoritesService, etc |
 | Components              | Renderizacao, interacao, formularios             |
 | Validators              | Senha forte, formato de CPF, telefone            |
