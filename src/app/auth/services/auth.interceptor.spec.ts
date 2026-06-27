@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXsrfConfiguration } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
@@ -72,6 +72,50 @@ describe('authInterceptor — Login & Register Scenarios', () => {
       const req = httpMock.expectOne('https://example.com/anything');
       expect(req.request.withCredentials).toBe(false);
       req.flush({});
+    });
+  });
+
+  // ─── B39. CSRF — proteção contra Cross-Site Request Forgery ──
+
+  describe('B39. CSRF — withXsrfConfiguration habilitado', () => {
+    function setupWithCsrf() {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(
+            withInterceptors([authInterceptor]),
+            withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
+          ),
+          provideHttpClientTesting(),
+        ],
+      });
+      http = TestBed.inject(HttpClient);
+      httpMock = TestBed.inject(HttpTestingController);
+    }
+
+    afterEach(() => {
+      document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    });
+
+    it('#195 POST para API com cookie CSRF — inclui header X-XSRF-TOKEN', () => {
+      document.cookie = 'XSRF-TOKEN=csrf-abc123; path=/';
+      setupWithCsrf();
+
+      http.post(`${environment.apiUrl}/auth/login`, {}).subscribe();
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+      expect(req.request.headers.get('X-XSRF-TOKEN')).toBe('csrf-abc123');
+      req.flush({});
+    });
+
+    it('#196 GET para API — nao inclui header CSRF (apenas metodos de escrita)', () => {
+      document.cookie = 'XSRF-TOKEN=csrf-abc123; path=/';
+      setupWithCsrf();
+
+      http.get(`${environment.apiUrl}/videos`).subscribe();
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/videos`);
+      expect(req.request.headers.has('X-XSRF-TOKEN')).toBe(false);
+      req.flush([]);
     });
   });
 });

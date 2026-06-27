@@ -47,6 +47,10 @@ export class AuthService {
   }
 
   private loadSession() {
+  // Limpeza de token legado: remove tokens de sessoes anteriores a migracao para cookie httpOnly.
+  localStorage.removeItem(this.TOKEN_KEY);
+  sessionStorage.removeItem(this.TOKEN_KEY);
+
   const localUser = localStorage.getItem(this.USER_KEY);
   const sessionUser = sessionStorage.getItem(this.USER_KEY);
   const userData = localUser ?? sessionUser;

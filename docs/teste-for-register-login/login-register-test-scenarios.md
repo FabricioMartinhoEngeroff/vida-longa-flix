@@ -123,6 +123,8 @@
 | 52 | `getToken()` | Retorna `localStorage.getItem('token') ?? sessionStorage.getItem('token')` (compatibilidade) |
 | 53 | `isAuthenticated()` com usuario carregado | Retorna `true` (`!!this.user`) |
 | 54 | `isAuthenticated()` sem usuario | Retorna `false` |
+| 349 | App inicializa com token JWT legado no `localStorage` (pre-migracao) | `loadSession()` remove o token imediatamente — nenhuma janela de exposicao a XSS |
+| 350 | App inicializa com token JWT legado no `sessionStorage` (pre-migracao) | `loadSession()` remove o token imediatamente |
 
 ---
 
@@ -439,7 +441,7 @@
 
 ---
 
-## B36. Auth Interceptor — autenticacao via cookie httpOnly
+## B36. Auth Interceptor — autenticacao via cookie httpOnly e CSRF
 
 | # | Cenario | Esperado |
 |---|---------|----------|
@@ -447,6 +449,9 @@
 | 190 | Request para URL externa | Sem `withCredentials`, sem `Authorization` — nenhum dado vazado para terceiros |
 | 193 | Request para API | `withCredentials: true` adicionado — browser envia cookie httpOnly automaticamente |
 | 194 | Request para URL externa | `withCredentials` permanece `false` |
+| 346 | `app.config.ts` tem `withXsrfConfiguration` configurado | `cookieName: 'XSRF-TOKEN'`, `headerName: 'X-XSRF-TOKEN'` — Angular le o cookie e injeta o header em mutacoes |
+| 347 | POST para API com cookie `XSRF-TOKEN=csrf-abc123` presente | Header `X-XSRF-TOKEN: csrf-abc123` incluido automaticamente pelo Angular |
+| 348 | GET para API com cookie `XSRF-TOKEN` presente | Header `X-XSRF-TOKEN` **nao** e incluido — CSRF so protege metodos de escrita (POST/PUT/DELETE/PATCH) |
 
 ---
 
@@ -944,7 +949,7 @@ Quando um usuario ACTIVE e desativado/removido:
 | B6. Login — submissao com sucesso | 5 |
 | B7. Login — normalizacao de dados | 4 |
 | B8. Login — tratamento de erros | 8 |
-| B9. Login — sessao e persistencia | 10 |
+| B9. Login — sessao e persistencia | 12 |
 | B10. Login — botao "Criar conta" | 1 |
 | B11. Login — modal "Esqueci minha senha" | 2 |
 | B12. Register — renderizacao | 9 |
@@ -971,7 +976,7 @@ Quando um usuario ACTIVE e desativado/removido:
 | B33. Password Change — validacao de token | 4 |
 | B34. Auth Guard | 2 |
 | B35. Admin Guard | 4 |
-| B36. Auth Interceptor | 4 |
+| B36. Auth Interceptor + CSRF | 7 |
 | B37. handleApiError | 5 |
 | B38. Logout | 4 |
 | B39. FormFieldComponent | 11 |

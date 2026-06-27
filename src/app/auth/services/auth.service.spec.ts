@@ -797,6 +797,50 @@ describe('AuthService — Email Welcome', () => {
       expect(localStorage.getItem('user')).toBeNull();
     });
   });
+  // ─── B51. Limpeza de token legado no startup ─────────────────
+
+  describe('B51. Limpeza de token legado no startup', () => {
+    it('#305 loadSession remove token legado do localStorage ao iniciar', () => {
+      localStorage.setItem('token', 'old-token-pre-migration');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: routerMock },
+          { provide: LoggerService, useValue: loggerMock },
+          ApiService,
+          AuthService,
+        ],
+      });
+
+      TestBed.inject(AuthService);
+
+      expect(localStorage.getItem('token')).toBeNull();
+    });
+
+    it('#306 loadSession remove token legado do sessionStorage ao iniciar', () => {
+      sessionStorage.setItem('token', 'old-session-token-pre-migration');
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: routerMock },
+          { provide: LoggerService, useValue: loggerMock },
+          ApiService,
+          AuthService,
+        ],
+      });
+
+      TestBed.inject(AuthService);
+
+      expect(sessionStorage.getItem('token')).toBeNull();
+    });
+  });
+
   // ─── B50. keepLoggedIn enviado para o backend ────────────────
   describe('B50. keepLoggedIn enviado para o backend', () => {
     it('#300 login com keepLoggedIn=true — payload inclui keepLoggedIn: true', async () => {
