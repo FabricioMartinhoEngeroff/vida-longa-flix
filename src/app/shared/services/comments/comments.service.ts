@@ -18,12 +18,20 @@ export class CommentsService {
   // estado local por videoId
   private state = signal<Record<string, CommentResponse[]>>({});
 
+  // mensagem de erro da ultima escrita (POST/DELETE); null quando tudo ok
+  private errorState = signal<string | null>(null);
+
   // cancela GET anterior para evitar resposta stale sobrescrever dados frescos
   private loadSub: Record<string, Subscription> = {};
 
   readonly comments = this.state.asReadonly();
+  readonly error = this.errorState.asReadonly();
 
   constructor(private http: HttpClient) {}
+
+  clearError(): void {
+    this.errorState.set(null);
+  }
 
   loadByVideo(videoId: string): void {
     const key = `video:${videoId}`;
@@ -47,18 +55,22 @@ export class CommentsService {
     const txt = (text ?? '').trim();
     if (!txt) return;
 
+    this.errorState.set(null); // nova tentativa zera erro anterior
+
     this.http.post<void>(this.baseUrl, { text, videoId })
       .subscribe({
         next: () => this.loadByVideo(videoId),
-        error: () => { /* silencia erro de POST */ }
+        error: () => this.errorState.set('Não foi possível publicar seu comentário. Tente novamente.')
       });
   }
 
   delete(commentId: string, videoId: string): void {
+    this.errorState.set(null);
+
     this.http.delete<void>(`${this.baseUrl}/${commentId}`)
       .subscribe({
         next: () => this.loadByVideo(videoId),
-        error: () => { /* silencia erro de DELETE */ }
+        error: () => this.errorState.set('Não foi possível excluir o comentário. Tente novamente.')
       });
   }
 

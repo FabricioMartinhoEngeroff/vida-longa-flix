@@ -163,6 +163,43 @@ describe('CommentsService', () => {
     expect(service.get('video-1').length).toBe(2);
   });
 
+  // ── Erro visivel ao usuario: nao engolir falha de POST/DELETE ──
+
+  it('add: POST que falha expoe mensagem no signal error()', () => {
+    expect(service.error()).toBeNull();
+
+    service.add('video-1', 'vai falhar');
+    http.expectOne(`${environment.apiUrl}/comments`)
+      .flush('Forbidden', { status: 403, statusText: 'Forbidden' });
+
+    // nenhum GET de reload deve ocorrer quando o POST falha
+    http.expectNone(`${environment.apiUrl}/comments/video/video-1`);
+    expect(service.error()).toBeTruthy();
+  });
+
+  it('add: sucesso limpa erro de uma tentativa anterior', () => {
+    // 1a tentativa falha
+    service.add('video-1', 'falha');
+    http.expectOne(`${environment.apiUrl}/comments`)
+      .flush('x', { status: 403, statusText: 'Forbidden' });
+    expect(service.error()).toBeTruthy();
+
+    // 2a tentativa sucede — erro deve zerar
+    service.add('video-1', 'ok');
+    http.expectOne(`${environment.apiUrl}/comments`).flush(null);
+    http.expectOne(`${environment.apiUrl}/comments/video/video-1`).flush([]);
+    expect(service.error()).toBeNull();
+  });
+
+  it('delete: DELETE que falha expoe mensagem no signal error()', () => {
+    service.delete('c1', 'video-1');
+    http.expectOne(`${environment.apiUrl}/comments/c1`)
+      .flush('x', { status: 403, statusText: 'Forbidden' });
+
+    http.expectNone(`${environment.apiUrl}/comments/video/video-1`);
+    expect(service.error()).toBeTruthy();
+  });
+
   it('should not break when DELETE is followed by rapid add', () => {
     const c1: CommentResponse = { id: '1', text: 'c1', date: '2024-01-01', user: { id: 'u1', name: 'Ana' } };
     const c2: CommentResponse = { id: '2', text: 'c2', date: '2024-01-02', user: { id: 'u1', name: 'Ana' } };

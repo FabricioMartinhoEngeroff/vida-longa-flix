@@ -29,6 +29,7 @@ describe('VideoZoomModalComponent', () => {
   };
 
   const commentsStateSignal = signal<Record<string, any[]>>({});
+  const commentsErrorSignal = signal<string | null>(null);
 
   const commentsServiceMock = {
     get: vi.fn().mockReturnValue([]),
@@ -36,6 +37,7 @@ describe('VideoZoomModalComponent', () => {
     loadByVideo: vi.fn(),
     delete: vi.fn(),
     comments: commentsStateSignal.asReadonly(),
+    error: commentsErrorSignal.asReadonly(),
   };
 
   beforeEach(async () => {
@@ -43,6 +45,7 @@ describe('VideoZoomModalComponent', () => {
     selectedVideoSignal.set(null);
     videosSignal.set([]);
     commentsStateSignal.set({});
+    commentsErrorSignal.set(null);
     await TestBed.configureTestingModule({
       imports: [VideoZoomModalComponent],
       providers: [

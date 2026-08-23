@@ -110,3 +110,13 @@
 .comment-form button:hover {
   background-color: #4f8a58;
 }
+
+.comment-error {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  font-size: 0.85rem;
+}

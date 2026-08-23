@@ -123,6 +123,10 @@ export class VideoZoomModalComponent implements OnDestroy {
     this.cancelDeleteComment();
   }
 
+  get commentError(): string | null {
+    return this.commentsService.error();
+  }
+
   get commentItems(): CommentItem[] {
     return (this.comments ?? []).map((c) => ({
       id: c.id,

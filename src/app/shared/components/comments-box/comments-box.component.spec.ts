@@ -112,6 +112,19 @@ describe('CommentsBoxComponent', () => {
     expect(favoriteSpy).toHaveBeenCalled();
   });
 
+  it('should render the error message when [error] is set, and hide it when null', () => {
+    const el = fixture.nativeElement as HTMLElement;
+
+    fixture.componentRef.setInput('error', 'Não foi possível publicar seu comentário. Tente novamente.');
+    fixture.detectChanges();
+    expect(el.querySelector('.comment-error')).toBeTruthy();
+    expect(el.textContent).toContain('Não foi possível publicar seu comentário');
+
+    fixture.componentRef.setInput('error', null);
+    fixture.detectChanges();
+    expect(el.querySelector('.comment-error')).toBeNull();
+  });
+
   it('should render delete button and emit commentDelete when canDeleteComments=true', () => {
     const delSpy = vi.spyOn(component.commentDelete, 'emit');
 

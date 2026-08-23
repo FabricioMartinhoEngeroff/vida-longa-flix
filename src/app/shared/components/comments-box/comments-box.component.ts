@@ -22,6 +22,7 @@ export class CommentsBoxComponent {
   @Input() commentItems: CommentItem[] | null = null;
   @Input() canDeleteComments = false;
   @Input() favorited = false;
+  @Input() error: string | null = null;
   @Output() favoriteClick = new EventEmitter<void>();
   @Output() commentSubmit = new EventEmitter<string>();
   @Output() commentDelete = new EventEmitter<string>();

@@ -56,6 +56,10 @@
     }
   </div>
 
+  @if (error) {
+    <div class="comment-error" role="alert">{{ error }}</div>
+  }
+
   <div class="comment-form">
     <input
       type="text"
