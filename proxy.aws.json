@@ -1,0 +1,9 @@
+{
+  "/api": {
+    "target": "https://api.vidalongaflix.com",
+    "secure": true,
+    "changeOrigin": true,
+    "cookieDomainRewrite": "localhost",
+    "logLevel": "debug"
+  }
+}

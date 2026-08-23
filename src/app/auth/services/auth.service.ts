@@ -223,6 +223,20 @@ export class AuthService {
     }
   }
 
+  /**
+   * Chamado pelo authInterceptor quando o backend responde 401 numa chamada autenticada:
+   * o cookie de sessao (httpOnly) expirou ou e invalido enquanto o user ainda persistia no
+   * storage. Limpa o estado local e redireciona para o login. A guarda evita redirect
+   * duplicado quando ja estamos deslogados (ex.: 401 em pagina publica).
+   */
+  handleSessionExpired(): void {
+    if (!this.isAuthenticated()) {
+      return;
+    }
+    this.clearSession();
+    this.router.navigate(['/authorization']);
+  }
+
  private saveSession(user: User, storage: 'local' | 'session') {
   const primary = storage === 'local' ? localStorage : sessionStorage;
   const secondary = storage === 'local' ? sessionStorage : localStorage;
