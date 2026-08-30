@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { VideoService } from '../../shared/services/video/video.service';
-import { Category, VideoRequest } from '../../shared/types/videos';
+import {VideoRequest } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 import { CsvUploadComponent } from '../../shared/components/csv-upload/csv-upload.component';
 import { NotificationService } from '../../shared/services/alert-message/alert-message.service';
-
+import { DeleteModalBase } from '../../shared/components/delete-modal/delete-modal.base';
 
 @Component({
   selector: 'app-video-admin',
@@ -16,11 +16,9 @@ import { NotificationService } from '../../shared/services/alert-message/alert-m
   templateUrl: './video-admin.component.html',
   styleUrls: ['./video-admin.component.css'],
 })
-export class VideoAdminComponent {
+export class VideoAdminComponent extends DeleteModalBase {
   form: FormGroup;
   uploadIcon = 'cloud_upload';
-
-  categories: Category[] = [];
 
   videoFileName = '';
   coverFileName = '';
@@ -31,18 +29,20 @@ export class VideoAdminComponent {
   private coverFile: File | null = null;
   private isEditingCover = false;
 
-  isDeleteModalOpen = false;
-  private pendingDelete: { kind: 'VIDEO' | 'CATEGORY'; id: string; label: string } | null = null;
+  protected readonly itemDeleteTitle = 'Deletar vídeo';
+protected readonly itemLabel = 'o vídeo';
 
   constructor(
     private fb: FormBuilder,
     private videoService: VideoService,
-    private categoriesService: CategoriesService,
+    categoriesService: CategoriesService,
     private alert: NotificationService
   ) {
+    super(categoriesService);
+
     this.categoriesService.list('VIDEO').subscribe({
       next: (cats) => (this.categories = cats),
-      error: () => { /* Falha silenciosa — categorias permanecem vazias */ },
+      error: () => {},
     });
 
     this.form = this.fb.group({
@@ -105,7 +105,7 @@ export class VideoAdminComponent {
   }
 
   private isPublicUrl(value: string): boolean {
-    if (!value) return true; // empty is allowed (e.g. optional cover)
+    if (!value) return true;
     return /^https?:\/\//.test(value) && !/localhost/i.test(value);
   }
 
@@ -114,8 +114,6 @@ export class VideoAdminComponent {
 
     const url = this.form.value.url;
     const cover = this.form.value.cover;
-
-    // Se tem arquivo local, o fluxo multipart sera usado — nao validar URL publica
     const hasLocalVideo = !!this.videoFile;
     const hasLocalCover = !!this.coverFile;
 
@@ -141,7 +139,6 @@ export class VideoAdminComponent {
       return;
     }
 
-    // Keep local suggestions fresh
     const typedName = (this.form.value.categoryName ?? '').trim();
     if (typedName && !this.categories.some(c => c.id === categoryId)) {
       this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'VIDEO' }];
@@ -167,14 +164,7 @@ export class VideoAdminComponent {
       this.videoService.addVideo(request);
     }
 
-    this.form.reset({
-      categoryName: '',
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-      calories: 0,
-    });
+    this.form.reset({ categoryName: '', protein: 0, carbs: 0, fat: 0, fiber: 0, calories: 0 });
     this.videoFileName = '';
     this.coverFileName = '';
     this.videoFile = null;
@@ -184,35 +174,20 @@ export class VideoAdminComponent {
   onEditCover(videoId: string, event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith('image/')) return;
-
     if (file.size > 10 * 1024 * 1024) {
       this.alert.error('A imagem da capa deve ter no máximo 10MB.');
       return;
     }
-
     if (this.isEditingCover) return;
     this.isEditingCover = true;
-
     this.videoService.updateCover(videoId, file);
-
     setTimeout(() => { this.isEditingCover = false; }, 1000);
   }
 
   askDeleteVideo(id: string, title: string): void {
     this.pendingDelete = { kind: 'VIDEO', id, label: title };
     this.isDeleteModalOpen = true;
-  }
-
-  askDeleteCategory(id: string, name: string): void {
-    this.pendingDelete = { kind: 'CATEGORY', id, label: name };
-    this.isDeleteModalOpen = true;
-  }
-
-  cancelDelete(): void {
-    this.isDeleteModalOpen = false;
-    this.pendingDelete = null;
   }
 
   confirmDelete(): void {
@@ -225,27 +200,6 @@ export class VideoAdminComponent {
       return;
     }
 
-    this.categoriesService.delete(pending.id).subscribe({
-      next: () => {
-        this.categories = this.categories.filter((c) => c.id !== pending.id);
-        this.cancelDelete();
-      },
-      error: () => {
-        this.cancelDelete();
-      },
-    });
-  }
-
-  get deleteTitle(): string {
-    if (this.pendingDelete?.kind === 'CATEGORY') return 'Deletar categoria';
-    return 'Deletar vídeo';
-  }
-
-  get deleteMessage(): string {
-    const label = this.pendingDelete?.label ?? '';
-    if (this.pendingDelete?.kind === 'CATEGORY') {
-      return `Deseja mesmo deletar a categoria “${label}”?`;
-    }
-    return `Deseja mesmo deletar o vídeo “${label}”?`;
+    this.deleteCategory();
   }
 }

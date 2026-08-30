@@ -25,7 +25,6 @@ describe('LoginComponent — Login & Register Scenarios', () => {
   const authMock = {
     login: vi.fn().mockResolvedValue(loginResponse),
     isAuthenticated: vi.fn().mockReturnValue(false),
-    getToken: vi.fn().mockReturnValue(null),
   };
 
   const loggerMock = { log: vi.fn(), warn: vi.fn(), error: vi.fn() };
@@ -117,18 +116,18 @@ describe('LoginComponent — Login & Register Scenarios', () => {
       expect(component.form.get('email')!.touched).toBe(true);
     });
 
-    it('#16 e-mail vazio, campo tocado — erro "Required field"', () => {
+    it('#16 e-mail vazio, campo tocado — erro "Campo obrigatório"', () => {
       const ctrl = component.form.get('email')!;
       ctrl.setValue('');
       ctrl.markAsTouched();
-      expect(component.errorMessage('email')).toBe('Required field');
+      expect(component.errorMessage('email')).toBe('Campo obrigatório');
     });
 
-    it('#17 e-mail invalido — erro "Invalid email"', () => {
+    it('#17 e-mail invalido — erro "E-mail inválido"', () => {
       const ctrl = component.form.get('email')!;
       ctrl.setValue('abc');
       ctrl.markAsTouched();
-      expect(component.errorMessage('email')).toBe('Invalid email');
+      expect(component.errorMessage('email')).toBe('E-mail inválido');
     });
 
     it('#18 e-mail valido — sem erro', () => {
@@ -147,18 +146,18 @@ describe('LoginComponent — Login & Register Scenarios', () => {
       expect(ctrl.value.length).toBeLessThanOrEqual(254);
     });
 
-    it('#20 senha vazia, campo tocado — erro "Required field"', () => {
+    it('#20 senha vazia, campo tocado — erro "Campo obrigatório"', () => {
       const ctrl = component.form.get('password')!;
       ctrl.setValue('');
       ctrl.markAsTouched();
-      expect(component.errorMessage('password')).toBe('Required field');
+      expect(component.errorMessage('password')).toBe('Campo obrigatório');
     });
 
-    it('#21 senha com menos de 6 caracteres — erro "Minimum 6 characters"', () => {
+    it('#21 senha com menos de 6 caracteres — erro "Mínimo de 6 caracteres"', () => {
       const ctrl = component.form.get('password')!;
       ctrl.setValue('12345');
       ctrl.markAsTouched();
-      expect(component.errorMessage('password')).toBe('Minimum 6 characters');
+      expect(component.errorMessage('password')).toBe('Mínimo de 6 caracteres');
     });
 
     it('#22 senha com exatamente 6 caracteres — sem erro', () => {

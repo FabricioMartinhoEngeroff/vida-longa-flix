@@ -4,11 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MenuService } from '../../shared/services/menus/menus-service';
 import { MenuRequest } from '../../shared/types/menu';
-import { Category } from '../../shared/types/videos';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ConfirmationModalComponent } from '../../shared/components/confirmation-modal/confirmation-modal.component';
 import { CsvUploadComponent } from '../../shared/components/csv-upload/csv-upload.component';
 import { NotificationService } from '../../shared/services/alert-message/alert-message.service';
+import { DeleteModalBase } from '../../shared/components/delete-modal/delete-modal.base';
 
 @Component({
   selector: 'app-menu-admin',
@@ -17,27 +17,27 @@ import { NotificationService } from '../../shared/services/alert-message/alert-m
   templateUrl: './menu-admin.component.html',
   styleUrls: ['./menu-admin.component.css'],
 })
-export class MenuAdminComponent implements OnInit {
+export class MenuAdminComponent extends DeleteModalBase implements OnInit {
   form: FormGroup;
   uploadIcon = 'cloud_upload';
-
-  // Categorias do tipo MENU carregadas do backend
-  categories: Category[] = [];
 
   coverFileName = '';
   isDraggingCover = false;
 
-  isDeleteModalOpen = false;
-  private pendingDelete: { kind: 'MENU' | 'CATEGORY'; id: string; label: string } | null = null;
   private isSaving = false;
   private editingCoverMenuIds = new Set<string>();
+
+  protected readonly itemDeleteTitle = 'Deletar cardápio';
+  protected readonly itemLabel = 'o cardápio';
 
   constructor(
     private fb: FormBuilder,
     private menuService: MenuService,
-    private categoriesService: CategoriesService,
+    categoriesService: CategoriesService,
     private alert: NotificationService
   ) {
+    super(categoriesService);
+
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(5)]],
@@ -54,7 +54,6 @@ export class MenuAdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Busca categorias do tipo MENU igual ao VideoAdminComponent faz para VIDEO
     this.categoriesService.list('MENU').subscribe({
       next: (cats) => this.categories = cats,
       error: () => { this.categories = []; },
@@ -69,8 +68,7 @@ export class MenuAdminComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.coverFileName = file.name;
-    const previewUrl = URL.createObjectURL(file);
-    this.form.patchValue({ cover: previewUrl });
+    this.form.patchValue({ cover: URL.createObjectURL(file) });
   }
 
   onDragOver(event: DragEvent): void {
@@ -83,8 +81,7 @@ export class MenuAdminComponent implements OnInit {
     const file = event.dataTransfer?.files[0];
     if (!file) return;
     this.coverFileName = file.name;
-    const previewUrl = URL.createObjectURL(file);
-    this.form.patchValue({ cover: previewUrl });
+    this.form.patchValue({ cover: URL.createObjectURL(file) });
   }
 
   async save(): Promise<void> {
@@ -104,7 +101,6 @@ export class MenuAdminComponent implements OnInit {
         this.categories = [...this.categories, { id: categoryId, name: typedName, type: 'MENU' }];
       }
 
-      // Validação: não permite persistir blob:, data:, ou localhost como cover final
       const coverValue = this.form.value.cover || '';
       const isInvalidCover = /^(blob:|data:)/.test(coverValue) || coverValue.includes('localhost');
       const finalCover = isInvalidCover ? '' : coverValue;
@@ -125,14 +121,7 @@ export class MenuAdminComponent implements OnInit {
 
       this.menuService.addMenu(request);
 
-      this.form.reset({
-        categoryName: '',
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        fiber: 0,
-        calories: 0,
-      });
+      this.form.reset({ categoryName: '', protein: 0, carbs: 0, fat: 0, fiber: 0, calories: 0 });
       this.coverFileName = '';
     } catch (e: any) {
       this.alert.error(e?.message || 'Categoria não encontrada.');
@@ -144,24 +133,13 @@ export class MenuAdminComponent implements OnInit {
   onEditCoverFile(menuId: string, event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-
-    // Validação de tipo de arquivo
-    if (!file.type.startsWith('image/')) {
-      return;
-    }
-
-    // Validação de tamanho (10MB)
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 10 * 1024 * 1024) {
       this.alert.error('A imagem da capa deve ter no máximo 10MB.');
       return;
     }
-
-    if (this.editingCoverMenuIds.has(menuId)) {
-      return;
-    }
+    if (this.editingCoverMenuIds.has(menuId)) return;
     this.editingCoverMenuIds.add(menuId);
-
     this.menuService.updateCover(menuId, file);
     setTimeout(() => { this.editingCoverMenuIds.delete(menuId); }, 1000);
   }
@@ -169,16 +147,6 @@ export class MenuAdminComponent implements OnInit {
   askDeleteMenu(id: string, title: string): void {
     this.pendingDelete = { kind: 'MENU', id, label: title };
     this.isDeleteModalOpen = true;
-  }
-
-  askDeleteCategory(id: string, name: string): void {
-    this.pendingDelete = { kind: 'CATEGORY', id, label: name };
-    this.isDeleteModalOpen = true;
-  }
-
-  cancelDelete(): void {
-    this.isDeleteModalOpen = false;
-    this.pendingDelete = null;
   }
 
   confirmDelete(): void {
@@ -191,27 +159,6 @@ export class MenuAdminComponent implements OnInit {
       return;
     }
 
-    this.categoriesService.delete(pending.id).subscribe({
-      next: () => {
-        this.categories = this.categories.filter((c) => c.id !== pending.id);
-        this.cancelDelete();
-      },
-      error: () => {
-        this.cancelDelete();
-      },
-    });
-  }
-
-  get deleteTitle(): string {
-    if (this.pendingDelete?.kind === 'CATEGORY') return 'Deletar categoria';
-    return 'Deletar cardápio';
-  }
-
-  get deleteMessage(): string {
-    const label = this.pendingDelete?.label ?? '';
-    if (this.pendingDelete?.kind === 'CATEGORY') {
-      return `Deseja mesmo deletar a categoria “${label}”?`;
-    }
-    return `Deseja mesmo deletar o cardápio “${label}”?`;
+    this.deleteCategory();
   }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { FormFieldComponent } from '../../components/form-field/form-field.component';
 import { PrimaryButtonComponent } from '../../components/primary-button/primary-button.component';
@@ -7,6 +7,7 @@ import { PasswordStrengthIndicatorComponent } from '../../components/password-st
 import { EmailAdjustmentMessageComponent } from '../../components/email-adjustment-message/email-adjustment-message.component';
 import { getDefaultNotificationDuration, NotificationService } from '../../services/notification.service';
 import { EmailErrorType } from '../../types/form.types';
+import { getFieldError } from '../../utils/form-errors';
 
 import { PasswordStrength, strongPasswordValidator } from '../../utils/strong-password-validator';
 import { AuthService } from '../../services/auth.service';
@@ -31,7 +32,7 @@ import { LoggerService } from '../../services/logger.service';
 })
 export class RegisterComponent {
   loading = false;
-  form: any;
+  form: FormGroup;
 
   emailErrorType: EmailErrorType = null;
   emailErrorMessage?: string;
@@ -66,10 +67,6 @@ export class RegisterComponent {
     return this.form.get('password')?.value || '';
   }
 
-  get f() {
-    return this.form.controls;
-  }
-
   private updateEmailError() {
     const emailControl = this.form.get('email');
     
@@ -96,27 +93,9 @@ export class RegisterComponent {
     }
   }
 
-  fieldError(path: string): string | null {
-    const control = this.form.get(path);
-    if (!control || !control.touched || !control.errors) return null;
-
-    // PT-BR: mensagens de validacao exibidas abaixo dos campos.
-    if (control.errors['required']) return 'Campo obrigatório';
-    if (control.errors['email']) return 'E-mail inválido';
-    if (control.errors['minlength'])
-      return `Mínimo de ${control.errors['minlength'].requiredLength} caracteres`;
-    if (control.errors['pattern']) return 'Telefone inválido';
-
-    if (control.errors['senhaFraca']) {
-      const requirements = control.errors['senhaFraca'].requisitosFaltando;
-      if (requirements && requirements.length > 0) {
-        return requirements[0];
-      }
-      return 'A senha não atende aos requisitos de segurança';
-    }
-
-    return 'Valor inválido';
-  }
+ fieldError(path: string): string | null {
+  return getFieldError(this.form.get(path));
+}
 
   async register() {
     this.form.markAllAsTouched();

@@ -12,28 +12,13 @@ import {
   RegistrationStatusResponse,
   WaitlistRemovalResponse,
 } from '../types/user.types';
-import { applyPhoneMaskAuto } from '../utils/masks.utils';
 import { handleApiError } from '../utils/handle-api-error';
 import { LoggerService } from './logger.service';
-
-interface LoginPayload {
-  email: string;
-  password: string;
-  keepLoggedIn: boolean;
-}
-
-interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-}
+import { StorageService } from './storage.service';
+import { mapLoginToApi, mapRegisterToApi, normalizeEmail } from '../utils/auth-mapper';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_KEY = 'token';
-  private readonly USER_KEY = 'user';
-
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
@@ -41,32 +26,30 @@ export class AuthService {
     private http: HttpClient,
     private api: ApiService,
     private router: Router,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private storage: StorageService
   ) {
     this.loadSession();
   }
 
-  private loadSession() {
-  // Limpeza de token legado: remove tokens de sessoes anteriores a migracao para cookie httpOnly.
-  localStorage.removeItem(this.TOKEN_KEY);
-  sessionStorage.removeItem(this.TOKEN_KEY);
-
-  const localUser = localStorage.getItem(this.USER_KEY);
-  const sessionUser = sessionStorage.getItem(this.USER_KEY);
-  const userData = localUser ?? sessionUser;
-
-  if (userData) {
-    try {
-      this.userSubject.next(JSON.parse(userData));
-    } catch {
-      this.clearSession();
-    }
+  private loadSession(): void {
+    const user = this.storage.loadUser();
+    if (user) this.userSubject.next(user);
   }
-}
+
+  private saveSession(user: User, type: 'local' | 'session'): void {
+    this.storage.saveUser(user, type === 'local');
+    this.userSubject.next(user);
+  }
+
+  private clearSession(): void {
+    this.storage.clearUser();
+    this.userSubject.next(null);
+  }
 
   async login(email: string, password: string, keepLoggedIn = true): Promise<LoginResponse> {
     try {
-      const payload = this.mapLoginToApi(email, password, keepLoggedIn);
+      const payload = mapLoginToApi(email, password, keepLoggedIn);
 
       const response = await firstValueFrom(
         this.http.post<LoginResponse>(`${this.api.baseURL}/auth/login`, payload)
@@ -96,7 +79,7 @@ export class AuthService {
 
   async register(data: RegisterData): Promise<RegistrationResponse> {
     try {
-      const payload = this.mapRegisterToApi(data);
+      const payload = mapRegisterToApi(data);
 
       const response = await firstValueFrom(
         this.http.post<RegistrationResponse>(`${this.api.baseURL}/auth/register`, payload)
@@ -123,8 +106,6 @@ export class AuthService {
       };
 
       this.saveSession(user, 'local');
-
-      // WhatsApp removido daqui — backend já envia no /auth/register
       return response;
 
     } catch (error) {
@@ -139,7 +120,7 @@ export class AuthService {
   }
 
   async leaveWaitlist(email: string): Promise<WaitlistRemovalResponse> {
-    const normalizedEmail = this.normalizeEmail(email);
+    const normalizedEmail = normalizeEmail(email);
 
     return firstValueFrom(
       this.http.delete<WaitlistRemovalResponse>(
@@ -148,34 +129,31 @@ export class AuthService {
     );
   }
 
- async fetchAuthenticatedUser(): Promise<User | null> {
-  if (!this.isAuthenticated()) {
-    this.router.navigateByUrl('/login');
-    return null;
-  }
-
-  try {
-    const response = await firstValueFrom(
-      this.http.get<User>(`${this.api.baseURL}/users/me`)
-    );
-
-    if (response) {
-      const inLocal = !!localStorage.getItem(this.USER_KEY);
-      this.saveSession(response, inLocal ? 'local' : 'session');
+  async fetchAuthenticatedUser(): Promise<User | null> {
+    if (!this.isAuthenticated()) {
+      this.router.navigateByUrl('/login');
+      return null;
     }
 
-    return response ?? null;
-  } catch (error) {
-    this.logger.error('Error fetching authenticated user:', error);
-    return null;
+    try {
+      const response = await firstValueFrom(
+        this.http.get<User>(`${this.api.baseURL}/users/me`)
+      );
+
+      if (response) {
+        this.saveSession(response, this.storage.isPersistent() ? 'local' : 'session');
+      }
+
+      return response ?? null;
+    } catch (error) {
+      this.logger.error('Error fetching authenticated user:', error);
+      return null;
+    }
   }
-}
 
   async updateProfile(data: ProfileData): Promise<User> {
     const currentUser = this.user;
-    if (!currentUser) {
-      throw new Error('User not authenticated');
-    }
+    if (!currentUser) throw new Error('User not authenticated');
 
     const updatedUser: User = {
       ...currentUser,
@@ -188,101 +166,40 @@ export class AuthService {
       updatedAt: new Date()
     };
 
-    const inLocal = !!localStorage.getItem(this.USER_KEY);
-    this.saveSession(updatedUser, inLocal ? 'local' : 'session');
-
+    this.saveSession(updatedUser, this.storage.isPersistent() ? 'local' : 'session');
     return updatedUser;
   }
 
   async updatePhoto(photo: string | null): Promise<void> {
     const currentUser = this.user;
-    if (!currentUser) {
-      throw new Error('User not authenticated');
-    }
+    if (!currentUser) throw new Error('User not authenticated');
 
     const updatedUser: User = {
       ...currentUser,
-      photo: photo,
+      photo,
       updatedAt: new Date()
     };
 
-    const inLocal = !!localStorage.getItem(this.USER_KEY);
-    this.saveSession(updatedUser, inLocal ? 'local' : 'session');
+    this.saveSession(updatedUser, this.storage.isPersistent() ? 'local' : 'session');
   }
 
-   async logout(): Promise<void> {
+  async logout(): Promise<void> {
     try {
       await firstValueFrom(
         this.http.post(`${this.api.baseURL}/auth/logout`, {})
       );
     } catch {
-      // se o backend falhar, limpa local de qualquer forma
     } finally {
       this.clearSession();
       this.router.navigate(['/authorization']);
     }
   }
 
-  /**
-   * Chamado pelo authInterceptor quando o backend responde 401 numa chamada autenticada:
-   * o cookie de sessao (httpOnly) expirou ou e invalido enquanto o user ainda persistia no
-   * storage. Limpa o estado local e redireciona para o login. A guarda evita redirect
-   * duplicado quando ja estamos deslogados (ex.: 401 em pagina publica).
-   */
+  
   handleSessionExpired(): void {
-    if (!this.isAuthenticated()) {
-      return;
-    }
+    if (!this.isAuthenticated()) return;
     this.clearSession();
     this.router.navigate(['/authorization']);
-  }
-
- private saveSession(user: User, storage: 'local' | 'session') {
-  const primary = storage === 'local' ? localStorage : sessionStorage;
-  const secondary = storage === 'local' ? sessionStorage : localStorage;
-
-  primary.setItem(this.USER_KEY, JSON.stringify(user));
-  secondary.removeItem(this.USER_KEY);
-
-  // Limpeza de transicao: remove token de sessoes anteriores a migracao pro cookie httpOnly.
-  primary.removeItem(this.TOKEN_KEY);
-  secondary.removeItem(this.TOKEN_KEY);
-
-  this.userSubject.next(user);
-}
-
-  private clearSession() {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.USER_KEY);
-    this.userSubject.next(null);
-  }
-
-  private mapLoginToApi(email: string, password: string, keepLoggedIn: boolean): LoginPayload {
-  return {
-    email: this.normalizeEmail(email),
-    password: (password ?? '').trim(),
-    keepLoggedIn,
-  };
-}
-
-  private mapRegisterToApi(data: RegisterData): RegisterPayload {
-    return {
-      name: (data.name ?? '').trim(),
-      email: this.normalizeEmail(data.email),
-      password: data.password ?? '',
-      // Keep backend compatibility: send the formatted phone expected by legacy validation.
-      phone: applyPhoneMaskAuto(data.phone ?? ''),
-    };
-  }
-
-  private normalizeEmail(email: string | null | undefined): string {
-    return (email ?? '').trim().toLowerCase();
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY) ?? sessionStorage.getItem(this.TOKEN_KEY);
   }
 
   get user(): User | null {
@@ -290,6 +207,6 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-  return !!this.user;
-}
+    return !!this.user;
+  }
 }

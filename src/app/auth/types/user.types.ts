@@ -96,6 +96,19 @@ export interface ResetPassword {
   newPassword: string;
 }
 
+export interface LoginPayload {
+  email: string;
+  password: string;
+  keepLoggedIn: boolean;
+}
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+}
+
 export function isProfileComplete(user: User): boolean {
   return !!(
     user.name &&

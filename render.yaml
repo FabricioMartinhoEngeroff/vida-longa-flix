@@ -1,0 +1,26 @@
+# Render Blueprint — Vida Longa Flix (SPA estatico)
+#
+# So tem efeito se o site for gerenciado como Blueprint no Render.
+# Se o site foi criado manualmente pelo painel, as regras de "routes" abaixo
+# precisam ser adicionadas em Settings -> Redirects/Rewrites do site.
+#
+# A regra de rewrite /api/* faz o proprio dominio do front servir a API
+# (mesma origem). Isso e o que permite o cookie XSRF-TOKEN ser lido pelo
+# JavaScript do front e o header X-XSRF-TOKEN ser anexado -> corrige o 403
+# em POST/PATCH/PUT/DELETE (comentarios, /view, etc.).
+services:
+  - name: vida-longa-flix
+    type: web
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist/organo/browser
+    routes:
+      # Proxy da API para o backend (mesma origem para o browser).
+      # DEVE vir antes do fallback do SPA.
+      - type: rewrite
+        source: /api/*
+        destination: https://vidalongaflix.onrender.com/api/$1
+      # Fallback do SPA: qualquer rota do client-side cai no index.html.
+      - type: rewrite
+        source: /*
+        destination: /index.html

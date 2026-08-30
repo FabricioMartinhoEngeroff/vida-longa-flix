@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
 import { FormFieldComponent } from '../../components/form-field/form-field.component';
@@ -9,6 +9,7 @@ import { PrimaryButtonComponent } from '../../components/primary-button/primary-
 import { AuthService } from '../../services/auth.service';
 import { LoginForm } from '../../types/form.types';
 import { LoggerService } from '../../services/logger.service';
+import { getFieldError } from '../../utils/form-errors';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,7 @@ import { LoggerService } from '../../services/logger.service';
 })
 export class LoginComponent {
   loading = false;
-  form!: ReturnType<FormBuilder['group']>;
+  form!: FormGroup<LoginForm>;
   recoveryOpen = false;
 
   constructor(
@@ -49,33 +50,22 @@ export class LoginComponent {
   }
 
   errorMessage(field: keyof LoginForm): string | null {
-    const control = this.form.get(field);
-    if (!control || !control.touched || !control.errors) return null;
-
-    if (control.errors['required']) return 'Required field';
-    if (control.errors['email']) return 'Invalid email';
-    if (control.errors['minlength']) {
-      return `Minimum ${control.errors['minlength'].requiredLength} characters`;
-    }
-
-    return 'Invalid value';
+    return getFieldError(this.form.get(field));  // ← uma linha
   }
 
   async signIn() {
     this.form.markAllAsTouched();
 
-    // PT-BR: no login, sem NotificationService; validação visual fica no formulário.
     if (this.form.invalid) return;
 
     this.loading = true;
 
     try {
-      const { email, password } = this.form.getRawValue();
-      const { keepLoggedIn } = this.form.getRawValue();
+      const { email, password, keepLoggedIn } = this.form.getRawValue();
       await this.authService.login(email, password, keepLoggedIn);
       this.router.navigateByUrl('/app', { replaceUrl: true });
     } catch (e) {
-     this.logger.error('Erro ao realizar login:', e);
+      this.logger.error('Erro ao realizar login:', e);
     } finally {
       this.loading = false;
     }

@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import { ApiService } from '../api/api.service';
 import { LoggerService } from './logger.service';
 import { AuthService } from './auth.service';
+import { StorageService } from './storage.service';
 import { vi } from 'vitest';
 
 describe('AuthService — Email Welcome', () => {
@@ -62,6 +63,7 @@ describe('AuthService — Email Welcome', () => {
         { provide: Router, useValue: routerMock },
         { provide: LoggerService, useValue: loggerMock },
         ApiService,
+         StorageService,
         AuthService,
       ],
     });
@@ -682,13 +684,25 @@ describe('AuthService — Email Welcome', () => {
   // ─── B9. Sessao e persistencia ───────────────────────────────
 
   describe('B9. Sessao e persistencia', () => {
-    it('#47 loadSession com localStorage populado — carrega user', async () => {
-      // Pre-populate localStorage
-      localStorage.setItem('token', 'saved-token');
+    it('#47 loadSession com localStorage populado — carrega user', () => {
       localStorage.setItem('user', JSON.stringify({ id: 'u1', name: 'Ana' }));
 
-      // Existing instance can read the persisted token through the public API.
-      expect(service.getToken()).toBe('saved-token');
+      // Re-instantiate to trigger loadSession
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: routerMock },
+          { provide: LoggerService, useValue: loggerMock },
+          ApiService,
+          StorageService,
+          AuthService,
+        ],
+      });
+
+      const s = TestBed.inject(AuthService);
+      expect(s.user?.id).toBe('u1');
     });
 
     it('#50 loadSession com user JSON invalido — clearSession', () => {
@@ -713,13 +727,29 @@ describe('AuthService — Email Welcome', () => {
       expect(localStorage.getItem('token')).toBeNull();
     });
 
-    it('#52 getToken — retorna localStorage ?? sessionStorage', () => {
+    it('#52 loadSession remove token legado do storage (sessao via cookie httpOnly)', () => {
       localStorage.setItem('token', 'local-tok');
-      expect(service.getToken()).toBe('local-tok');
-
-      localStorage.removeItem('token');
       sessionStorage.setItem('token', 'session-tok');
-      expect(service.getToken()).toBe('session-tok');
+      localStorage.setItem('user', JSON.stringify({ id: 'u1', name: 'Ana' }));
+
+      // Re-instantiate to trigger loadSession
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          { provide: Router, useValue: routerMock },
+          { provide: LoggerService, useValue: loggerMock },
+          ApiService,
+          StorageService,
+          AuthService,
+        ],
+      });
+
+      const s = TestBed.inject(AuthService);
+      expect(s.user?.id).toBe('u1');
+      expect(localStorage.getItem('token')).toBeNull();
+      expect(sessionStorage.getItem('token')).toBeNull();
     });
 
     it('#53 isAuthenticated com user carregado via login — true', async () => {
