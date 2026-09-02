@@ -8,6 +8,8 @@ export interface NotificationPayload {
   durationMs?: number;
 }
 
+export type NotificationType = NotificationPayload['type'];
+
 export interface Notification extends Omit<NotificationPayload, 'durationMs'> {
   durationMs: number;
 }

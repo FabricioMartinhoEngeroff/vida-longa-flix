@@ -1,10 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { SuccessMessageComponent } from './shared/components/alert-message/success-message.component';
-import { ErrorMessageComponent } from './shared/components/alert-message/error-message.component';
-import { WarningMessageComponent } from './shared/components/alert-message/warning-message.component';
-import { InfoMessageComponent } from './shared/components/alert-message/info-message.component';
+import { NotificationToastComponent } from './shared/components/alert-message/notification-toast.component';
 import { NotificationService } from './shared/services/alert-message/alert-message.service';
 
 @Component({
@@ -12,10 +9,7 @@ import { NotificationService } from './shared/services/alert-message/alert-messa
   standalone: true,
   imports: [
     RouterOutlet,
-    SuccessMessageComponent,
-    ErrorMessageComponent,
-    WarningMessageComponent,
-    InfoMessageComponent
+   NotificationToastComponent
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
